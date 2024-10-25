@@ -2,16 +2,15 @@ import useTranslation from 'next-translate/useTranslation';
 import { FC } from 'react';
 import { ManagedCourse_Course_by_pk_Sessions_SessionAddresses } from '../../../../queries/__generated__/ManagedCourse';
 import { UPDATE_SESSION_ADDRESS } from '../../../../queries/course';
-import EduHubTextFieldEditor from '../../../forms/EduHubTextFieldEditor';
+import InputField from '../../../inputs/InputField';
 import { isLinkFormat } from '../../../../helpers/util';
-import { QueryResult } from '@apollo/client';
 
 interface SessionAddressesIProps {
   address: ManagedCourse_Course_by_pk_Sessions_SessionAddresses | null;
-  refetchQuery: QueryResult<any, any>;
+  refetchQueries: [string];
 }
 
-export const SessionAddresses: FC<SessionAddressesIProps> = ({ address, refetchQuery }) => {
+export const SessionAddresses: FC<SessionAddressesIProps> = ({ address, refetchQueries }) => {
   const { t } = useTranslation('course-page');
 
   const defaultSessionAddress = address?.CourseLocation?.defaultSessionAddress;
@@ -22,11 +21,7 @@ export const SessionAddresses: FC<SessionAddressesIProps> = ({ address, refetchQ
   const label = isOnline
     ? t('sessionAddress.online.label')
     : t('sessionAddress.offline.label') + t('common:location.' + address?.CourseLocation?.locationOption);
-  const value = isOnline
-    ? isValidLink
-      ? sessionAddress
-      : t('sessionAddress.online.placeholder')
-    : sessionAddress;
+  const value = isOnline ? (isValidLink ? sessionAddress : t('sessionAddress.online.placeholder')) : sessionAddress;
   const placeholder = isOnline ? null : t('sessionAddress.offline.placeholder');
 
   return (
@@ -35,10 +30,11 @@ export const SessionAddresses: FC<SessionAddressesIProps> = ({ address, refetchQ
       {isOnline ? (
         <div className="h-2 mb-0 ml-16">{value}</div>
       ) : (
-        <EduHubTextFieldEditor
-          element="input"
-          updateMutation={UPDATE_SESSION_ADDRESS}
-          refetchQuery={refetchQuery}
+        <InputField
+          variant="eduhub"
+          type="input"
+          updateValueMutation={UPDATE_SESSION_ADDRESS}
+          refetchQueries={refetchQueries}
           itemId={address.id}
           placeholder={placeholder}
           value={value}
