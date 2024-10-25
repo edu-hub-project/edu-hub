@@ -16,6 +16,36 @@ import { ErrorMessageDialog } from '../common/dialogs/ErrorMessageDialog';
 import NotificationSnackbar from '../common/dialogs/NotificationSnackbar';
 import { gql } from 'graphql-tag';
 
+/**
+ * TagSelector Component
+ *
+ * This component provides a flexible tag selector that can operate in two modes:
+ * 1. Immediate server update mode
+ * 2. Local update mode
+ *
+ * The mode is determined by the presence or absence of both `insertValueMutation` and `deleteValueMutation` props:
+ *
+ * 1. When both `insertValueMutation` and `deleteValueMutation` are provided:
+ *    - The component will update the server immediately when tags are added or removed.
+ *    - It will call the provided mutations to update the server.
+ *    - After successful updates, it will call `onValueUpdated` with the server response.
+ *    - It will show a "Saved" notification after each successful update.
+ *
+ * 2. When either `insertValueMutation` or `deleteValueMutation` is not provided:
+ *    - The component will not attempt to update the server.
+ *    - It will only call `onValueUpdated` with the new tags.
+ *    - No "Saved" notification will be shown.
+ *
+ * In both modes:
+ * - Tag changes are debounced to prevent excessive updates or callbacks.
+ * - Input validation is performed, and error messages are displayed if the input is invalid.
+ * - The component supports both Material-UI and custom EduHub styling variants.
+ *
+ * This behavior allows the component to be used in various scenarios:
+ * - As a standalone tag selector that immediately persists changes to the server.
+ * - As part of a larger form where updates are collected locally and submitted together later.
+ */
+
 type TagSelectorProps = {
   // Determines the visual style and behavior of the component
   // 'material' uses Material-UI components, 'eduhub' uses custom styling
@@ -65,23 +95,6 @@ type TagSelectorProps = {
 
   // Prefix for options/tags translations (optional)
   optionsTranslationPrefix?: string;
-
-  /**
-   * Controls whether the tag selector should update the server immediately on change or wait for external trigger.
-   *
-   * @default true
-   *
-   * When true (default):
-   * - The component will call the insert/delete mutations as soon as tags are added/removed.
-   * - This is suitable for standalone selectors or when immediate updates are desired.
-   *
-   * When false:
-   * - The component will not call the mutations directly.
-   * - Instead, it will call onValueUpdated with the new tags.
-   * - This allows the parent component to control when the update should occur (e.g., on form submission).
-   * - Useful for multi-field forms where you want to submit all changes at once.
-   */
-  immediateUpdate?: boolean;
 };
 
 const TagSelector: React.FC<TagSelectorProps> = ({
@@ -101,7 +114,6 @@ const TagSelector: React.FC<TagSelectorProps> = ({
   className = '',
   invertColors = false,
   optionsTranslationPrefix = '',
-  immediateUpdate = true,
 }) => {
   const { t } = useTranslation();
   const [tags, setTags] = useState(values);
@@ -148,7 +160,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
   const debouncedUpdateTags = useDebouncedCallback((newTags: { id: number; name: string }[]) => {
     const oldTags = values;
 
-    if (immediateUpdate && insertValueMutation && deleteValueMutation) {
+    if (insertValueMutation && deleteValueMutation) {
       for (const tag of newTags) {
         if (!oldTags.some((oldTag) => oldTag.id === tag.id)) {
           // New tag added
@@ -167,6 +179,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
     }
 
     setHasBlurred(false);
+    setShowSavedNotification(!!(insertValueMutation && deleteValueMutation));
   }, debounceTimeout);
 
   const handleTagChange = useCallback(

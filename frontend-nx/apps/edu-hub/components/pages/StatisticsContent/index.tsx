@@ -236,7 +236,6 @@ const StatisticsContent: FC = () => {
                 onValueUpdated={handleProgramChange}
                 refetchQueries={[]}
                 className="text-gray-800"
-                immediateUpdate={false}
               />
             </div>
             {renderCharts()}

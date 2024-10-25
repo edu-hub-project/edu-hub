@@ -17,6 +17,38 @@ import { AlertMessageDialog } from '../common/dialogs/AlertMessageDialog';
 import { ErrorMessageDialog } from '../common/dialogs/ErrorMessageDialog';
 import { isLinkFormat, isECTSFormat } from '../../helpers/util';
 import NotificationSnackbar from '../common/dialogs/NotificationSnackbar';
+import { gql } from 'graphql-tag';
+
+/**
+ * InputField Component
+ *
+ * This component provides a flexible input field that can operate in two modes:
+ * 1. Immediate server update mode
+ * 2. Local update mode
+ *
+ * The mode is determined by the presence or absence of the `updateValueMutation` prop:
+ *
+ * 1. When `updateValueMutation` is provided:
+ *    - The component will update the server immediately when the input value changes.
+ *    - It will call the provided mutation to update the server.
+ *    - After a successful update, it will call `onValueUpdated` with the server response.
+ *    - It will show a "Saved" notification after each successful update.
+ *
+ * 2. When `updateValueMutation` is not provided:
+ *    - The component will not attempt to update the server.
+ *    - It will only call `onValueUpdated` with the new input value.
+ *    - No "Saved" notification will be shown.
+ *
+ * In both modes:
+ * - Input changes are debounced to prevent excessive updates or callbacks.
+ * - Input validation is performed, and error messages are displayed if the input is invalid.
+ * - The component supports both Material-UI and custom EduHub styling variants.
+ *
+ * This behavior allows the component to be used in various scenarios:
+ * - As a standalone input field that immediately persists changes to the server.
+ * - As part of a larger form where updates are collected locally and submitted together later.
+ *
+ */
 
 type InputFieldProps = {
   /**
@@ -67,7 +99,7 @@ type InputFieldProps = {
    *   }
    * `;
    */
-  updateValueMutation: DocumentNode;
+  updateValueMutation?: DocumentNode;
 
   /**
    * Callback function called after successful text update.
@@ -139,23 +171,6 @@ type InputFieldProps = {
   max?: number;
 
   /**
-   * Controls whether the input field should update the server immediately on change or wait for external trigger.
-   *
-   * @default true
-   *
-   * When true (default):
-   * - The component will call the updateValueMutation as soon as the input changes (with debounce).
-   * - This is suitable for standalone fields or when immediate updates are desired.
-   *
-   * When false:
-   * - The component will not call the updateValueMutation directly.
-   * - Instead, it will call onValueUpdated with the new value.
-   * - This allows the parent component to control when the update should occur (e.g., on form submission).
-   * - Useful for multi-field forms where you want to submit all changes at once.
-   */
-  immediateUpdate?: boolean;
-
-  /**
    * Allows for additional props to be passed.
    */
   [x: string]: any;
@@ -182,7 +197,6 @@ const InputField: React.FC<InputFieldProps> = ({
   invertColors = false,
   min,
   max,
-  immediateUpdate = true,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -197,20 +211,22 @@ const InputField: React.FC<InputFieldProps> = ({
     setLocalText(value);
   }, [value]);
 
-  const [updateText] = useRoleMutation(updateValueMutation, {
-    onError: (error) => handleError(t(error.message)),
-    onCompleted: (data) => {
-      if (onValueUpdated) onValueUpdated(data);
-      setShowSavedNotification(true);
-    },
-    refetchQueries: refetchQueries,
-  });
-
-  const handleNonImmediateUpdate = (newText: string) => {
-    if (onValueUpdated) {
-      onValueUpdated({ text: newText });
+  const [updateText] = useRoleMutation(
+    updateValueMutation ||
+      gql`
+        mutation NoOp {
+          __typename
+        }
+      `,
+    {
+      onError: (error) => handleError(t(error.message)),
+      onCompleted: (data) => {
+        if (onValueUpdated) onValueUpdated(data);
+        setShowSavedNotification(true);
+      },
+      refetchQueries,
     }
-  };
+  );
 
   const validateInput = (text: string): boolean => {
     switch (type) {
@@ -261,13 +277,13 @@ const InputField: React.FC<InputFieldProps> = ({
 
   const debouncedUpdateText = useDebouncedCallback((newText: string) => {
     if (validateInput(newText)) {
-      if (immediateUpdate) {
+      if (updateValueMutation) {
         updateText({ variables: { itemId, text: newText } });
-      } else {
-        handleNonImmediateUpdate(newText);
+      } else if (onValueUpdated) {
+        onValueUpdated({ text: newText });
       }
       setErrorMessage('');
-      setShowSavedNotification(immediateUpdate);
+      setShowSavedNotification(!!updateValueMutation);
     } else {
       setErrorMessage(getErrorMessage(type));
     }
@@ -408,7 +424,13 @@ const InputField: React.FC<InputFieldProps> = ({
   return (
     <>
       {variant === 'material' ? renderMaterialUI() : renderEduHub()}
+      {variant === 'material' && error && <AlertMessageDialog alert={error} open={!!error} onClose={resetError} />}
       {variant === 'eduhub' && error && <ErrorMessageDialog errorMessage={error} open={!!error} onClose={resetError} />}
+      <NotificationSnackbar
+        open={showSavedNotification}
+        onClose={() => setShowSavedNotification(false)}
+        message="notification_snackbar.saved"
+      />
     </>
   );
 };
