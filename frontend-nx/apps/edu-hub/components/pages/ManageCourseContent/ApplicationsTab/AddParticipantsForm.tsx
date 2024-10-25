@@ -79,8 +79,7 @@ export const AddParticipantsForm: FC<AddParticipantsFormProps> = ({ courseId, on
   return (
     <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg p-6 w-[400px] h-[400px]">
       <TagSelector
-        variant="eduhub" // or "material" depending on your design
-        immediateUpdate={false}
+        variant="material"
         label={t('selected_users')}
         placeholder={t('name_or_email')}
         itemId={0}
