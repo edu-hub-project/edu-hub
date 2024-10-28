@@ -50,7 +50,7 @@ services:
 
   python_functions:
     container_name: eduhub-python-functions
-    image: python:3.9-slim-bullseye
+    image: python:3.11-slim-bullseye
     working_dir: /functions
     volumes:
       - ./functions:/functions
