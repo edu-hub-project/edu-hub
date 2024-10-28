@@ -52,7 +52,7 @@ resource "google_cloudfunctions2_function" "call_python_function" {
   description = "Calls a Python function povided in the corresponding function folder"
 
   build_config {
-    runtime     = "python38"
+    runtime     = "python311"
     entry_point = "call_python_function"
     environment_variables = {
       # Causes a re-deploy of the function when the source changes
@@ -334,3 +334,4 @@ resource "google_cloudfunctions2_function" "send_questionaires" {
     ingress_settings   = var.cloud_function_ingress_settings
   }
 }
+
