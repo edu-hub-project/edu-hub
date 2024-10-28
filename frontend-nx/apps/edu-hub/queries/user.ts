@@ -22,7 +22,13 @@ export const USER = gql`
       university
       externalProfile
       occupation
+      organizationId
       picture	
+      Organization {
+        id
+        name
+        aliases
+      }
     }
   }
 `;

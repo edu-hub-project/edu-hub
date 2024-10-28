@@ -26,6 +26,6 @@ export interface UpdateUserOccupation {
 }
 
 export interface UpdateUserOccupationVariables {
-  itemId: any;
-  occupation: UserOccupation_enum;
+  userId: any;
+  value: UserOccupation_enum;
 }

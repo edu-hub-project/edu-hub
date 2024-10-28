@@ -106,10 +106,19 @@ export const UPDATE_USER_LAST_NAME = gql`
 `;
 
 export const UPDATE_USER_OCCUPATION = gql`
-  mutation UpdateUserOccupation($itemId: uuid!, $occupation: UserOccupation_enum!) {
-    update_User_by_pk(pk_columns: { id: $itemId }, _set: { occupation: $occupation }) {
+  mutation UpdateUserOccupation($userId: uuid!, $value: UserOccupation_enum!) {
+    update_User_by_pk(pk_columns: { id: $userId }, _set: { occupation: $value }) {
       id
       occupation
+    }
+  }
+`;
+
+export const UPDATE_USER_ORGANIZATION_ID = gql`
+  mutation UpdateUserOrganizationId($userId: uuid!, $value: Int) {
+    update_User_by_pk(pk_columns: { id: $userId }, _set: { organizationId: $value }) {
+      id
+      organizationId
     }
   }
 `;
