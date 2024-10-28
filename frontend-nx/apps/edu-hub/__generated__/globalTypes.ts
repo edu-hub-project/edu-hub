@@ -1407,6 +1407,35 @@ export enum University_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "UserOccupation"
+ */
+export enum UserOccupation_constraint {
+  UserOccupation_pkey = "UserOccupation_pkey",
+}
+
+export enum UserOccupation_enum {
+  EDUCATOR = "EDUCATOR",
+  EMPLOYED_FULL_TIME = "EMPLOYED_FULL_TIME",
+  EMPLOYED_PART_TIME = "EMPLOYED_PART_TIME",
+  HIGH_SCHOOL_STUDENT = "HIGH_SCHOOL_STUDENT",
+  HOMEMAKER = "HOMEMAKER",
+  OTHER = "OTHER",
+  RESEARCHER = "RESEARCHER",
+  RETIRED = "RETIRED",
+  SELF_EMPLOYED = "SELF_EMPLOYED",
+  UNEMPLOYED = "UNEMPLOYED",
+  UNIVERSITY_STUDENT = "UNIVERSITY_STUDENT",
+}
+
+/**
+ * update columns of table "UserOccupation"
+ */
+export enum UserOccupation_update_column {
+  comment = "comment",
+  value = "value",
+}
+
+/**
  * unique or primary key constraints on table "UserStatus"
  */
 export enum UserStatus_constraint {
@@ -1433,6 +1462,7 @@ export enum UserStatus_update_column {
  */
 export enum User_constraint {
   Person_AnonymId_key = "Person_AnonymId_key",
+  User_email_key = "User_email_key",
   User_pkey = "User_pkey",
 }
 
@@ -1451,6 +1481,7 @@ export enum User_select_column {
   lastName = "lastName",
   matriculationNumber = "matriculationNumber",
   newsletterRegistration = "newsletterRegistration",
+  occupation = "occupation",
   organizationId = "organizationId",
   otherUniversity = "otherUniversity",
   picture = "picture",
@@ -1488,6 +1519,7 @@ export enum User_update_column {
   lastName = "lastName",
   matriculationNumber = "matriculationNumber",
   newsletterRegistration = "newsletterRegistration",
+  occupation = "occupation",
   organizationId = "organizationId",
   otherUniversity = "otherUniversity",
   picture = "picture",
@@ -6838,6 +6870,65 @@ export interface University_order_by {
 }
 
 /**
+ * Boolean expression to filter rows from the table "UserOccupation". All fields are combined with a logical 'AND'.
+ */
+export interface UserOccupation_bool_exp {
+  Users?: User_bool_exp | null;
+  Users_aggregate?: User_aggregate_bool_exp | null;
+  _and?: UserOccupation_bool_exp[] | null;
+  _not?: UserOccupation_bool_exp | null;
+  _or?: UserOccupation_bool_exp[] | null;
+  comment?: String_comparison_exp | null;
+  value?: String_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to compare columns of type "UserOccupation_enum". All fields are combined with logical 'AND'.
+ */
+export interface UserOccupation_enum_comparison_exp {
+  _eq?: UserOccupation_enum | null;
+  _in?: UserOccupation_enum[] | null;
+  _is_null?: boolean | null;
+  _neq?: UserOccupation_enum | null;
+  _nin?: UserOccupation_enum[] | null;
+}
+
+/**
+ * input type for inserting data into table "UserOccupation"
+ */
+export interface UserOccupation_insert_input {
+  Users?: User_arr_rel_insert_input | null;
+  comment?: string | null;
+  value?: string | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "UserOccupation"
+ */
+export interface UserOccupation_obj_rel_insert_input {
+  data: UserOccupation_insert_input;
+  on_conflict?: UserOccupation_on_conflict | null;
+}
+
+/**
+ * on_conflict condition type for table "UserOccupation"
+ */
+export interface UserOccupation_on_conflict {
+  constraint: UserOccupation_constraint;
+  update_columns: UserOccupation_update_column[];
+  where?: UserOccupation_bool_exp | null;
+}
+
+/**
+ * Ordering options when selecting data from "UserOccupation".
+ */
+export interface UserOccupation_order_by {
+  Users_aggregate?: User_aggregate_order_by | null;
+  comment?: order_by | null;
+  value?: order_by | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "UserStatus". All fields are combined with a logical 'AND'.
  */
 export interface UserStatus_bool_exp {
@@ -6973,6 +7064,7 @@ export interface User_bool_exp {
   Experts?: Expert_bool_exp | null;
   Experts_aggregate?: Expert_aggregate_bool_exp | null;
   Organization?: Organization_bool_exp | null;
+  UserOccupation?: UserOccupation_bool_exp | null;
   UserStatus?: UserStatus_bool_exp | null;
   _and?: User_bool_exp[] | null;
   _not?: User_bool_exp | null;
@@ -6989,6 +7081,7 @@ export interface User_bool_exp {
   lastName?: String_comparison_exp | null;
   matriculationNumber?: String_comparison_exp | null;
   newsletterRegistration?: Boolean_comparison_exp | null;
+  occupation?: UserOccupation_enum_comparison_exp | null;
   organizationId?: Int_comparison_exp | null;
   otherUniversity?: String_comparison_exp | null;
   picture?: String_comparison_exp | null;
@@ -7009,6 +7102,7 @@ export interface User_insert_input {
   CourseEnrollments?: CourseEnrollment_arr_rel_insert_input | null;
   Experts?: Expert_arr_rel_insert_input | null;
   Organization?: Organization_obj_rel_insert_input | null;
+  UserOccupation?: UserOccupation_obj_rel_insert_input | null;
   UserStatus?: UserStatus_obj_rel_insert_input | null;
   anonymousId?: string | null;
   created_at?: any | null;
@@ -7022,6 +7116,7 @@ export interface User_insert_input {
   lastName?: string | null;
   matriculationNumber?: string | null;
   newsletterRegistration?: boolean | null;
+  occupation?: UserOccupation_enum | null;
   organizationId?: number | null;
   otherUniversity?: string | null;
   picture?: string | null;
@@ -7097,6 +7192,7 @@ export interface User_order_by {
   CourseEnrollments_aggregate?: CourseEnrollment_aggregate_order_by | null;
   Experts_aggregate?: Expert_aggregate_order_by | null;
   Organization?: Organization_order_by | null;
+  UserOccupation?: UserOccupation_order_by | null;
   UserStatus?: UserStatus_order_by | null;
   anonymousId?: order_by | null;
   created_at?: order_by | null;
@@ -7110,6 +7206,7 @@ export interface User_order_by {
   lastName?: order_by | null;
   matriculationNumber?: order_by | null;
   newsletterRegistration?: order_by | null;
+  occupation?: order_by | null;
   organizationId?: order_by | null;
   otherUniversity?: order_by | null;
   picture?: order_by | null;

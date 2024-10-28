@@ -10,6 +10,7 @@ export const UPDATE_USER = gql`
     $university: University_enum
     $externalProfile: String
     $employment: Employment_enum
+    $occupation: UserOccupation_enum
     $picture: String
   ) {
     update_User_by_pk(
@@ -22,6 +23,7 @@ export const UPDATE_USER = gql`
         email: $email
         externalProfile: $externalProfile
         university: $university
+        occupation: $occupation
         picture: $picture
       }
     ) {
@@ -30,6 +32,7 @@ export const UPDATE_USER = gql`
       matriculationNumber
       lastName
       employment
+      occupation
       email
       externalProfile
       university
@@ -45,6 +48,7 @@ export const UPDATE_USER_ON_ENROLLMENT_CONFIRMATION = gql`
     $otherUniversity: String
     $university: University_enum
     $employment: Employment_enum
+    $occupation: UserOccupation_enum
   ) {
     update_User_by_pk(
       pk_columns: { id: $userId }
@@ -53,6 +57,7 @@ export const UPDATE_USER_ON_ENROLLMENT_CONFIRMATION = gql`
         otherUniversity: $otherUniversity
         employment: $employment
         university: $university
+        occupation: $occupation
       }
     ) {
       id
@@ -60,6 +65,7 @@ export const UPDATE_USER_ON_ENROLLMENT_CONFIRMATION = gql`
       employment
       otherUniversity
       university
+      occupation
     }
   }
 `;
@@ -77,6 +83,33 @@ export const UPDATE_USER_PROFILE_PICTURE = gql`
     ) {
       id
       picture
+    }
+  }
+`;
+
+export const UPDATE_USER_FIRST_NAME = gql`
+  mutation UpdateUserFirstName($itemId: uuid!, $text: String!) {
+    update_User_by_pk(pk_columns: { id: $itemId }, _set: { firstName: $text }) {
+      id
+      firstName
+    }
+  }
+`;
+
+export const UPDATE_USER_LAST_NAME = gql`
+  mutation UpdateUserLastName($itemId: uuid!, $text: String!) {
+    update_User_by_pk(pk_columns: { id: $itemId }, _set: { lastName: $text }) {
+      id
+      lastName
+    }
+  }
+`;
+
+export const UPDATE_USER_OCCUPATION = gql`
+  mutation UpdateUserOccupation($itemId: uuid!, $occupation: UserOccupation_enum!) {
+    update_User_by_pk(pk_columns: { id: $itemId }, _set: { occupation: $occupation }) {
+      id
+      occupation
     }
   }
 `;

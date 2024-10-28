@@ -5,6 +5,9 @@ object_relationships:
   - name: Organization
     using:
       foreign_key_constraint_on: organizationId
+  - name: UserOccupation
+    using:
+      foreign_key_constraint_on: occupation
   - name: UserStatus
     using:
       foreign_key_constraint_on: status
@@ -119,6 +122,8 @@ select_permissions:
         - lastName
         - matriculationNumber
         - newsletterRegistration
+        - occupation
+        - organizationId
         - otherUniversity
         - picture
         - status
@@ -138,6 +143,7 @@ update_permissions:
         - lastName
         - matriculationNumber
         - newsletterRegistration
+        - occupation
         - organizationId
         - otherUniversity
         - picture
