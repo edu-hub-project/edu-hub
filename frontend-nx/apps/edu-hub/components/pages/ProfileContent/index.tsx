@@ -12,6 +12,7 @@ import {
   UPDATE_USER_LAST_NAME,
   UPDATE_USER_PROFILE_PICTURE,
   UPDATE_USER_OCCUPATION,
+  UPDATE_USER_ORGANIZATION_ID,
 } from '../../../queries/updateUser';
 import { USER, USER_OCCUPATION } from '../../../queries/user';
 
@@ -20,13 +21,13 @@ import { User, UserVariables } from '../../../queries/__generated__/User';
 import InputField from '../../inputs/InputField';
 import DropDownSelector from '../../inputs/DropDownSelector';
 import { UserOccupation } from '../../../queries/__generated__/UserOccupation';
+import CreatableTagSelector from '../../inputs/CreatableTagSelector';
 
 const ProfileContent: FC = () => {
   const { t } = useTranslation('profile');
   const { data: sessionData, status: sessionStatus } = useSession();
   const [showError, setShowError] = useState(true);
 
-  // Always call hooks unconditionally at the top level
   const {
     data: userData,
     error: userError,
@@ -107,22 +108,23 @@ const ProfileContent: FC = () => {
           <div className="w-full md:w-1/2 pr-0 md:pr-3">
             <DropDownSelector
               variant="eduhub"
-              label={t('employment_status')}
-              value={userData?.User_by_pk?.occupation}
+              label={t('occupation.label')}
+              value={userData?.User_by_pk?.occupation ?? 'UNIVERSITY_STUDENT'}
               options={occupationOptions}
-              identifierVariables={{ userId: userData?.User_by_pk?.id }}
               updateValueMutation={UPDATE_USER_OCCUPATION}
+              identifierVariables={{ userId: userData?.User_by_pk?.id }}
+              optionsTranslationPrefix="profile:occupation."
             />
           </div>
           <div className="w-full md:w-1/2 pl-0 md:pl-3">
-            <InputField
+            <CreatableTagSelector
               variant="eduhub"
-              type="input"
-              label={t('last_name')}
+              label={t('organization.aliases')}
+              placeholder={t('input.enter_alias')}
               itemId={userData?.User_by_pk?.id}
-              value={userData?.User_by_pk?.lastName}
-              updateValueMutation={UPDATE_USER_LAST_NAME}
-              showCharacterCount={false}
+              values={[userData?.User_by_pk?.Organization?.name]}
+              options={[]}
+              updateValuesMutation={UPDATE_USER_ORGANIZATION_ID}
             />
           </div>
         </div>

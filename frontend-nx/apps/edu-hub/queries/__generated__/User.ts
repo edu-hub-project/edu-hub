@@ -9,6 +9,13 @@ import { University_enum, UserOccupation_enum } from "./../../__generated__/glob
 // GraphQL query operation: User
 // ====================================================
 
+export interface User_User_by_pk_Organization {
+  __typename: "Organization";
+  id: number;
+  name: string;
+  aliases: any | null;
+}
+
 export interface User_User_by_pk {
   __typename: "User";
   id: any;
@@ -41,9 +48,17 @@ export interface User_User_by_pk {
    */
   occupation: UserOccupation_enum | null;
   /**
+   * Referring to where the user is occupied. Could be the user's company, higher education institution, or any organization.
+   */
+  organizationId: number | null;
+  /**
    * The user's profile picture
    */
   picture: string | null;
+  /**
+   * An object relationship
+   */
+  Organization: User_User_by_pk_Organization | null;
 }
 
 export interface User {

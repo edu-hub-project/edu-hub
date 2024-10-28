@@ -1,8 +1,21 @@
 {
   "first_name": "Vorname",
   "last_name": "Nachname",
-  "occupation": "Beschäftigung",
   "university": "Hochschule",
   "university_enrollment_number": "Matrikelnummer",
-  "company": "Unternehmen"
+  "company": "Unternehmen",
+  "occupation": {
+    "label": "Beschäftigung",
+    "HIGH_SCHOOL_STUDENT": "Schüler:in",
+    "UNIVERSITY_STUDENT": "Student:in",
+    "EMPLOYED_FULL_TIME": "Vollzeit beschäftigt",
+    "EMPLOYED_PART_TIME": "Teilzeit beschäftigt",
+    "SELF_EMPLOYED": "Selbstständig",
+    "UNEMPLOYED": "Arbeitslos",
+    "RETIRED": "Im Ruhestand",
+    "RESEARCHER": "Forscher:in",
+    "EDUCATOR": "Lehrkraft",
+    "HOMEMAKER": "Hausfrau/Hausmann",
+    "OTHER": "Sonstiges"
+  }
 }
