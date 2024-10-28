@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { FC } from 'react';
 import { Page } from '../../components/layout/Page';
 import { useIsLoggedIn } from '../../hooks/authentication';
-import ProfileOverview from '../../components/pages/ProfileContent';
+import ProfileContent from '../../components/pages/ProfileContent';
 
 const Profile: FC = () => {
   //const { t } = useTranslation('users');
@@ -16,7 +16,7 @@ const Profile: FC = () => {
           <link rel="icon" href="/favicon.png" />
         </Head>
         <Page>
-          <div className="min-h-[77vh]">{isLoggedIn && <ProfileOverview />}</div>
+          <div className="min-h-[77vh]">{isLoggedIn && <ProfileContent />}</div>
         </Page>
       </div>
     </>

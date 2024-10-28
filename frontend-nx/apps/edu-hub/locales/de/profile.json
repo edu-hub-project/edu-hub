@@ -1,0 +1,8 @@
+{
+  "first_name": "Vorname",
+  "last_name": "Nachname",
+  "occupation": "Beschäftigung",
+  "university": "Hochschule",
+  "university_enrollment_number": "Matrikelnummer",
+  "company": "Unternehmen"
+}

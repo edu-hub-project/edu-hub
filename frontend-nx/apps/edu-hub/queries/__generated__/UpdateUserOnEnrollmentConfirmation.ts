@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { University_enum, Employment_enum } from "./../../__generated__/globalTypes";
+import { University_enum, Employment_enum, UserOccupation_enum } from "./../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: UpdateUserOnEnrollmentConfirmation
@@ -28,6 +28,10 @@ export interface UpdateUserOnEnrollmentConfirmation_update_User_by_pk {
    * The university the user is attending or workin at (only provided if he is a student or working in academia)
    */
   university: University_enum | null;
+  /**
+   * Provides the users occupation status.
+   */
+  occupation: UserOccupation_enum | null;
 }
 
 export interface UpdateUserOnEnrollmentConfirmation {
@@ -43,4 +47,5 @@ export interface UpdateUserOnEnrollmentConfirmationVariables {
   otherUniversity?: string | null;
   university?: University_enum | null;
   employment?: Employment_enum | null;
+  occupation?: UserOccupation_enum | null;
 }

@@ -18,44 +18,63 @@ import { ErrorMessageDialog } from '../common/dialogs/ErrorMessageDialog';
 import NotificationSnackbar from '../common/dialogs/NotificationSnackbar';
 
 type DropDownSelectorProps = {
-  // Determines the visual style and behavior of the component
-  // 'material' uses Material-UI components, 'eduhub' uses custom styling
+  /**
+   * Determines the visual style and behavior of the component.
+   * 'material' uses Material-UI components, 'eduhub' uses custom styling.
+   */
   variant: 'material' | 'eduhub';
 
-  // The label for the dropdown selector (optional)
+  /** The label for the dropdown selector. */
   label?: string;
 
-  // The currently selected value in the dropdown
+  /** The currently selected value in the dropdown. */
   value: string;
 
-  // Array of available options for the dropdown (in format used in the database)
+  /** Array of available options for the dropdown (in format used in the database). */
   options: string[];
 
-  // GraphQL mutation to update the selected value
+  /**
+   * GraphQL mutation to update the selected value.
+   * Example:
+   * ```
+   * const UPDATE_VALUE_MUTATION = gql`
+   *   mutation UpdateValue($id: ID!, $value: String!) {
+   *     updateValue(id: $id, value: $value) {
+   *       id
+   *       value
+   *     }
+   *   }
+   * `;
+   * ```
+   */
   updateValueMutation: DocumentNode;
 
-  // Callback function triggered after a successful value update (optional)
+  /** Callback function triggered after a successful value update. */
   onValueUpdated?: (data: any) => void;
 
-  // Array of query names to refetch after a successful update (optional)
+  /** Array of query names to refetch after a successful update. */
   refetchQueries?: string[];
 
-  // Tooltip text to provide additional information about the dropdown (optional)
+  /** Tooltip text to provide additional information about the dropdown. */
   helpText?: string;
 
-  // Error message to display when the selection is invalid (optional)
+  /** Error message to display when the selection is invalid. */
   errorText?: string;
 
-  // Prefix for options translations (optional)
+  /** Prefix for options translations. */
   optionsTranslationPrefix?: string;
 
-  // Indicates if the field is required (optional, default: false)
+  /** Indicates if the field is required. Default is false. */
   isMandatory?: boolean;
 
-  // Additional CSS classes to apply to the component (optional)
+  /** Additional CSS classes to apply to the component. */
   className?: string;
 
-  // Variables to include in the mutation for identification
+  /**
+   * Variables to include in the mutation for identification.
+   * These should match the variables expected by the updateValueMutation.
+   * Example: { id: "user123" }
+   */
   identifierVariables: Record<string, any>;
 };
 
