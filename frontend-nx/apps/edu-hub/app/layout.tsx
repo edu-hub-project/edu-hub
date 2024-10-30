@@ -1,6 +1,5 @@
 import { Providers } from './providers';
-import { Metadata } from 'next';
-import { redirect } from 'next/navigation';
+import { Metadata, Viewport } from 'next';
 import useTranslation from 'next-translate/useTranslation';
 import log from 'loglevel';
 
@@ -14,7 +13,11 @@ import i18n from '../i18n';
 export const metadata: Metadata = {
   title: 'EduHub | opencampus.sh',
   description: 'EduHub by opencampus.sh',
-  viewport: 'width=device-width, initial-scale=1',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 if (process.env.NEXT_PUBLIC_ENVIRONMENT === 'production') {
@@ -24,10 +27,10 @@ if (process.env.NEXT_PUBLIC_ENVIRONMENT === 'production') {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const { lang } = useTranslation('common');
+  const { lang: detectedLang } = useTranslation('common');
+  const lang = detectedLang || i18n.defaultLocale;
 
-  // Redirect to default locale if lang is not supported. /second-page -> /en/second-page
-  if (!i18n.locales.includes(lang)) redirect(`/${i18n.defaultLocale}/${lang}`);
+  log.debug('Current lang:', lang);
 
   return (
     <html lang={lang}>
