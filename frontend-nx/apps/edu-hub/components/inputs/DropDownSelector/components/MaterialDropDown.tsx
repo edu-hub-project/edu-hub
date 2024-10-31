@@ -81,15 +81,33 @@ export const MaterialDropDown: React.FC<MaterialDropDownProps> = ({
             onBlur={onBlur}
             placeholder={placeholder}
             displayEmpty
-            style={{ color: hasBlurred && errorMessage ? 'red' : 'inherit' }}
+            style={{
+              color: hasBlurred && errorMessage ? 'red' : 'inherit',
+              backgroundColor: 'white',
+              minHeight: '32px',
+              padding: '4px',
+            }}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  backgroundColor: 'white',
+                },
+              },
+            }}
             endAdornment={
-              helpText ? (
+              helpText && (
                 <InputAdornment position="end">
                   <Tooltip title={t(helpText)} placement="top">
-                    <HelpOutline style={{ cursor: 'pointer', color: theme.palette.text.disabled }} />
+                    <HelpOutline
+                      style={{
+                        cursor: 'pointer',
+                        color: theme.palette.text.disabled,
+                        marginRight: '20px',
+                      }}
+                    />
                   </Tooltip>
                 </InputAdornment>
-              ) : null
+              )
             }
           >
             {!localValue && placeholder && (
