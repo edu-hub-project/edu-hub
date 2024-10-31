@@ -149,8 +149,7 @@ const FormToAddEditAchievementOption: FC<IPropsAddEditAchievementTempData> = (pr
           <InputField
             variant="eduhub"
             immediateUpdate={false}
-            itemId={0}  // Dummy
-            updateValueMutation={null as any}  // Dummy
+            itemId={-1}  // Dummy
             label={`${tCommon('project-title')}*`}
             name="title"
             type="input"
@@ -212,8 +211,7 @@ const FormToAddEditAchievementOption: FC<IPropsAddEditAchievementTempData> = (pr
         <InputField
           variant="eduhub"
           immediateUpdate={false}
-          itemId={0}  // Dummy
-          updateValueMutation={null as any}  // Dummy
+          itemId={-1}  // Dummy
           label={`${tCommon('project-description')}`}
           name="description"
           type="textarea" 
@@ -221,7 +219,7 @@ const FormToAddEditAchievementOption: FC<IPropsAddEditAchievementTempData> = (pr
           onValueUpdated={(data) => {
             dispatch({
               key: 'description',
-              value: data.text
+              value: data.texts
             });
           }}
           maxLength={3000}
@@ -291,38 +289,7 @@ const FormToAddEditAchievementOption: FC<IPropsAddEditAchievementTempData> = (pr
 export default FormToAddEditAchievementOption;
 /* #endregion */
 
-/* #region Custom UI */
-type IPropsEhInputWithTitle2 = {
-  label: string;
-  onChangeHandler: (event: any) => void;
-} & { [key: string]: any };
 
-const EhInputWithTitle2: FC<IPropsEhInputWithTitle2> = ({ label, onChangeHandler, ...custom }) => {
-  const handOnchange = useCallback(
-    (event) => {
-      onChangeHandler(event);
-    },
-    [onChangeHandler]
-  );
-  return (
-    <div className="flex flex-col space-y-1">
-      <p>{label}</p>
-      <DebounceInput
-        className={`h-12
-            px-2
-            bg-white
-            transition
-            ease-in-out
-            w-full
-            border border-solid border-gray-300
-            focus:border-none focus:outline-none`}
-        onChange={handOnchange}
-        debounceTimeout={1000}
-        {...custom}
-      />
-    </div>
-  );
-};
 
 interface IProsSelect {
   options: string[];
