@@ -21,7 +21,8 @@ import { User, UserVariables } from '../../../queries/__generated__/User';
 import InputField from '../../inputs/InputField';
 import DropDownSelector from '../../inputs/DropDownSelector';
 import { UserOccupation } from '../../../queries/__generated__/UserOccupation';
-import CreatableTagSelector from '../../inputs/CreatableTagSelector';
+import { CREATE_ORGANIZATION, ORGANIZATION_LIST } from '../../../queries/organization';
+import { OrganizationList } from '../../../queries/__generated__/OrganizationList';
 
 const ProfileContent: FC = () => {
   const { t } = useTranslation('profile');
@@ -43,8 +44,25 @@ const ProfileContent: FC = () => {
     skip: sessionStatus === 'loading',
   });
 
-  // Prepare data after all hooks are called
-  const occupationOptions = (queryOccupationOptions.data?.UserOccupation || []).map((x) => x.value);
+  const { data: organizationData } = useRoleQuery<OrganizationList>(ORGANIZATION_LIST, {
+    variables: {
+      limit: 100, // Adjust as needed
+    },
+    skip: sessionStatus === 'loading',
+  });
+
+  // Occupation enums and their translated labels
+  const occupationOptions = (queryOccupationOptions.data?.UserOccupation || []).map((x) => ({
+    label: t(`profile:occupation.${x.value}`), // Apply translation here
+    value: x.value,
+  }));
+
+  // Organization ids and their corresponding names
+  const organizationOptions =
+    organizationData?.Organization?.map((org) => ({
+      label: org.name,
+      value: org.id.toString(),
+    })) || [];
 
   // Render loading state
   if (sessionStatus === 'loading') {
@@ -109,22 +127,23 @@ const ProfileContent: FC = () => {
             <DropDownSelector
               variant="eduhub"
               label={t('occupation.label')}
-              value={userData?.User_by_pk?.occupation ?? 'UNIVERSITY_STUDENT'}
+              value={userData?.User_by_pk?.occupation}
               options={occupationOptions}
               updateValueMutation={UPDATE_USER_OCCUPATION}
               identifierVariables={{ userId: userData?.User_by_pk?.id }}
-              optionsTranslationPrefix="profile:occupation."
             />
           </div>
           <div className="w-full md:w-1/2 pl-0 md:pl-3">
-            <CreatableTagSelector
+            <DropDownSelector
               variant="eduhub"
-              label={t('organization.aliases')}
-              placeholder={t('input.enter_alias')}
-              itemId={userData?.User_by_pk?.id}
-              values={[userData?.User_by_pk?.Organization?.name]}
-              options={[]}
-              updateValuesMutation={UPDATE_USER_ORGANIZATION_ID}
+              creatable={true}
+              label={t('organization.label')}
+              value={userData?.User_by_pk?.Organization?.id.toString()}
+              placeholder={t('organization.placeholder')}
+              options={organizationOptions}
+              updateValueMutation={UPDATE_USER_ORGANIZATION_ID}
+              identifierVariables={{ userId: userData?.User_by_pk?.id }}
+              createOptionMutation={CREATE_ORGANIZATION}
             />
           </div>
         </div>
@@ -149,7 +168,7 @@ const ProfileContent: FC = () => {
               filled
               inverted
             >
-              {t('change-password')}
+              {t('change_password_or_email')}
             </Button>
           </div>
         </div>

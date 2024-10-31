@@ -118,8 +118,9 @@ const ManageOrganizationsContent: FC = () => {
   }, [pageIndex, debouncedRefetch, searchFilter]);
 
   const organizationTypes = useMemo(
-    () => data?.OrganizationType?.map((type) => type.value as OrganizationType_enum) || [],
-    [data]
+    () =>
+      data?.OrganizationType?.map((type) => ({ value: type.value, label: t(`type_selection.${type.value}`) })) || [],
+    [data, t]
   );
 
   const columns = useMemo<ColumnDef<OrganizationList_Organization>[]>(
@@ -152,7 +153,6 @@ const ManageOrganizationsContent: FC = () => {
             options={organizationTypes}
             updateValueMutation={UPDATE_ORGANIZATION_TYPE}
             refetchQueries={['OrganizationList']}
-            optionsTranslationPrefix="manageOrganizations:type_selection."
           />
         ),
       },
@@ -166,7 +166,7 @@ const ManageOrganizationsContent: FC = () => {
         variables: {
           insertInput: {
             name: t('organization.new_organization'),
-            type: organizationTypes[0],
+            type: organizationTypes[0].value as OrganizationType_enum,
             description: t('organization.default_description'),
           },
         },

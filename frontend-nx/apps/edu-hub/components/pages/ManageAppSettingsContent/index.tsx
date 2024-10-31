@@ -28,20 +28,20 @@ type Inputs = {
   bannerTextEn: string;
 };
 
-const timeZones = [
-  'Europe/Berlin',
-  'Europe/London',
-  'Europe/Paris',
-  'UTC',
-  'America/New_York',
-  'America/Los_Angeles',
-  'Asia/Tokyo',
-  // Add more time zones as needed
-];
-
 const ManageAppSettingsContent: FC = () => {
   const { data: sessionData } = useSession();
   const { t } = useTranslation('manageAppSettings');
+
+  const timeZoneOptions = [
+    { value: 'Europe/Berlin', label: t('time_zone.values.Europe/Berlin') },
+    { value: 'Europe/London', label: t('time_zone.values.Europe/London') },
+    { value: 'Europe/Paris', label: t('time_zone.values.Europe/Paris') },
+    { value: 'UTC', label: t('time_zone.values.UTC') },
+    { value: 'America/New_York', label: t('time_zone.values.America/New_York') },
+    { value: 'America/Los_Angeles', label: t('time_zone.values.America/Los_Angeles') },
+    { value: 'Asia/Tokyo', label: t('time_zone.values.Asia/Tokyo') },
+    // Add more time zones as needed
+  ];
 
   const methods = useForm<Inputs>({
     defaultValues: {
@@ -241,14 +241,13 @@ const ManageAppSettingsContent: FC = () => {
               {t('time_zone.label')}
             </label>
             <DropDownSelector
-              variant="eduhub"
-              options={timeZones}
+              variant="material"
+              options={timeZoneOptions}
               value={appSettingsData?.AppSettings[0]?.timeZone}
               helpText={t('time_zone.help_text')}
               updateValueMutation={UPDATE_APP_SETTINGS_TIME_ZONE}
               identifierVariables={{ appName: 'edu' }}
               refetchQueries={['AppSettings']}
-              optionsTranslationPrefix="manageAppSettings:time_zone.values."
             />
           </div>
         </>

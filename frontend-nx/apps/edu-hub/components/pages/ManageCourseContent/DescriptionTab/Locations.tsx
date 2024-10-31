@@ -2,7 +2,7 @@ import { QueryResult } from '@apollo/client';
 import useTranslation from 'next-translate/useTranslation';
 import { FC, useCallback } from 'react';
 import { ManagedCourse_Course_by_pk_CourseLocations } from '../../../../queries/__generated__/ManagedCourse';
-import DropDownSelector from '../../../inputs/DropDownSelector';
+import DropDownSelector from '../../../inputs/DropDownSelector_single component';
 import { useRoleQuery } from '../../../../hooks/authedQuery';
 import { LocationOptions } from '../../../../queries/__generated__/LocationOptions';
 import {
@@ -27,7 +27,10 @@ export const Locations: FC<LocationsIProps> = ({ location, onDelete }) => {
   if (queryLocationOptions.error) {
     console.log('query known location options error', queryLocationOptions.error);
   }
-  const locationOptions = (queryLocationOptions.data?.LocationOption || []).map((x) => x.value);
+  const locationOptions = (queryLocationOptions.data?.LocationOption || []).map((x) => ({
+    value: x.value,
+    label: t(`location.${x.value}`),
+  }));
 
   const handleDelete = useCallback(() => {
     if (location != null) {
@@ -50,7 +53,6 @@ export const Locations: FC<LocationsIProps> = ({ location, onDelete }) => {
             updateValueMutation={UPDATE_COURSE_LOCATION}
             identifierVariables={{ locationId: location.id }}
             refetchQueries={['ManagedCourse']}
-            optionsTranslationPrefix="course-page:location."
             className="mb-2"
           />
         </div>
