@@ -17,6 +17,10 @@
     "EDUCATOR": "Educator",
     "HOMEMAKER": "Housewife/Househusband",
     "OTHER": "Other"
-    }
-  }
-  
+  },
+  "organization": {
+    "label": "Organization",
+    "placeholder": "Select or add new one"
+  },
+  "change_password_or_email": "Change password or email"
+}

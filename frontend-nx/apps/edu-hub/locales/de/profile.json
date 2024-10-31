@@ -17,5 +17,10 @@
     "EDUCATOR": "Lehrkraft",
     "HOMEMAKER": "Hausfrau/Hausmann",
     "OTHER": "Sonstiges"
-  }
+  },
+  "organization": {
+    "label": "Organisation",
+    "placeholder": "Auswählen oder neu hinzufügen"
+  },
+  "change_password_or_email": "Passwort oder E-Mail ändern"
 }

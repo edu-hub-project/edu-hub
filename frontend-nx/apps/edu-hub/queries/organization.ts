@@ -87,3 +87,12 @@ export const DELETE_ORGANIZATION = gql`
     }
   }
 `;
+
+export const CREATE_ORGANIZATION = gql`
+  mutation CreateOrganization($value: String!) {
+    insert_Organization_one(object: {name: $value, type: OTHER}) {
+      id
+      type
+    }
+  }
+`;
