@@ -13,6 +13,8 @@ import {
   UPDATE_USER_PROFILE_PICTURE,
   UPDATE_USER_OCCUPATION,
   UPDATE_USER_ORGANIZATION_ID,
+  UPDATE_USER_EXTERNAL_PROFILE,
+  UPDATE_USER_MATRICULATION_NUMBER,
 } from '../../../queries/updateUser';
 import { USER, USER_OCCUPATION } from '../../../queries/user';
 
@@ -84,6 +86,25 @@ const ProfileContent: FC = () => {
     console.log('query known occupation options error', queryOccupationOptions.error);
   }
 
+  const getOrganizationLabel = (occupation) => {
+    switch (occupation) {
+      case 'HIGH_SCHOOL_STUDENT':
+        return t('organization.label_school');
+      case 'UNIVERSITY_STUDENT':
+        return t('organization.label_university');
+      case 'EMPLOYED_FULL_TIME':
+      case 'EMPLOYED_PART_TIME':
+      case 'SELF_EMPLOYED':
+        return t('organization.label_company');
+      case 'RESEARCHER':
+        return t('organization.label_research');
+      case 'EDUCATOR':
+        return t('organization.label_education');
+      default:
+        return t('organization.label_base');
+    }
+  };
+
   return (
     <div className="px-3 mt-20">
       <>
@@ -137,7 +158,7 @@ const ProfileContent: FC = () => {
             <DropDownSelector
               variant="eduhub"
               creatable={true}
-              label={t('organization.label')}
+              label={getOrganizationLabel(userData?.User_by_pk?.occupation)}
               value={userData?.User_by_pk?.Organization?.id.toString()}
               placeholder={t('organization.placeholder')}
               options={organizationOptions}
@@ -148,18 +169,36 @@ const ProfileContent: FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap">
-          <div className="w-full md:w-1/2 pr-0 md:pr-3"></div>
+        <div className="flex flex-wrap mt-8">
+          <div className="w-full md:w-1/2 pr-0 md:pr-3">
+            <InputField
+              variant="eduhub"
+              type="link"
+              label={t('external_profile')}
+              itemId={userData?.User_by_pk?.id}
+              value={userData?.User_by_pk?.externalProfile}
+              updateValueMutation={UPDATE_USER_EXTERNAL_PROFILE}
+              showCharacterCount={false}
+            />
+          </div>
+          {/* only show for university students */}
+          {userData?.User_by_pk?.occupation === 'UNIVERSITY_STUDENT' && (
+            <div className="w-full md:w-1/2 pl-0 md:pl-3">
+              <InputField
+                variant="eduhub"
+                type="number"
+                label={t('matriculation_number')}
+                itemId={userData?.User_by_pk?.id}
+                value={userData?.User_by_pk?.matriculationNumber}
+                updateValueMutation={UPDATE_USER_MATRICULATION_NUMBER}
+                showCharacterCount={false}
+              />
+            </div>
+          )}
         </div>
+
         <div className="flex flex-wrap">
-          {/* <div className="w-full md:w-1/2 pl-0 md:pl-3">
-              <FormFieldRow<Inputs> label={t('matriculation-number')} name="matriculationNumber" />
-            </div> */}
-        </div>
-        <div className="flex flex-wrap">
-          {/* <div className="w-full md:w-1/2 pr-0 md:pr-3">
-              <FormFieldRow<Inputs> label={t('external-profile')} name="externalProfile" />
-            </div> */}
+          <div className="w-full md:w-1/2 pl-0 md:pl-3 flex justify-center items-center text-center"></div>
           <div className="w-full md:w-1/2 pl-0 md:pl-3 flex justify-center items-center text-center">
             <Button
               as="a"

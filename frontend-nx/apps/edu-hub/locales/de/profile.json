@@ -13,14 +13,21 @@
     "SELF_EMPLOYED": "Selbstständig",
     "UNEMPLOYED": "Arbeitslos",
     "RETIRED": "Im Ruhestand",
-    "RESEARCHER": "Forscher:in",
+    "RESEARCHER": "Wissenschaftliche:r Mitarbeiter:in",
     "EDUCATOR": "Lehrkraft",
     "HOMEMAKER": "Hausfrau/Hausmann",
     "OTHER": "Sonstiges"
   },
   "organization": {
-    "label": "Organisation",
+    "label_base": "Organisation",
+    "label_school": "Schule",
+    "label_university": "Hochschule",
+    "label_company": "Unternehmen",
+    "label_research": "Hochschule/Forschungseinrichtung",
+    "label_education": "Schule",
     "placeholder": "Auswählen oder neu hinzufügen"
   },
+  "external_profile": "Link zu externem Profil (LinkedIn, XING, ...)",
+  "matriculation_number": "Matrikelnummer",
   "change_password_or_email": "Passwort oder E-Mail ändern"
 }

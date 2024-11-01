@@ -19,8 +19,15 @@
     "OTHER": "Other"
   },
   "organization": {
-    "label": "Organization",
+    "label_base": "Organization",
+    "label_school": "School",
+    "label_university": "University",
+    "label_company": "Company",
+    "label_research": "University/Research institution",
+    "label_education": "School",
     "placeholder": "Select or add new one"
   },
+  "external_profile": "Link to external profile (LinkedIn, XING, ...)",
+  "matriculation_number": "Matriculation number",
   "change_password_or_email": "Change password or email"
 }
