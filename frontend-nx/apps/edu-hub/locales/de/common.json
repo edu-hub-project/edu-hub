@@ -15,8 +15,6 @@
   "last-name": "Nachname",
   "email": "E-Mail",
   "university": "Hochschule",
-  "matriculation-number": "Matrikelnummer",
-  "external-profile": "Link zu externem Profil (LinkedIn, XING, ...)",
   "NONE": "unregelmäßig",
   "MONDAY": "MONTAG",
   "TUESDAY": "DIENSTAG",
@@ -154,6 +152,9 @@
     "invalid_minimum_maximum_integer": "Der Wert muss mindestens {{min}} und höchstens {{max}} sein",
     "invalid_integer_format": "Der Wert muss eine ganze Zahl sein",
     "invalid_input": "Ungültige Eingabe"
+  },
+  "dropdown_selector": {
+    "create_option": "\"{{option}}\" neu hinzufügen"
   },
   "time_picker": {
     "select_time": "Zeit auswählen",

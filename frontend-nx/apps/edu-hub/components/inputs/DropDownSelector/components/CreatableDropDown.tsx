@@ -62,6 +62,35 @@ export const CreatableDropDown: React.FC<CreatableDropDownProps> = ({
     onValueChange(syntheticEvent);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    const filteredOptions = getFilteredOptions(inputValue);
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      const optionElements = document.querySelectorAll('.dropdown-option');
+      optionElements.forEach((el) => el.classList.remove('hover:bg-gray-300'));
+
+      setHighlightedIndex((prev) => (prev < filteredOptions.length - 1 ? prev + 1 : prev));
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      const optionElements = document.querySelectorAll('.dropdown-option');
+      optionElements.forEach((el) => el.classList.remove('hover:bg-gray-300'));
+
+      setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+    } else if (event.key === 'Enter' && highlightedIndex >= 0) {
+      event.preventDefault();
+      if (highlightedIndex < filteredOptions.length) {
+        onInputChange('');
+        handleValueChange(filteredOptions[highlightedIndex].value);
+        setIsOpen(false);
+        setIsCleared(false);
+      } else if (shouldShowCreateOption(inputValue)) {
+        onCreateOption();
+      }
+      setHighlightedIndex(-1);
+    }
+  };
+
   return (
     <div className="relative">
       <input
@@ -78,37 +107,7 @@ export const CreatableDropDown: React.FC<CreatableDropDownProps> = ({
           setIsOpen(true);
           setHighlightedIndex(-1);
         }}
-        onKeyDown={(e) => {
-          if (!isOpen) return;
-
-          const filteredOptions = getFilteredOptions(inputValue);
-          const maxIndex = shouldShowCreateOption(inputValue) ? filteredOptions.length : filteredOptions.length - 1;
-
-          switch (e.key) {
-            case 'ArrowDown':
-              e.preventDefault();
-              setHighlightedIndex((prev) => (prev < maxIndex ? prev + 1 : 0));
-              break;
-            case 'ArrowUp':
-              e.preventDefault();
-              setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : maxIndex));
-              break;
-            case 'Enter':
-              e.preventDefault();
-              if (highlightedIndex === filteredOptions.length) {
-                onCreateOption();
-              } else if (highlightedIndex >= 0) {
-                const selectedOption = filteredOptions[highlightedIndex];
-                onInputChange('');
-                handleValueChange(selectedOption.value);
-                setIsOpen(false);
-              }
-              break;
-            case 'Escape':
-              setIsOpen(false);
-              break;
-          }
-        }}
+        onKeyDown={handleKeyDown}
         onFocus={() => {
           setIsOpen(true);
           if (!inputValue && !isCleared) {
@@ -134,12 +133,17 @@ export const CreatableDropDown: React.FC<CreatableDropDownProps> = ({
           {getFilteredOptions(inputValue).map((option, index) => (
             <div
               key={option.value}
-              className={`px-4 py-2 cursor-pointer ${highlightedIndex === index ? 'bg-gray-300' : 'hover:bg-gray-300'}`}
+              className={`dropdown-option px-4 py-2 cursor-pointer ${
+                highlightedIndex === index ? 'bg-gray-300' : 'hover:bg-gray-300'
+              }`}
               onClick={() => {
                 onInputChange('');
                 handleValueChange(option.value);
                 setIsOpen(false);
+                setIsCleared(false);
               }}
+              onMouseEnter={() => setHighlightedIndex(index)}
+              onMouseLeave={() => setHighlightedIndex(-1)}
             >
               {t(option.label)}
             </div>

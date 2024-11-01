@@ -122,3 +122,22 @@ export const UPDATE_USER_ORGANIZATION_ID = gql`
     }
   }
 `;
+
+export const UPDATE_USER_EXTERNAL_PROFILE = gql`
+  mutation UpdateUserExternalProfile($userId: uuid!, $value: String!) {
+    update_User_by_pk(pk_columns: { id: $userId }, _set: { externalProfile: $value }) {
+      id
+      externalProfile
+    }
+  }
+`;
+
+export const UPDATE_USER_MATRICULATION_NUMBER = gql`
+  mutation UpdateUserMatriculationNumber($userId: uuid!, $value: String!) {
+    update_User_by_pk(pk_columns: { id: $userId }, _set: { matriculationNumber: $value }) {
+      id
+      matriculationNumber
+    }
+  }
+`;
+
