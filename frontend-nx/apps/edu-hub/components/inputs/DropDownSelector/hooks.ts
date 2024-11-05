@@ -30,11 +30,11 @@ export const useDropDownLogic = (
     refetchQueries,
   });
 
-  const validateValue = useCallback((newValue: string, isMandatory: boolean = false) => {
+  const validateValue = useCallback((newValue: string, isMandatory = false) => {
     return isMandatory ? newValue !== '' : true;
   }, []);
 
-  const debouncedUpdateValue = useDebouncedCallback((newValue: string, isMandatory: boolean = false) => {
+  const debouncedUpdateValue = useDebouncedCallback((newValue: string, isMandatory = false) => {
     if (validateValue(newValue, isMandatory)) {
       const variables = {
         ...identifierVariables,
@@ -58,7 +58,7 @@ export const useDropDownLogic = (
   );
 
   const handleBlur = useCallback(
-    (variant: 'material' | 'eduhub', isMandatory: boolean = false) => {
+    (variant: 'material' | 'eduhub', isMandatory = false) => {
       setHasBlurred(true);
       if (!validateValue(localValue, isMandatory)) {
         setErrorMessage('dropdown_selector.invalid_selection');
@@ -76,14 +76,12 @@ export const useDropDownLogic = (
     [localValue, validateValue, debouncedUpdateValue, handleError, resetError]
   );
 
-  // Update localValue when value prop changes
   useEffect(() => {
     if (value !== localValue) {
       setLocalValue(value);
     }
-  }, [value]);
+  }, [value, localValue]);
 
-  // Update local options when prop changes
   useEffect(() => {
     setLocalOptions(options);
   }, [options]);
