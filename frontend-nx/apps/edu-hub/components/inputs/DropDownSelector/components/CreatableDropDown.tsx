@@ -59,7 +59,7 @@ export const CreatableDropDown: React.FC<CreatableDropDownProps> = ({
   );
 
   const shouldShowCreateOption = useCallback(
-    (searchValue: string = '') => {
+    (searchValue = '') => {
       return (
         searchValue &&
         !getFilteredOptions(searchValue).some((option) => t(option.label).toLowerCase() === searchValue.toLowerCase())
@@ -73,6 +73,15 @@ export const CreatableDropDown: React.FC<CreatableDropDownProps> = ({
       target: { value: value === null ? null : value },
     } as SelectChangeEvent<string>;
     onValueChange(syntheticEvent);
+  };
+
+  const handleOptionSelect = (optionValue: string) => {
+    handleValueChange(optionValue);
+    // Force the display of the selected value
+    const selectedLabel = getLabelForValue(optionValue);
+    onInputChange(selectedLabel);
+    setIsOpen(false);
+    setIsCleared(false);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -93,10 +102,8 @@ export const CreatableDropDown: React.FC<CreatableDropDownProps> = ({
     } else if (event.key === 'Enter' && highlightedIndex >= 0) {
       event.preventDefault();
       if (highlightedIndex < filteredOptions.length) {
-        onInputChange('');
-        handleValueChange(filteredOptions[highlightedIndex].value);
-        setIsOpen(false);
-        setIsCleared(false);
+        const selectedOption = filteredOptions[highlightedIndex];
+        handleOptionSelect(selectedOption.value);
       } else if (shouldShowCreateOption(inputValue)) {
         onCreateOption();
       }
@@ -149,12 +156,7 @@ export const CreatableDropDown: React.FC<CreatableDropDownProps> = ({
               className={`dropdown-option px-4 py-2 cursor-pointer ${
                 highlightedIndex === index ? 'bg-gray-300' : 'hover:bg-gray-300'
               }`}
-              onClick={() => {
-                onInputChange('');
-                handleValueChange(option.value);
-                setIsOpen(false);
-                setIsCleared(false);
-              }}
+              onClick={() => handleOptionSelect(option.value)}
               onMouseEnter={() => setHighlightedIndex(index)}
               onMouseLeave={() => setHighlightedIndex(-1)}
             >
