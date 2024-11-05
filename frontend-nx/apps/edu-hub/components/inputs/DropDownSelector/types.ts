@@ -1,8 +1,9 @@
 import { DocumentNode } from 'graphql';
 
 export type Option = {
-  label: string;
   value: string;
+  label: string;
+  aliases?: Array<string | { name: string } | null> | null;
 };
 
 export type DropDownSelectorProps = {

@@ -40,7 +40,20 @@ export const CreatableDropDown: React.FC<CreatableDropDownProps> = ({
 
   const getFilteredOptions = useCallback(
     (searchValue: string = '') => {
-      return localOptions.filter((option) => t(option.label).toLowerCase().includes(searchValue.toLowerCase()));
+      return localOptions.filter((option) => {
+        const labelMatch = t(option.label).toLowerCase().includes(searchValue.toLowerCase());
+        const aliasMatch = option.aliases?.some((alias) => {
+          if (!alias) return false;
+          if (typeof alias === 'object' && 'name' in alias) {
+            return alias.name.toLowerCase().includes(searchValue.toLowerCase());
+          }
+          if (typeof alias === 'string') {
+            return alias.toLowerCase().includes(searchValue.toLowerCase());
+          }
+          return false;
+        });
+        return labelMatch || aliasMatch;
+      });
     },
     [localOptions, t]
   );
