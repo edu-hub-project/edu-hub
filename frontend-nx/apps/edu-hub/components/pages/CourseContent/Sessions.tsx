@@ -55,9 +55,15 @@ export const Sessions: FC<SessionsProps> = ({ sessions, isLoggedInParticipant })
                   <div className="whitespace-nowrap ml-0 pl-0">
                     {SessionAddresses.map(({ address, CourseLocation }, addressIndex) => {
                       // Debugging: Log CourseLocation and address for each SessionAddress
-                      console.log(`Session ${index}, Address ${addressIndex}, CourseLocation:`, CourseLocation, 'address:', address);
+                      console.log(
+                        `Session ${index}, Address ${addressIndex}, CourseLocation:`,
+                        CourseLocation,
+                        'address:',
+                        address
+                      );
 
-                      const displayAddress = address && address.trim() !== '' ? address : CourseLocation?.defaultSessionAddress;
+                      const displayAddress =
+                        address && address.trim() !== '' ? address : CourseLocation?.defaultSessionAddress;
 
                       return (
                         <span key={addressIndex} className="text-sm text-gray-400 ml-0 pl-0">
@@ -123,7 +129,7 @@ export const Sessions: FC<SessionsProps> = ({ sessions, isLoggedInParticipant })
                 className="text-white text-sm sm:text-lg font-semibold hover:underline italic flex items-center pb-6"
                 onClick={() => setShowAllSessions(false)}
               >
-                {t('hideSessions')}
+                {t('course:hideSessions')}
                 <IoIosArrowUp className="ml-1" />
               </button>
             ) : (
@@ -131,7 +137,7 @@ export const Sessions: FC<SessionsProps> = ({ sessions, isLoggedInParticipant })
                 className="text-white text-sm sm:text-lg font-semibold hover:underline italic flex items-center pb-6"
                 onClick={() => setShowAllSessions(true)}
               >
-                {t('showAllSessions')}
+                {t('course:showAllSessions')}
                 <IoIosArrowDown className="ml-1" />
               </button>
             ))}
