@@ -39,9 +39,10 @@ interface OnboardingProps {
   course: CourseWithEnrollment_Course_by_pk | Course_Course_by_pk;
   enrollmentId: number;
   refetchCourse: (variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<CourseWithEnrollment>>;
+  setResetValues: (value: boolean) => void;
 }
 
-const Onboarding: FC<OnboardingProps> = ({ course, enrollmentId, refetchCourse }) => {
+const Onboarding: FC<OnboardingProps> = ({ course, enrollmentId, refetchCourse, setResetValues }) => {
   const { t } = useTranslation('course');
   const userId = useUserId();
   const [showDeclineDialog, setShowDeclineDialog] = useState(false);
@@ -132,6 +133,7 @@ const Onboarding: FC<OnboardingProps> = ({ course, enrollmentId, refetchCourse }
         },
       });
       await refetchCourse();
+      setResetValues(false);
     } catch (error) {
       console.log(error);
     } finally {
