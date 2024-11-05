@@ -23,7 +23,7 @@ import Locations from './Locations';
 import { Button } from '@mui/material';
 import { MdAddCircle } from 'react-icons/md';
 import useTranslation from 'next-translate/useTranslation';
-import DropdownSelector from '../../../inputs/DropDownSelector_single component';
+import DropdownSelector from '../../../inputs/DropDownSelector';
 import TimePicker from '../../../inputs/TimePicker';
 import { LocationOption_enum } from '../../../../__generated__/globalTypes';
 import useErrorHandler from '../../../../hooks/useErrorHandler';
