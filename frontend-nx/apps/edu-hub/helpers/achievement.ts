@@ -87,7 +87,6 @@ interface TempUserData {
   id: any;
   firstName: string;
   lastName: string;
-  email: string;
 }
 export type AtLeastNameEmail = AtLeast<TempUserData>;
 
