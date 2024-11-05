@@ -64,6 +64,7 @@ const ProfileContent: FC = () => {
     organizationData?.Organization?.map((org) => ({
       label: org.name,
       value: org.id.toString(),
+      aliases: org.aliases,
     })) || [];
 
   // Render loading state
