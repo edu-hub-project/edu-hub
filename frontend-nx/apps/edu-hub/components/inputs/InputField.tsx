@@ -230,6 +230,9 @@ const InputField: React.FC<InputFieldProps> = ({
 
   const validateInput = useCallback(
     (text: string): boolean => {
+      // Allow empty input for all types
+      if (!text) return true;
+
       switch (type) {
         case 'link':
           return isLinkFormat(text);

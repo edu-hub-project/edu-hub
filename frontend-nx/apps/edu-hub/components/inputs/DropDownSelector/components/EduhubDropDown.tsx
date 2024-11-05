@@ -49,7 +49,7 @@ export const EduhubDropDown: React.FC<EduhubDropDownProps> = ({
 
   return (
     <div className="px-2">
-      <div className="text-gray-400">
+      <div className={className || 'text-gray-400'}>
         <div className="flex justify-between mb-2">
           <div className="flex items-center">
             {helpText && (

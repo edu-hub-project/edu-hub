@@ -1,221 +1,143 @@
-import { FC, useEffect, Dispatch, useState } from 'react';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import { FC, useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import { CircularProgress } from '@mui/material';
 
 import { useAuthedMutation } from '../../../hooks/authedMutation';
-import { useAuthedQuery } from '../../../hooks/authedQuery';
+import { useAuthedQuery, useRoleQuery } from '../../../hooks/authedQuery';
 import { useUserId } from '../../../hooks/user';
-import { UPDATE_USER_ON_ENROLLMENT_CONFIRMATION } from '../../../queries/updateUser';
-import { USER } from '../../../queries/user';
+import {
+  UPDATE_USER_OCCUPATION,
+  UPDATE_USER_ORGANIZATION_ID,
+  UPDATE_USER_MATRICULATION_NUMBER,
+} from '../../../queries/updateUser';
 import { UPDATE_ENROLLMENT_STATUS } from '../../../queries/insertEnrollment';
+import { CourseEnrollmentStatus_enum } from '../../../__generated__/globalTypes';
+import { USER_OCCUPATION } from '../../../queries/user';
+import { CREATE_ORGANIZATION, ORGANIZATION_LIST } from '../../../queries/organization';
+import { OrganizationList } from '../../../queries/__generated__/OrganizationList';
+import { UserOccupation } from '../../../queries/__generated__/UserOccupation';
+import { Button } from '../../common/Button';
+import { QuestionConfirmationDialog } from '../../common/dialogs/QuestionConfirmationDialog';
+import InputField from '../../inputs/InputField';
+import DropDownSelector from '../../inputs/DropDownSelector';
+
+import type { OperationVariables, ApolloQueryResult } from '@apollo/client';
+import { Course_Course_by_pk } from '../../../queries/__generated__/Course';
 import {
   CourseWithEnrollment,
   CourseWithEnrollment_Course_by_pk,
 } from '../../../queries/__generated__/CourseWithEnrollment';
-import { CourseEnrollmentStatus_enum } from '../../../__generated__/globalTypes';
-import { University_enum } from '../../../__generated__/globalTypes';
-import { Employment_enum } from '../../../__generated__/globalTypes';
-import {
-  UpdateUserOnEnrollmentConfirmationVariables,
-  UpdateUserOnEnrollmentConfirmation,
-} from '../../../queries/__generated__/UpdateUserOnEnrollmentConfirmation';
 import {
   UpdateEnrollmentStatus,
   UpdateEnrollmentStatusVariables,
 } from '../../../queries/__generated__/UpdateEnrollmentStatus';
-import { User, UserVariables } from '../../../queries/__generated__/User';
-import { Button } from '../../common/Button';
-import FormFieldRow from '../../inputs/FormFieldRow';
-import { QuestionConfirmationDialog } from '../../common/dialogs/QuestionConfirmationDialog';
-
-import type { OperationVariables, ApolloQueryResult } from '@apollo/client';
-import { Course_Course_by_pk } from '../../../queries/__generated__/Course';
-
-type Inputs = {
-  employment: Employment_enum | null;
-  otherUniversity?: string;
-  university: University_enum | null;
-  matriculationNumber: string;
-};
+import { USER } from '../../../queries/user';
+import { User } from '../../../queries/__generated__/User';
+import { useSession } from 'next-auth/react';
 
 interface OnboardingProps {
   course: CourseWithEnrollment_Course_by_pk | Course_Course_by_pk;
   enrollmentId: number;
   refetchCourse: (variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<CourseWithEnrollment>>;
-  resetValues: { [key in keyof Inputs]?: string };
-  setResetValues: Dispatch<any>;
 }
 
-const Onboarding: FC<OnboardingProps> = ({ course, enrollmentId, refetchCourse, resetValues, setResetValues }) => {
+const Onboarding: FC<OnboardingProps> = ({ course, enrollmentId, refetchCourse }) => {
   const { t } = useTranslation('course');
   const userId = useUserId();
-
-  const methods = useForm<Inputs>({
-    defaultValues: {
-      employment: null,
-      otherUniversity: null,
-      university: null,
-      matriculationNumber: '',
-    },
-  });
-
-  const {
-    handleSubmit,
-    formState: { isSubmitting },
-    reset,
-    watch,
-  } = methods;
-
-  const [universityVisible, setUniversityVisible] = useState(false);
-  const [otherUniversityVisible, setOtherUniversityVisible] = useState(false);
-  const [otherUniversityLabel, setOtherUniversityLabel] = useState('');
   const [showDeclineDialog, setShowDeclineDialog] = useState(false);
-  const watchEmployment = watch('employment');
-  const watchUniversity = watch('university');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: sessionData, status: sessionStatus } = useSession();
 
-  useEffect(() => {
-    switch (watchEmployment) {
-      case Employment_enum.STUDENT:
-        setOtherUniversityLabel(t('common:otherUniversityLabel.university'));
-        setUniversityVisible(true);
-
-        if (watchUniversity === University_enum.OTHER) {
-          setOtherUniversityVisible(true);
-        } else {
-          setOtherUniversityVisible(false);
-        }
-        break;
-
-      case Employment_enum.OTHER:
-        setOtherUniversityLabel(t('common:otherUniversityLabel.other'));
-        setUniversityVisible(false);
-        setOtherUniversityVisible(true);
-        break;
-
-      case Employment_enum.TEACHER:
-        setOtherUniversityLabel(t('common:otherUniversityLabel.teacher'));
-        setUniversityVisible(false);
-        setOtherUniversityVisible(true);
-        break;
-
-      case Employment_enum.ACADEMIA:
-      case Employment_enum.EMPLOYED:
-        setOtherUniversityLabel(t('common:otherUniversityLabel.organization'));
-        setUniversityVisible(false);
-        setOtherUniversityVisible(true);
-        break;
-
-      default:
-        setUniversityVisible(false);
-        setOtherUniversityVisible(false);
-        break;
-    }
-  }, [watchEmployment, watchUniversity, t]);
-
-  const {
-    loading: userLoading,
-    error: userError,
-    refetch: refetchUser,
-  } = useAuthedQuery<User, UserVariables>(USER, {
-    variables: {
-      userId,
-    },
-    skip: true,
+  const { data: userData } = useAuthedQuery<User>(USER, {
+    variables: { userId },
   });
 
-  useEffect(() => {
-    if (resetValues) {
-      const fetchUser = async () => {
-        const userQueryResult = await refetchUser();
-        const user = userQueryResult?.data?.User_by_pk;
-        reset({
-          employment: user?.employment,
-          otherUniversity: user?.otherUniversity,
-          university: user?.university,
-          matriculationNumber: user?.matriculationNumber,
-        });
-      };
-      fetchUser();
-    }
-  }, [refetchUser, resetValues, reset]);
-
-  const [updateUser] = useAuthedMutation<
-    UpdateUserOnEnrollmentConfirmation,
-    UpdateUserOnEnrollmentConfirmationVariables
-  >(UPDATE_USER_ON_ENROLLMENT_CONFIRMATION);
+  const queryOccupationOptions = useRoleQuery<UserOccupation>(USER_OCCUPATION, {
+    skip: sessionStatus === 'loading',
+  });
+  const { data: organizationData } = useRoleQuery<OrganizationList>(ORGANIZATION_LIST, {
+    variables: {
+      limit: 100, // Adjust as needed
+    },
+    skip: sessionStatus === 'loading',
+  });
 
   const [updateEnrollmentStatus] = useAuthedMutation<UpdateEnrollmentStatus, UpdateEnrollmentStatusVariables>(
     UPDATE_ENROLLMENT_STATUS
   );
 
-  // const onCloseConfirmEnrollment = useCallback(() => {
-  //   setModalOpen(false);
-  // }, [setModalOpen]);
+  // Occupation enums and their translated labels
+  const occupationOptions = (queryOccupationOptions.data?.UserOccupation || []).map((x) => ({
+    label: t(`profile:occupation.${x.value}`), // Apply translation here
+    value: x.value,
+  }));
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    try {
-      await updateUser({
-        variables: {
-          userId,
-          matriculationNumber: data.matriculationNumber,
-          university: data.university,
-          employment: data.employment,
-          otherUniversity: data.otherUniversity,
-        },
-      });
-      await updateEnrollmentStatus({
-        variables: {
-          enrollmentId,
-          status: CourseEnrollmentStatus_enum.CONFIRMED,
-        },
-      });
-      refetchCourse();
-      setResetValues(null);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    } catch (error) {
-      console.log(error);
+  // Organization ids and their corresponding names
+  const organizationOptions =
+    organizationData?.Organization?.map((org) => ({
+      label: org.name,
+      value: org.id.toString(),
+      aliases: org.aliases,
+    })) || [];
+
+  // Render loading state
+  if (sessionStatus === 'loading') {
+    return <div>Loading...</div>;
+  }
+
+  const getOrganizationLabel = (occupation) => {
+    switch (occupation) {
+      case 'HIGH_SCHOOL_STUDENT':
+        return t('profile:organization.label_school');
+      case 'UNIVERSITY_STUDENT':
+        return t('profile:organization.label_university');
+      case 'EMPLOYED_FULL_TIME':
+      case 'EMPLOYED_PART_TIME':
+      case 'SELF_EMPLOYED':
+        return t('profile:organization.label_company');
+      case 'RESEARCHER':
+        return t('profile:organization.label_research');
+      case 'EDUCATOR':
+        return t('profile:organization.label_education');
+      default:
+        return t('profile:organization.label_base');
     }
   };
 
   const onEnrollmentCancellation = async () => {
     try {
+      setIsSubmitting(true);
       await updateEnrollmentStatus({
         variables: {
           enrollmentId,
           status: CourseEnrollmentStatus_enum.CANCELLED,
         },
       });
-      refetchCourse();
-      setResetValues(null);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await refetchCourse();
+      setShowDeclineDialog(false);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const onDeclineDialogClose = async (isDeclined) => {
-    if (isDeclined) {
-      await onEnrollmentCancellation();
-      setShowDeclineDialog(false);
-    } else {
-      setShowDeclineDialog(false);
+  const onConfirmEnrollment = async () => {
+    try {
+      setIsSubmitting(true);
+      await updateEnrollmentStatus({
+        variables: {
+          enrollmentId,
+          status: CourseEnrollmentStatus_enum.CONFIRMED,
+        },
+      });
+      await refetchCourse();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  const employmentSelectFormOptions = (Object.keys(Employment_enum) as Array<keyof typeof Employment_enum>).map(
-    (key) => ({
-      label: t(`common:${key}`),
-      value: key,
-    })
-  );
-
-  const universitySelectFormOptions = (Object.keys(University_enum) as Array<keyof typeof University_enum>).map(
-    (key) => ({
-      label: t(`common:${key}`),
-      value: key,
-    })
-  );
 
   if (!course) {
     return <div>{t('courseNotAvailable')}</div>;
@@ -223,98 +145,85 @@ const Onboarding: FC<OnboardingProps> = ({ course, enrollmentId, refetchCourse, 
 
   return (
     <div className="bg-edu-course-invited rounded-2xl p-6 !text-edu-black mb-12">
-      {!userLoading && !userError && (
-        <>
-          <div className="pb-5 text-2xl font-bold">{t('onboardingModal.important')}</div>
-          <div className="pb-5 text-xl font-bold">{t('onboardingModal.congratulation')}</div>
-          <div className="pb-1">{t('onboardingModal.formIntro')}</div>
-          <div>
-            <FormProvider {...methods}>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="flex flex-wrap"></div>
-                <div className="flex flex-wrap">
-                  <div className="w-full lg:w-1/2 lg:pr-3">
-                    <FormFieldRow<Inputs>
-                      label={t('common:employmentStatus')}
-                      name="employment"
-                      type="select"
-                      options={employmentSelectFormOptions}
-                      formColor="text-edu-black"
-                    />
-                  </div>
-                </div>
-                {universityVisible && (
-                  <div className="flex flex-wrap">
-                    <div className="w-full lg:w-1/2 lg:pr-3">
-                      <FormFieldRow<Inputs>
-                        label={t('common:university')}
-                        name="university"
-                        type="select"
-                        options={universitySelectFormOptions}
-                        formColor="text-edu-black"
-                      />
-                    </div>
-                    <div className="w-full lg:w-1/2 lg:pl-3">
-                      {watchUniversity === University_enum.CAU_KIEL && (
-                        <FormFieldRow<Inputs>
-                          label={t('common:matriculationNumber')}
-                          name="matriculationNumber"
-                          formColor="text-edu-black"
-                          required={universityVisible && watchUniversity === University_enum.CAU_KIEL}
-                        />
-                      )}
-                    </div>
-                  </div>
-                )}
-                {otherUniversityVisible && (
-                  <div className="w-full lg:w-1/2">
-                    <FormFieldRow<Inputs>
-                      label={otherUniversityLabel}
-                      name="otherUniversity"
-                      formColor="text-edu-black"
-                    />
-                  </div>
-                )}
-                <div className="pb-3">{t('onboardingModal.confirmSufficientTime')}</div>
-                <div className="pb-3">
-                  <b>{t('onboardingModal.mattermostInfo1')}</b>
-                </div>
-                <div className="pb-0">{t('onboardingModal.mattermostInfo2')}</div>
-                <div className="flex flex-col lg:flex-row lg:gap-5">
-                  <Button
-                    as="button"
-                    type="button"
-                    disabled={isSubmitting}
-                    filled
-                    inverted
-                    className="mt-8 block mx-auto lg:mb-5 disabled:bg-slate-500"
-                    onClick={() => {
-                      setShowDeclineDialog(true);
-                    }}
-                  >
-                    {isSubmitting ? <CircularProgress /> : t('reject')}
-                  </Button>
-                  <Button
-                    as="button"
-                    type="submit"
-                    disabled={isSubmitting}
-                    filled
-                    className="mt-4 lg:mt-8 block mx-auto lg:mb-5 disabled:bg-slate-500"
-                  >
-                    {isSubmitting ? <CircularProgress /> : t('confirm')}
-                  </Button>
-                </div>
-              </form>
-            </FormProvider>
-          </div>
-          <QuestionConfirmationDialog
-            onClose={(isDeclined) => onDeclineDialogClose(isDeclined)}
-            open={showDeclineDialog}
-            confirmationText={t('onboardingModal.declineButtonText')}
-            question={t('onboardingModal.declineConfirmText')}
+      <div className="pb-5 text-2xl font-bold">{t('onboardingModal.important')}</div>
+      <div className="pb-5 text-xl font-bold">{t('onboardingModal.congratulation')}</div>
+      <div className="pb-4">{t('onboardingModal.formIntro')}</div>
+      <div className="flex flex-wrap">
+        <div className="w-full lg:w-1/2 lg:pr-3">
+          <DropDownSelector
+            variant="eduhub"
+            label={t('profile:occupation.label')}
+            value={userData?.User_by_pk?.occupation || ''}
+            options={occupationOptions}
+            updateValueMutation={UPDATE_USER_OCCUPATION}
+            identifierVariables={{ userId }}
+            className="text-black mb-2"
           />
-        </>
+        </div>
+        <div className="w-full lg:w-1/2 lg:pl-3">
+          <DropDownSelector
+            variant="eduhub"
+            creatable={true}
+            label={getOrganizationLabel(userData?.User_by_pk?.occupation)}
+            value={userData?.User_by_pk?.Organization?.id?.toString() || ''}
+            placeholder={t('profile:organization.placeholder')}
+            options={organizationOptions}
+            updateValueMutation={UPDATE_USER_ORGANIZATION_ID}
+            identifierVariables={{ userId }}
+            createOptionMutation={CREATE_ORGANIZATION}
+            className="text-black mb-2"
+          />
+        </div>
+      </div>
+      {userData?.User_by_pk?.occupation === 'UNIVERSITY_STUDENT' && (
+        <div className="w-full lg:w-1/2  lg:pr-3">
+          <InputField
+            variant="eduhub"
+            type="number"
+            label={t('profile:matriculation_number')}
+            itemId={userData?.User_by_pk?.id}
+            value={userData?.User_by_pk?.matriculationNumber || ''}
+            updateValueMutation={UPDATE_USER_MATRICULATION_NUMBER}
+            showCharacterCount={false}
+            className="text-black"
+          />
+        </div>
       )}
+      <div className="pb-3">{t('onboardingModal.confirmSufficientTime')}</div>
+      <div className="pb-3">
+        <b>{t('onboardingModal.mattermostInfo1')}</b>
+      </div>
+      <div className="pb-0">{t('onboardingModal.mattermostInfo2')}</div>
+      <div className="flex flex-col lg:flex-row lg:gap-5">
+        <Button
+          as="button"
+          type="button"
+          disabled={isSubmitting}
+          filled
+          inverted
+          className="mt-8 block mx-auto lg:mb-5 disabled:bg-slate-500"
+          onClick={() => setShowDeclineDialog(true)}
+        >
+          {isSubmitting ? <CircularProgress /> : t('reject')}
+        </Button>
+        <Button
+          as="button"
+          type="button"
+          disabled={isSubmitting}
+          filled
+          className="mt-4 lg:mt-8 block mx-auto lg:mb-5 disabled:bg-slate-500"
+          onClick={onConfirmEnrollment}
+        >
+          {isSubmitting ? <CircularProgress /> : t('confirm')}
+        </Button>
+      </div>
+
+      <QuestionConfirmationDialog
+        open={showDeclineDialog}
+        onClose={(isDeclined) => (isDeclined ? onEnrollmentCancellation() : setShowDeclineDialog(false))}
+        question={t('course:onboardingModal.declineConfirmText')}
+        confirmationText={t('course:onboardingModal.declineButtonText')}
+      />
     </div>
   );
 };
