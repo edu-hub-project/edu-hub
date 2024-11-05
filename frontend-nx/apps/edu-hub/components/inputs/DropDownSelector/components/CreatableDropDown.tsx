@@ -39,7 +39,7 @@ export const CreatableDropDown: React.FC<CreatableDropDownProps> = ({
   const [isCleared, setIsCleared] = useState(false);
 
   const getFilteredOptions = useCallback(
-    (searchValue: string = '') => {
+    (searchValue = '') => {
       return localOptions.filter((option) => {
         const labelMatch = t(option.label).toLowerCase().includes(searchValue.toLowerCase());
         const aliasMatch = option.aliases?.some((alias) => {
