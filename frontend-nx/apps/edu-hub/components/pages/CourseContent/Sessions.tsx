@@ -37,22 +37,22 @@ export const Sessions: FC<SessionsProps> = ({ sessions, isLoggedInParticipant })
       {visibleSessions.length > 0 && (
         <>
           <span className="text-3xl font-semibold mt-24">{t('course_sessions')}</span>
-          <ul>
+          <ul className="max-w-2xl">
             {visibleSessions.map(({ startDateTime, endDateTime, title, SessionSpeakers, SessionAddresses }, index) => (
               <li key={index} className="flex mb-4">
                 <div className="flex flex-wrap items-start flex-shrink-0 mb-2">
                   <div className="flex flex-col mr-6">
                     <span className="block text-sm sm:text-lg font-semibold">{displayDate(startDateTime)}</span>
-                    <span className="text-sm">
+                    <span className="text-sm whitespace-nowrap">
                       {formatTimeString(startDateTime)}
                       {' - '}
                       {formatTimeString(endDateTime)}
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="block text-sm sm:text-lg whitespace-nowrap sm:whitespace-normal">{title}</span>
-                  <div className="whitespace-nowrap ml-0 pl-0">
+                <div className="flex flex-col flex-1">
+                  <span className="block text-sm sm:text-lg break-words">{title}</span>
+                  <div className="break-words">
                     {SessionAddresses.map(({ address, CourseLocation }, addressIndex) => {
                       // Debugging: Log CourseLocation and address for each SessionAddress
                       console.log(
