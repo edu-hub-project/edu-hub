@@ -114,35 +114,45 @@ const AchievementRecord: FC<IProps> = ({ courseId, achievementRecordUploadDeadli
         />
       )}
 
-      <div className="flex flex-col space-y-3 items-start">
-        <BlockTitle>{t('course-page:achievement-option')}</BlockTitle>
+      <div className="flex flex-col w-full md:w-1/2 mb-4 md:mb-0">
+        <div className="mb-2 text-xl sm:text-2xl">
+          <BlockTitle>{t('course-page:achievement-option')}</BlockTitle>
+        </div>
+
         {!query.loading && achievementOptions.length > 0 && (
-          <span className="text-lg mt-6">
+          <span className="text-lg mb-4">
             {t('course-page:achievement-record-upload-dead-line-text', {
               date: formattedDate(achievementRecordUploadDeadline),
             })}
           </span>
         )}
-        {myRecords ? (
-          <p>
-            {t('course-page:last_record_upload', {
-              dateTime: formattedDateWithTime(new Date(myRecords.created_at), lang),
-              fullName: makeFullName(profile.firstName, profile.lastName),
-              achievementRecordTitle: myRecords.AchievementOption.title,
-              achievementRecordFileName: myRecords.documentationUrl.substring(
-                myRecords.documentationUrl.lastIndexOf('/') + 1
-              ),
-            })}
-          </p>
-        ) : (
-          <p>{t('course-page:no_existing_record_upload')}</p>
-        )}
-        <div className="flex flex-col lg:flex-row">
-          <Button filled onClick={upload}>
+
+        <div>
+          {myRecords ? (
+            <p>
+              {t('course-page:last_record_upload', {
+                dateTime: formattedDateWithTime(new Date(myRecords.created_at), lang),
+                fullName: makeFullName(profile.firstName, profile.lastName),
+                achievementRecordTitle: myRecords.AchievementOption.title,
+                achievementRecordFileName: myRecords.documentationUrl.substring(
+                  myRecords.documentationUrl.lastIndexOf('/') + 1
+                ),
+              })}
+            </p>
+          ) : (
+            <span className="text-lg mb-4">
+              <p>{t('course-page:no_existing_record_upload')}</p>
+            </span>
+          )}
+        </div>
+
+        <div className="mt-4">
+          <Button filled onClick={upload} className="w-full sm:w-auto">
             {`↑ ${t('course-page:upload_achievement_record')}`}
           </Button>
         </div>
       </div>
+
       {showModal && (
         <FormToUploadAchievementRecord
           onClose={onClosed}

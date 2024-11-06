@@ -228,52 +228,64 @@ const InputField: React.FC<InputFieldProps> = ({
     }
   );
 
-  const validateInput = (text: string): boolean => {
-    switch (type) {
-      case 'link':
-        return isLinkFormat(text);
-      case 'email':
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text);
-      case 'ects':
-        return isECTSFormat(text);
-      case 'number': {
-        const num = parseInt(text, 10);
-        return (
-          !isNaN(num) && Number.isInteger(num) && (min === undefined || num >= min) && (max === undefined || num <= max)
-        );
-      }
-      default:
-        return true;
-    }
-  };
+  const validateInput = useCallback(
+    (text: string): boolean => {
+      // Allow empty input for all types
+      if (!text) return true;
 
-  const getErrorMessage = (inputType: string): string => {
-    switch (inputType) {
-      case 'link':
-        return t('input_field.invalid_link_format');
-      case 'email':
-        return t('input_field.invalid_email_format');
-      case 'ects':
-        return t('input_field.invalid_ects_format');
-      case 'number': {
-        if (!Number.isInteger(parseInt(value, 10))) {
+      switch (type) {
+        case 'link':
+          return isLinkFormat(text);
+        case 'email':
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text);
+        case 'ects':
+          return isECTSFormat(text);
+        case 'number': {
+          const num = parseInt(text, 10);
+          return (
+            !isNaN(num) &&
+            Number.isInteger(num) &&
+            (min === undefined || num >= min) &&
+            (max === undefined || num <= max)
+          );
+        }
+        default:
+          return true;
+      }
+    },
+    [type, min, max]
+  );
+
+  const getErrorMessage = useCallback(
+    (inputType: string): string => {
+      switch (inputType) {
+        case 'link':
+          return t('input_field.invalid_link_format');
+        case 'email':
+          return t('input_field.invalid_email_format');
+        case 'ects':
+          return t('input_field.invalid_ects_format');
+        case 'number': {
+          if (!Number.isInteger(parseInt(value, 10))) {
+            return t('input_field.invalid_integer_format');
+          }
+          if (min !== undefined && max !== undefined) {
+            return t(`input_field.invalid_minimum_maximum_integer`, { min, max });
+          }
+          if (min !== undefined) {
+            return t(`input_field.invalid_minimum_integer`, { min });
+          }
+          if (max !== undefined) {
+            return t(`input_field.invalid_maximum_integer`, { max });
+          }
           return t('input_field.invalid_integer_format');
         }
-        if (min !== undefined && max !== undefined) {
-          return t(`input_field.invalid_minimum_maximum_integer`, { min, max });
-        }
-        if (min !== undefined) {
-          return t(`input_field.invalid_minimum_integer`, { min });
-        }
-        if (max !== undefined) {
-          return t(`input_field.invalid_maximum_integer`, { max });
-        }
-        return t('input_field.invalid_integer_format');
+        default:
+          return t('input_field.invalid_input');
       }
-      default:
-        return t('input_field.invalid_input');
-    }
-  };
+    },
+    [t, value, min, max]
+  );
 
   const debouncedUpdateText = useDebouncedCallback((newText: string) => {
     if (validateInput(newText)) {

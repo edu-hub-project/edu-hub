@@ -20,10 +20,15 @@ export const USER = gql`
       matriculationNumber
       otherUniversity
       university
-      picture
       externalProfile
-      employment
-      email
+      occupation
+      organizationId
+      picture	
+      Organization {
+        id
+        name
+        aliases
+      }
     }
   }
 `;
@@ -190,6 +195,14 @@ export const DELETE_USER = gql`
         profile_picture_removal
         certificate_anonymization
       }
+    }
+  }
+`;
+
+export const USER_OCCUPATION = gql`
+  query UserOccupation {
+    UserOccupation {
+      value
     }
   }
 `;

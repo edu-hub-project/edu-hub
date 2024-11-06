@@ -23,8 +23,8 @@ import Locations from './Locations';
 import { Button } from '@mui/material';
 import { MdAddCircle } from 'react-icons/md';
 import useTranslation from 'next-translate/useTranslation';
-import UnifiedDropdownSelector from '../../../inputs/DropDownSelector';
-import UnifiedTimePicker from '../../../inputs/TimePicker';
+import DropdownSelector from '../../../inputs/DropDownSelector';
+import TimePicker from '../../../inputs/TimePicker';
 import { LocationOption_enum } from '../../../../__generated__/globalTypes';
 import useErrorHandler from '../../../../hooks/useErrorHandler';
 import { ErrorMessageDialog } from '../../../common/dialogs/ErrorMessageDialog';
@@ -49,7 +49,7 @@ import {
   InsertSessionAddressVariables,
 } from '../../../../queries/__generated__/InsertSessionAddress';
 import InputField from '../../../inputs/InputField';
-import UnifiedDropDownSelector from '../../../inputs/DropDownSelector';
+import DropDownSelector from '../../../inputs/DropDownSelector';
 
 interface IProps {
   course: ManagedCourse_Course_by_pk;
@@ -158,8 +158,20 @@ export const DescriptionTab: FC<IProps> = ({ course, qResult }) => {
     qResult
   );
 
-  const weekDayOptions = ['NONE', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
-  const languageOptions = ['DE', 'EN'];
+  const weekDayOptions = [
+    { value: 'NONE', label: t('weekdays.NONE') },
+    { value: 'MONDAY', label: t('weekdays.MONDAY') },
+    { value: 'TUESDAY', label: t('weekdays.TUESDAY') },
+    { value: 'WEDNESDAY', label: t('weekdays.WEDNESDAY') },
+    { value: 'THURSDAY', label: t('weekdays.THURSDAY') },
+    { value: 'FRIDAY', label: t('weekdays.FRIDAY') },
+    { value: 'SATURDAY', label: t('weekdays.SATURDAY') },
+    { value: 'SUNDAY', label: t('weekdays.SUNDAY') },
+  ];
+  const languageOptions = [
+    { value: 'DE', label: t('languages.DE') },
+    { value: 'EN', label: t('languages.EN') },
+  ];
 
   const courseLocations = [...course.CourseLocations];
   courseLocations.sort((a, b) => a.id - b.id);
@@ -255,17 +267,16 @@ export const DescriptionTab: FC<IProps> = ({ course, qResult }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2">
         <div className="grid grid-cols-3">
-          <UnifiedDropDownSelector
+          <DropDownSelector
             variant="eduhub"
             label={t('weekday')}
-            options={weekDayOptions}
             value={course.weekDay ?? 'MONDAY'}
+            options={weekDayOptions}
             updateValueMutation={UPDATE_COURSE_WEEKDAY}
             identifierVariables={{ courseId: course.id }}
             refetchQueries={['ManagedCourse']}
-            optionsTranslationPrefix="course-page:weekdays."
           />
-          <UnifiedTimePicker
+          <TimePicker
             variant="eduhub"
             label={t('start_time')}
             currentValue={course.startTime ? new Date(`1970-01-01T${course.startTime}`) : null}
@@ -274,7 +285,7 @@ export const DescriptionTab: FC<IProps> = ({ course, qResult }) => {
             refetchQueries={['ManagedCourse']}
             className="mb-4"
           />
-          <UnifiedTimePicker
+          <TimePicker
             variant="eduhub"
             label={t('end_time')}
             currentValue={course.endTime ? new Date(`1970-01-01T${course.endTime}`) : null}
@@ -286,7 +297,7 @@ export const DescriptionTab: FC<IProps> = ({ course, qResult }) => {
           <div />
         </div>
         <div className="grid grid-cols-2">
-          <UnifiedDropdownSelector
+          <DropdownSelector
             variant="eduhub"
             label={t('common:language')}
             options={languageOptions}
@@ -294,7 +305,6 @@ export const DescriptionTab: FC<IProps> = ({ course, qResult }) => {
             updateValueMutation={UPDATE_COURSE_LANGUAGE}
             identifierVariables={{ courseId: course.id }}
             refetchQueries={['ManagedCourse']}
-            optionsTranslationPrefix="course-page:languages."
           />
           <div>
             <InputField

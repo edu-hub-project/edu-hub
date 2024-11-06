@@ -15,8 +15,6 @@
   "first-name": "Firstname",
   "last-name": "Lastname",
   "university": "University",
-  "matriculation-number": "Matriculation number",
-  "external-profile": "Link to external profile (LinkedIn, XING, ...)",
   "NONE": "irregular",
   "MONDAY": "MONDAY",
   "TUESDAY": "TUESDAY",
@@ -154,6 +152,9 @@
     "invalid_minimum_maximum_integer": "The value must be at least {{min}} and at most {{max}}",
     "invalid_integer_format": "The value must be an integer",
     "invalid_input": "Invalid input"
+  },
+  "dropdown_selector": {
+    "create_option": "Create new entry \"{{option}}\""
   },
   "time_picker": {
     "select_time": "Select time",

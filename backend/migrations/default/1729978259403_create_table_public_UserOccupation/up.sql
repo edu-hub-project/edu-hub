@@ -1,0 +1,1 @@
+CREATE TABLE "public"."UserOccupation" ("value" text NOT NULL, "comment" text NOT NULL, PRIMARY KEY ("value") , UNIQUE ("value"));COMMENT ON TABLE "public"."UserOccupation" IS E'Selection of possible user status';
