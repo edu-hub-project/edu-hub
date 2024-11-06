@@ -19,23 +19,45 @@
 
 ## 🌱 Seeds
 
-Seed data is a set of data that is used to initialize the database with an initial set of values. It is especially useful during development and testing.
+Seed data is a set of data used to initialize the database with an initial set of values. It is especially useful during development and testing.
+
+### Default User Seeds
 The seed data includes the following users:
 
 - `admin@example.com`
-- `student1@example.com`
-- `student2@example.com`
-- `student3@example.com`
-- `student4@example.com`
-- `student5@example.com`
-- `expert1@example.com`
-- `expert2@example.com`
-- `expert3@example.com`
-- `expert4@example.com`
-- `expert5@example.com`
+- `student1@example.com` through `student5@example.com`
+- `expert1@example.com` through `expert5@example.com`
 
 The password for all users is `dev`.  
-To extend the seed data temporarily, use the Hasura console. To include them permantly, add corresponding SQL statements to the seeds file [here](https://github.com/edu-hub-project/application/blob/develop/backend/seeds/default/dev_seeds.sql).
+
+### Managing Seed Data
+
+There are two ways to manage seed data:
+
+1. **Temporary Changes**: Use the Hasura console to make temporary changes during development.
+
+2. **Permanent Changes**: 
+   - The initial database state is defined in `backend/seeds/default/initial_seeds.sql`
+   - This file is automatically applied when starting a fresh database
+
+### Exporting Current Data as Seeds
+
+You can export the current database state as a seed file using the provided script:
+
+```bash
+# Navigate to the seeds directory
+cd backend/seeds
+
+# Make the script executable (first time only)
+chmod +x export_seeds.sh
+
+# Run the export script
+./export_seeds.sh
+```
+
+This will create a `initial_seeds.sql` file in the `backend/seeds/default/` directory. This file contains the current state of all tables in the database.
+
+The new initial state will be applied to fresh database installations
 
 ## :wrench: Useful Scripts
 

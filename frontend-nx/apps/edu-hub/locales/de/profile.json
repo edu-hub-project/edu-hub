@@ -1,0 +1,33 @@
+{
+  "first_name": "Vorname",
+  "last_name": "Nachname",
+  "university": "Hochschule",
+  "university_enrollment_number": "Matrikelnummer",
+  "company": "Unternehmen",
+  "occupation": {
+    "label": "Beschäftigung",
+    "HIGH_SCHOOL_STUDENT": "Schüler:in",
+    "UNIVERSITY_STUDENT": "Student:in",
+    "EMPLOYED_FULL_TIME": "Vollzeit beschäftigt",
+    "EMPLOYED_PART_TIME": "Teilzeit beschäftigt",
+    "SELF_EMPLOYED": "Selbstständig",
+    "UNEMPLOYED": "Arbeitslos",
+    "RETIRED": "Im Ruhestand",
+    "RESEARCHER": "Wissenschaftliche:r Mitarbeiter:in",
+    "EDUCATOR": "Lehrkraft",
+    "HOMEMAKER": "Hausfrau/Hausmann",
+    "OTHER": "Sonstiges"
+  },
+  "organization": {
+    "label_base": "Organisation",
+    "label_school": "Schule",
+    "label_university": "Hochschule",
+    "label_company": "Unternehmen",
+    "label_research": "Hochschule/Forschungseinrichtung",
+    "label_education": "Schule",
+    "placeholder": "Auswählen oder neu hinzufügen"
+  },
+  "external_profile": "Link zu externem Profil (LinkedIn, XING, ...)",
+  "matriculation_number": "Matrikelnummer",
+  "change_password_or_email": "Passwort oder E-Mail ändern"
+}

@@ -29,7 +29,7 @@ is_empty=$(psql $HASURA_GRAPHQL_DATABASE_URL -tAc "SELECT COUNT(*) FROM public.\
 # Conditionally apply the seed data
 if [[ $is_empty -eq 0 ]]; then
     echo "Applying seed data..."
-    hasura-cli seed apply --file dev_seeds.sql --database-name default
+    hasura-cli seed apply --file initial_seeds.sql --database-name default
 else
     echo "The 'users' table is not empty. Skipping seed data application."
 fi
