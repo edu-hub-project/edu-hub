@@ -207,7 +207,8 @@ export const ManageCourseContent: FC<Props> = ({ courseId }) => {
       <QuestionConfirmationDialog
         question={t('course-page:confirmation-push-the-course-to-next-status')}
         confirmationText={t('course-page:set-status-high')}
-        onClose={handleUpgradeStatus}
+        onClose={() => handleUpgradeStatus(false)}
+        onConfirm={() => handleUpgradeStatus(true)}
         open={isConfirmUpgradeStatusOpen}
       />
       <AlertMessageDialog

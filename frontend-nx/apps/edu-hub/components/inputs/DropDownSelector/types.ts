@@ -12,14 +12,15 @@ export type DropDownSelectorProps = {
   placeholder?: string;
   value: string;
   options: Option[];
-  updateValueMutation: DocumentNode;
+  updateValueMutation?: DocumentNode;
   onValueUpdated?: (data: any) => void;
+  //For the creatable dropdown, we need to specify the query for the optionsto refetch after the option is created
   refetchQueries?: string[];
   helpText?: string;
   errorText?: string;
   isMandatory?: boolean;
   className?: string;
-  identifierVariables: Record<string, any>;
+  identifierVariables?: Record<string, any>;
   creatable?: boolean;
   onOptionCreated?: (newValue: string) => void;
   createOptionMutation?: DocumentNode;

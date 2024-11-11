@@ -166,6 +166,7 @@ const ProfileContent: FC = () => {
               updateValueMutation={UPDATE_USER_ORGANIZATION_ID}
               identifierVariables={{ userId: userData?.User_by_pk?.id }}
               createOptionMutation={CREATE_ORGANIZATION}
+              refetchQueries={['OrganizationList']}
             />
           </div>
         </div>

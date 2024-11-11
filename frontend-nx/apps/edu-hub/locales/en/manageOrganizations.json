@@ -9,10 +9,21 @@
   },
   "action": {
     "add": "Add Organization",
-    "delete_confirmation": "Deleting an organization is only possible if there are no users related to this organization.\nAre you sure you want to delete the organization \"{{name}}\"?",
-    "delete_selected": "Delete Selected Organizations",
-    "bulk_delete_confirmation": "Deleting an organization is only possible if there are no users related to this organization.\nAre you sure you want to delete the {{count}} selected organizations?",
-    "bulk_delete": "Delete Selected Organizations"
+    "delete_confirmation": "Deleting an organization is only possible if there are no users related to this organization.\nAre you sure you want to delete the organization \"{{name}}\"?"
+  },
+  "bulk_action": {
+    "delete": {
+      "label": "Delete organizations",
+      "confirmation": "Deleting an organization is only possible if there are no users related to this organization.\nAre you sure you want to delete the {{count}} selected organizations?"
+    },
+    "merge": {
+      "label": "Merge organizations",
+      "description": "Select the organization to which the selected organizations should be merged.",
+      "select_target": {
+        "label": "Target organization",
+        "placeholder": "Select target organization"
+      }
+    }
   },
   "input": {
     "enter_alias": "Enter organization alias",
@@ -24,7 +35,8 @@
     "duplicate_organization_name": "An organization with the default name is still existing. Please rename or delete that one first.",
     "general": "An error occurred while adding the organization. Please try again.",
     "network": "A network error occurred. Please check your connection and try again.",
-    "unexpected": "An unexpected error occurred. Please try again later."
+    "unexpected": "An unexpected error occurred. Please try again later.",
+    "bulk_delete_failed": "Error deleting selected organizations"
   },
   "type_selection": {
     "UNIVERSITY": "University",

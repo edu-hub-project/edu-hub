@@ -86,13 +86,14 @@ export const CreatableDropDown: React.FC<CreatableDropDownProps> = ({
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     const filteredOptions = getFilteredOptions(inputValue);
+    const totalItems = shouldShowCreateOption(inputValue) ? filteredOptions.length + 1 : filteredOptions.length;
 
     if (event.key === 'ArrowDown') {
       event.preventDefault();
       const optionElements = document.querySelectorAll('.dropdown-option');
       optionElements.forEach((el) => el.classList.remove('hover:bg-gray-300'));
 
-      setHighlightedIndex((prev) => (prev < filteredOptions.length - 1 ? prev + 1 : prev));
+      setHighlightedIndex((prev) => (prev < totalItems - 1 ? prev + 1 : prev));
     } else if (event.key === 'ArrowUp') {
       event.preventDefault();
       const optionElements = document.querySelectorAll('.dropdown-option');
@@ -104,8 +105,10 @@ export const CreatableDropDown: React.FC<CreatableDropDownProps> = ({
       if (highlightedIndex < filteredOptions.length) {
         const selectedOption = filteredOptions[highlightedIndex];
         handleOptionSelect(selectedOption.value);
-      } else if (shouldShowCreateOption(inputValue)) {
+      } else if (highlightedIndex === filteredOptions.length && shouldShowCreateOption(inputValue)) {
         onCreateOption();
+        setIsOpen(false);
+        setHighlightedIndex(-1);
       }
       setHighlightedIndex(-1);
     }

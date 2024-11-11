@@ -105,7 +105,7 @@ const Onboarding: FC<OnboardingProps> = ({ course, enrollmentId, refetchCourse, 
     }
   };
 
-  const onEnrollmentCancellation = async () => {
+  const handleEnrollmentCancellation = async () => {
     try {
       setIsSubmitting(true);
       await updateEnrollmentStatus({
@@ -123,7 +123,7 @@ const Onboarding: FC<OnboardingProps> = ({ course, enrollmentId, refetchCourse, 
     }
   };
 
-  const onConfirmEnrollment = async () => {
+  const handleEnrollmentConfirmation = async () => {
     try {
       setIsSubmitting(true);
       await updateEnrollmentStatus({
@@ -214,7 +214,7 @@ const Onboarding: FC<OnboardingProps> = ({ course, enrollmentId, refetchCourse, 
           disabled={isSubmitting}
           filled
           className="mt-4 lg:mt-8 block mx-auto lg:mb-5 disabled:bg-slate-500"
-          onClick={onConfirmEnrollment}
+          onClick={handleEnrollmentConfirmation}
         >
           {isSubmitting ? <CircularProgress /> : t('confirm')}
         </Button>
@@ -222,7 +222,8 @@ const Onboarding: FC<OnboardingProps> = ({ course, enrollmentId, refetchCourse, 
 
       <QuestionConfirmationDialog
         open={showDeclineDialog}
-        onClose={(isDeclined) => (isDeclined ? onEnrollmentCancellation() : setShowDeclineDialog(false))}
+        onClose={() => setShowDeclineDialog(false)}
+        onConfirm={handleEnrollmentCancellation}
         question={t('course:onboardingModal.declineConfirmText')}
         confirmationText={t('course:onboardingModal.declineButtonText')}
       />
