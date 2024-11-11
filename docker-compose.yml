@@ -1,8 +1,6 @@
 # This docker-compose file is meant for local development!
 # See readme.md
 
-version: "3.8"
-
 services:
   frontend-nx:
     container_name: eduhub-frontend-nx
@@ -50,7 +48,7 @@ services:
 
   python_functions:
     container_name: eduhub-python-functions
-    image: python:3.9-slim-bullseye
+    image: python:3.11-slim-bullseye
     working_dir: /functions
     volumes:
       - ./functions:/functions
@@ -106,6 +104,7 @@ services:
       - ./backend/migrations:/hasura-migrations
       - ./backend/metadata:/hasura-metadata
       - ./backend/seeds:/hasura-seeds
+      - ./backend/seeds/default:/hasura/seeds/default
 
   db_hasura:
     container_name: eduhub-db_hasura

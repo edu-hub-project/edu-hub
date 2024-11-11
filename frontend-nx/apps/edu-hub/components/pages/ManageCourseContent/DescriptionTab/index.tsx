@@ -23,14 +23,11 @@ import Locations from './Locations';
 import { Button } from '@mui/material';
 import { MdAddCircle } from 'react-icons/md';
 import useTranslation from 'next-translate/useTranslation';
-import EduHubTextFieldEditor from '../../../forms/EduHubTextFieldEditor';
-import EduHubDropdownSelector from '../../../forms/EduHubDropdownSelector';
-import EduHubTimePicker from '../../../forms/EduHubTimePicker';
-import EduHubNumberFieldEditor from '../../../forms/EduHubNumberFieldEditor';
+import DropdownSelector from '../../../inputs/DropDownSelector';
+import TimePicker from '../../../inputs/TimePicker';
 import { LocationOption_enum } from '../../../../__generated__/globalTypes';
 import useErrorHandler from '../../../../hooks/useErrorHandler';
 import { ErrorMessageDialog } from '../../../common/dialogs/ErrorMessageDialog';
-import { useStartTimeString, useEndTimeString } from '../../../../helpers/dateTimeHelpers';
 import {
   DeleteCourseLocation,
   DeleteCourseLocationVariables,
@@ -39,14 +36,6 @@ import {
   InsertCourseLocation,
   InsertCourseLocationVariables,
 } from '../../../../queries/__generated__/InsertCourseLocation';
-import {
-  UpdateCourseEndTime,
-  UpdateCourseEndTimeVariables,
-} from '../../../../queries/__generated__/UpdateCourseEndTime';
-import {
-  UpdateCourseStartTime,
-  UpdateCourseStartTimeVariables,
-} from '../../../../queries/__generated__/UpdateCourseStartTime';
 import {
   UpdateCourseMaxParticipants,
   UpdateCourseMaxParticipantsVariables,
@@ -59,6 +48,8 @@ import {
   InsertSessionAddress,
   InsertSessionAddressVariables,
 } from '../../../../queries/__generated__/InsertSessionAddress';
+import InputField from '../../../inputs/InputField';
+import DropDownSelector from '../../../inputs/DropDownSelector';
 
 interface IProps {
   course: ManagedCourse_Course_by_pk;
@@ -68,8 +59,6 @@ interface IProps {
 export const DescriptionTab: FC<IProps> = ({ course, qResult }) => {
   const { error, handleError, resetError } = useErrorHandler();
   const { t } = useTranslation('course-page');
-  const getStartTimeString = useStartTimeString();
-  const getEndTimeString = useEndTimeString();
 
   const [insertCourseLocation] = useRoleMutation<InsertCourseLocation, InsertCourseLocationVariables>(
     INSERT_COURSE_LOCATION,
@@ -88,7 +77,7 @@ export const DescriptionTab: FC<IProps> = ({ course, qResult }) => {
   const handleInsertCourseLocation = async () => {
     try {
       const totalLocationOptions = Object.keys(LocationOption_enum).length;
-      
+
       // Check if the current number of locations is less than the total available options
       if (course.CourseLocations.length >= totalLocationOptions) {
         handleError('All available location options have been used for this course.');
@@ -99,13 +88,13 @@ export const DescriptionTab: FC<IProps> = ({ course, qResult }) => {
       const usedOptions = new Set(course.CourseLocations.map((loc) => loc.locationOption));
       // Find the first available option
       const availableOption = Object.values(LocationOption_enum).find((option) => !usedOptions.has(option));
-      
+
       // If there's no available option, this shouldn't happen due to the previous check, but let's keep it as a safeguard
       if (!availableOption) {
         handleError('All location options already exist for this course.');
         return;
       }
-      
+
       // If there's is an available option, proceed with insertion
       const res = await insertCourseLocation({ variables: { courseId: course.id, option: availableOption } });
       //extract the location id from the response
@@ -160,35 +149,29 @@ export const DescriptionTab: FC<IProps> = ({ course, qResult }) => {
     qResult.refetch(); // Refetch the query to update the UI
   };
 
-  const updateCourseStartTime = useUpdateCallback<UpdateCourseStartTime, UpdateCourseStartTimeVariables>(
-    UPDATE_COURSE_START_TIME,
-    'courseId',
-    'startTime',
-    course?.id,
-    (time: string | null) => (time ? `${time}:00` : null),
-    qResult
-  );
-
-  const updateCourseEndTime = useUpdateCallback<UpdateCourseEndTime, UpdateCourseEndTimeVariables>(
-    UPDATE_COURSE_END_TIME,
-    'courseId',
-    'endTime',
-    course?.id,
-    (time: string | null) => (time ? `${time}:00` : null),
-    qResult
-  );
-
   const updateMaxParticipants = useUpdateCallback<UpdateCourseMaxParticipants, UpdateCourseMaxParticipantsVariables>(
     UPDATE_COURSE_MAX_PARTICIPANTS,
-    'courseId',
-    'maxParticipants',
+    'itemId',
+    'text',
     course?.id,
     eventTargetNumberMapper,
     qResult
   );
 
-  const weekDayOptions = ['NONE', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
-  const languageOptions = ['DE', 'EN'];
+  const weekDayOptions = [
+    { value: 'NONE', label: t('weekdays.NONE') },
+    { value: 'MONDAY', label: t('weekdays.MONDAY') },
+    { value: 'TUESDAY', label: t('weekdays.TUESDAY') },
+    { value: 'WEDNESDAY', label: t('weekdays.WEDNESDAY') },
+    { value: 'THURSDAY', label: t('weekdays.THURSDAY') },
+    { value: 'FRIDAY', label: t('weekdays.FRIDAY') },
+    { value: 'SATURDAY', label: t('weekdays.SATURDAY') },
+    { value: 'SUNDAY', label: t('weekdays.SUNDAY') },
+  ];
+  const languageOptions = [
+    { value: 'DE', label: t('languages.DE') },
+    { value: 'EN', label: t('languages.EN') },
+  ];
 
   const courseLocations = [...course.CourseLocations];
   courseLocations.sort((a, b) => a.id - b.id);
@@ -196,120 +179,146 @@ export const DescriptionTab: FC<IProps> = ({ course, qResult }) => {
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2">
-        <EduHubTextFieldEditor
+        <InputField
+          variant="eduhub"
+          type="textarea"
           value={course.tagline}
           label={t('short_description.label')}
-          updateMutation={UPDATE_COURSE_SHORT_DESCRIPTION}
-          refetchQuery={qResult}
+          updateValueMutation={UPDATE_COURSE_SHORT_DESCRIPTION}
+          refetchQueries={['ManagedCourse']}
           itemId={course.id}
-          placeholder={t('short_description.label')}
+          placeholder={t('short_description.placeholder')}
           helpText={t('short_description.help_text')}
           className="h-64"
+          currentText={course.tagline}
+          maxLength={500}
         />
-        <EduHubTextFieldEditor
+        <InputField
+          variant="eduhub"
+          type="textarea"
           value={course.learningGoals ?? ''}
-          updateMutation={UPDATE_COURSE_LEARNING_GOALS}
-          refetchQuery={qResult}
+          updateValueMutation={UPDATE_COURSE_LEARNING_GOALS}
+          refetchQueries={['ManagedCourse']}
           itemId={course.id}
           label={t('learning_goals.label')}
           placeholder={t('learning_goals.placeholder')}
           helpText={t('learning_goals.help_text')}
           maxLength={500}
           className="h-64"
+          currentText={course.learningGoals ?? ''}
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2">
         <div>
-          <EduHubTextFieldEditor
-            element="input"
+          <InputField
+            variant="eduhub"
+            type="input"
             value={course.headingDescriptionField1 ?? ''}
             itemId={course.id}
-            updateMutation={UPDATE_COURSE_HEADING_DESCRIPTION_1}
-            refetchQuery={qResult}
+            updateValueMutation={UPDATE_COURSE_HEADING_DESCRIPTION_1}
+            refetchQueries={['ManagedCourse']}
             label={t('info_block_1_title.label')}
             placeholder={t('info_block_1_title.placeholder')}
             helpText={t('info_block_1_title.help_text')}
             className="mb-0"
+            currentText={course.headingDescriptionField1 ?? ''}
           />
-          <EduHubTextFieldEditor
+          <InputField
+            variant="eduhub"
+            type="markdown"
             value={course.contentDescriptionField1 ?? ''}
             itemId={course.id}
-            updateMutation={UPDATE_COURSE_CONTENT_DESCRIPTION_FIELD_1}
-            refetchQuery={qResult}
+            updateValueMutation={UPDATE_COURSE_CONTENT_DESCRIPTION_FIELD_1}
+            refetchQueries={['ManagedCourse']}
             placeholder={t('info_block_1_content.placeholder')}
             maxLength={10000}
             className="h-64"
-            isMarkdown={true}
+            currentText={course.contentDescriptionField1 ?? ''}
           />
         </div>
         <div>
-          <EduHubTextFieldEditor
-            element="input"
+          <InputField
+            variant="eduhub"
+            type="input"
             value={course.headingDescriptionField2 ?? ''}
             itemId={course.id}
-            updateMutation={UPDATE_COURSE_HEADING_DESCRIPTION_2}
-            refetchQuery={qResult}
+            updateValueMutation={UPDATE_COURSE_HEADING_DESCRIPTION_2}
+            refetchQueries={['ManagedCourse']}
             label={t('info_block_2_title.label')}
             helpText={t('info_block_2_title.help_text')}
             placeholder={t('info_block_2_title.placeholder')}
             className="mb-0"
+            currentText={course.headingDescriptionField2 ?? ''}
           />
-          <EduHubTextFieldEditor
+          <InputField
+            variant="eduhub"
+            type="markdown"
             value={course.contentDescriptionField2 ?? ''}
             itemId={course.id}
-            updateMutation={UPDATE_COURSE_CONTENT_DESCRIPTION_FIELD_2}
-            refetchQuery={qResult}
+            updateValueMutation={UPDATE_COURSE_CONTENT_DESCRIPTION_FIELD_2}
+            refetchQueries={['ManagedCourse']}
             placeholder={t('info_block_2_content.placeholder')}
             maxLength={10000}
             className="h-64"
-            isMarkdown={true}
+            currentText={course.contentDescriptionField2 ?? ''}
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2">
         <div className="grid grid-cols-3">
-          <EduHubDropdownSelector
+          <DropDownSelector
+            variant="eduhub"
             label={t('weekday')}
-            options={weekDayOptions}
             value={course.weekDay ?? 'MONDAY'}
-            updateMutation={UPDATE_COURSE_WEEKDAY}
-            idVariables={{ courseId: course.id }}
+            options={weekDayOptions}
+            updateValueMutation={UPDATE_COURSE_WEEKDAY}
+            identifierVariables={{ courseId: course.id }}
             refetchQueries={['ManagedCourse']}
-            translationPrefix="course-page:weekdays."
-            translationNamespace="course-page"
           />
-          <EduHubTimePicker
+          <TimePicker
+            variant="eduhub"
             label={t('start_time')}
-            value={getStartTimeString(course.startTime)}
-            onChange={updateCourseStartTime}
+            currentValue={course.startTime ? new Date(`1970-01-01T${course.startTime}`) : null}
+            updateValueMutation={UPDATE_COURSE_START_TIME}
+            identifierVariables={{ courseId: course.id }}
+            refetchQueries={['ManagedCourse']}
             className="mb-4"
           />
-          <EduHubTimePicker
+          <TimePicker
+            variant="eduhub"
             label={t('end_time')}
-            value={getEndTimeString(course.endTime)}
-            onChange={updateCourseEndTime}
+            currentValue={course.endTime ? new Date(`1970-01-01T${course.endTime}`) : null}
+            updateValueMutation={UPDATE_COURSE_END_TIME}
+            identifierVariables={{ courseId: course.id }}
+            refetchQueries={['ManagedCourse']}
             className="mb-4"
           />
           <div />
         </div>
         <div className="grid grid-cols-2">
-          <EduHubDropdownSelector
+          <DropdownSelector
+            variant="eduhub"
             label={t('common:language')}
             options={languageOptions}
             value={course.language}
-            updateMutation={UPDATE_COURSE_LANGUAGE}
-            idVariables={{ courseId: course.id }}
+            updateValueMutation={UPDATE_COURSE_LANGUAGE}
+            identifierVariables={{ courseId: course.id }}
             refetchQueries={['ManagedCourse']}
-            translationPrefix="course-page:languages."
-            translationNamespace="course-page"
           />
           <div>
-            <EduHubNumberFieldEditor
-              label={t('max_participants')}
-              onChange={updateMaxParticipants}
-              value={course.maxParticipants || 0}
+            <InputField
+              variant="eduhub"
+              type="number"
+              label={t('manageCourse:max_participants.label')}
+              value={course.maxParticipants?.toString() || '0'}
+              itemId={course.id}
+              updateValueMutation={UPDATE_COURSE_MAX_PARTICIPANTS}
+              refetchQueries={['ManagedCourse']}
               min={0}
+              onValueUpdated={() => qResult.refetch()}
+              placeholder={t('manageCourse:max_participants.placeholder')}
+              helpText={t('manageCourse:max_participants.help_text')}
             />
           </div>
         </div>
@@ -321,12 +330,7 @@ export const DescriptionTab: FC<IProps> = ({ course, qResult }) => {
           <div className="col-span-7">{t('address.label')}</div>
         </div>
         {courseLocations.map((loc) => (
-          <Locations
-            key={loc.id}
-            location={loc}
-            onDelete={handleDeleteCourseLocation}
-            refetchQuery={qResult}
-          />
+          <Locations key={loc.id} location={loc} onDelete={handleDeleteCourseLocation} refetchQuery={qResult} />
         ))}
       </div>
       <div className="flex justify-start text-white">

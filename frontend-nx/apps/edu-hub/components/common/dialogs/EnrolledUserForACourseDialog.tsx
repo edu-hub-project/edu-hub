@@ -29,30 +29,29 @@ const EnrolledUserForACourseDialog: FC<IProps> = (props) => {
     props.onClose(false, null);
   }, [props]);
 
-  const experts = useAuthedQuery<
-    CourseEnrollmentWithUserQuery,
-    CourseEnrollmentWithUserQueryVariables
-  >(COURSE_ENROLLMENTS_WITH_USER, {
-    variables: {
-      limit: 15,
-      offset: 0,
-      where: {
-        _and: [
-          {
-            courseId: { _eq: props.courseId },
-          },
-          {
-            _or: [
-              { User: { firstName: { _ilike: `%${searchValue}%` } } },
-              { User: { lastName: { _ilike: `%${searchValue}%` } } },
-              { User: { email: { _ilike: `%${searchValue}%` } } },
-            ],
-          },
-        ],
+  const experts = useAuthedQuery<CourseEnrollmentWithUserQuery, CourseEnrollmentWithUserQueryVariables>(
+    COURSE_ENROLLMENTS_WITH_USER,
+    {
+      variables: {
+        limit: 15,
+        offset: 0,
+        where: {
+          _and: [
+            {
+              courseId: { _eq: props.courseId },
+            },
+            {
+              _or: [
+                { User: { firstName: { _ilike: `%${searchValue}%` } } },
+                { User: { lastName: { _ilike: `%${searchValue}%` } } },
+              ],
+            },
+          ],
+        },
       },
-    },
-    skip: searchValue.trim().length < 3,
-  });
+      skip: searchValue.trim().length < 3,
+    }
+  );
 
   const handleNewInput = useCallback(
     (value: string) => {
@@ -96,10 +95,7 @@ const EnrolledUserForACourseDialog: FC<IProps> = (props) => {
           <div className="h-[30rem] w-full overflow-auto">
             {users.map((cEnrollment, index) => (
               <div key={index} className="pb-1">
-                <TagWithTwoText
-                  tempUser={cEnrollment.User}
-                  onClick={onUserClick}
-                />
+                <TagWithTwoText tempUser={cEnrollment.User} onClick={onUserClick} />
               </div>
             ))}
           </div>
@@ -132,10 +128,7 @@ const TagWithTwoText: FC<IPropsCourse> = ({ tempUser, onClick }) => {
       onClick={clickThis}
       className="flex flex-col bg-edu-row-color px-2 py-1 cursor-pointer border border-slate-300 hover:border-solid hover:border-indigo-300"
     >
-      <p className="pr-2">
-        {makeFullName(tempUser.firstName, tempUser.lastName)}
-      </p>
-      <p className="text-gray-600">{tempUser.email}</p>
+      <p className="pr-2">{makeFullName(tempUser.firstName, tempUser.lastName)}</p>
     </div>
   );
 };

@@ -23,7 +23,7 @@ const getBgColor = (status) => {
 const AttendanceStatusLegend: FC = () => {
   const { t } = useTranslation();
   return (
-    <div className="flex md:flex-col mt-4">
+    <div className="flex flex-wrap gap-4 mt-4">
       <div className="flex items-center">
         <Dot className="text-red fill-green-500" /> {t('course-page:attendanceStatus.ATTENDED')}
       </div>
@@ -33,8 +33,6 @@ const AttendanceStatusLegend: FC = () => {
       <div className="flex items-center">
         <Dot className="text-red fill-gray-200" /> {t('course-page:attendanceStatus.PENDING')}
       </div>
-      <div />
-      <div />
     </div>
   );
 };
@@ -88,15 +86,17 @@ export const Attendances: FC<AttendancesProps> = ({ course }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col md:w-1/2 mb-4 md:mb-0">
-      <BlockTitle>{t('course-page:attendances')}</BlockTitle>
+    <div className="flex flex-col w-full md:w-1/2 mb-4 md:mb-0">
+      <div className="mb-2">
+        <BlockTitle>{t('course-page:attendances')}</BlockTitle>
+      </div>
       <span className="text-lg mb-4">
         {t('course-page:maxMissedSessions_plural', {
           count: course.maxMissedSessions,
         })}
       </span>
       <div>
-        <div className="grid grid-cols-3 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {course.Sessions.map((session) => (
             <AttendanceEntry key={session.id} session={session} />
           ))}

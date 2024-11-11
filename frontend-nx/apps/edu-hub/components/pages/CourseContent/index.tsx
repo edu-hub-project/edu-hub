@@ -135,6 +135,14 @@ const CourseContent: FC<{ id: number }> = ({ id }) => {
               <div className="max-w-screen-xl mx-auto w-full">{course.title}</div>
             </div>
             <div className="max-w-screen-xl mx-auto w-full">
+              {isLoggedIn && resetValues && (
+                <Onboarding
+                  course={course}
+                  enrollmentId={enrollmentId}
+                  refetchCourse={refetchCourse}
+                  setResetValues={setResetValues}
+                />
+              )}
               <PageBlock>
                 <ContentRow className="items-center">
                   <div className="flex flex-1 flex-col text-white mb-4 lg:mb-20">
@@ -152,18 +160,19 @@ const CourseContent: FC<{ id: number }> = ({ id }) => {
                 isCourseWithEnrollment && // needed to assure the type of the course object
                 courseEnrollment?.status === CourseEnrollmentStatus_enum.CONFIRMED &&
                 (course.achievementCertificatePossible || course.attendanceCertificatePossible) && (
-                  // <div className="mx-auto">
                   <ContentRow className="my-24 text-edu-black bg-white px-8 py-8">
                     {!isDegreeCourse && (
                       <>
-                        <Attendances course={course} />
-                        {!courseEnrollment?.achievementCertificateURL && (
-                          <AchievementRecord
-                            courseId={course.id}
-                            achievementRecordUploadDeadline={course.Program.achievementRecordUploadDeadline}
-                            courseTitle={course.title}
-                          />
-                        )}
+                        <div className="flex flex-col md:flex-row gap-12 md:gap-24 w-full">
+                          <Attendances course={course} />
+                          {!courseEnrollment?.achievementCertificateURL && (
+                            <AchievementRecord
+                              courseId={course.id}
+                              achievementRecordUploadDeadline={course.Program.achievementRecordUploadDeadline}
+                              courseTitle={course.title}
+                            />
+                          )}
+                        </div>
                       </>
                     )}
                     {isDegreeCourse && <CompletedDegreeCourses degreeCourseId={course.id} />}
@@ -173,19 +182,9 @@ const CourseContent: FC<{ id: number }> = ({ id }) => {
                       hideAttendanceCertificateButton={hideAttendanceCertificateButton}
                     />
                   </ContentRow>
-                  // </div>
                 )}
               <ContentRow className="flex">
                 <PageBlock classname="flex-1 text-white space-y-6">
-                  {isLoggedIn && resetValues && (
-                    <Onboarding
-                      course={course}
-                      enrollmentId={enrollmentId}
-                      resetValues={resetValues}
-                      refetchCourse={refetchCourse}
-                      setResetValues={setResetValues}
-                    />
-                  )}
                   <LearningGoals learningGoals={course.learningGoals} />
                   {!isDegreeCourse ? (
                     <Sessions sessions={course.Sessions} isLoggedInParticipant={isLoggedInParticipant} />

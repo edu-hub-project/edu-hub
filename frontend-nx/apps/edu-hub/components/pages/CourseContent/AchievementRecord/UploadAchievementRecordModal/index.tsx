@@ -35,7 +35,7 @@ import {
   AchievementOptionCoursesVariables,
 } from '../../../../../queries/__generated__/AchievementOptionCourses';
 import { QueryResult } from '@apollo/client';
-import FileDownload from '../../../../forms/FileDownload';
+import FileDownload from '../../../../inputs/FileDownload';
 import UploadUI from './UploadUI';
 import AchievementOptionDropDown from './AchievementOptionDropDown';
 
@@ -165,7 +165,6 @@ const UploadAchievementRecordModal: FC<IProps> = ({
                 id: user.id,
                 firstName: user.firstName,
                 lastName: user.lastName,
-                email: user.email,
               } as AtLeastNameEmail,
             ],
           });
@@ -277,15 +276,17 @@ const UploadAchievementRecordModal: FC<IProps> = ({
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} maxWidth="xl" title={t('course-page:upload_achievement_record')}>
-        <div className="flex flex-col space-y-5 w-full pb-5">
-          <div onClick={onAchievementOptionDropdown}>
-            <Button>{`${t('course-page:choose-achievement-option')} ↓`}</Button>
+        <div className="flex flex-col space-y-5 w-full p-4 sm:p-5">
+          <div className="w-full sm:w-auto">
+            <div onClick={onAchievementOptionDropdown}>
+              <Button>{`${t('course-page:choose-achievement-option')} ↓`}</Button>
+            </div>
           </div>
 
           {selectedAchievementOption && (
-            <div>
+            <div className="w-full">
               <div className="text-lg mb-6">
-                {t('course-page:selected_achievement_option')}:<br></br>
+                {t('course-page:selected_achievement_option')}:<br />
                 {selectedAchievementOption.title}
               </div>
               {selectedAchievementOption.AchievementOptionTemplate && (
@@ -301,14 +302,15 @@ const UploadAchievementRecordModal: FC<IProps> = ({
               )}
             </div>
           )}
-          <form onSubmit={save} className="flex flex-col space-y-5 mx-10">
-            <div className="flex flex-row gap-6">
-              <p className="w-2/6">{t('authors')}:</p>
-              <div className="w-4/6 flex flex-row">
+
+          <form onSubmit={save} className="flex flex-col space-y-5 mx-2 sm:mx-4 md:mx-6 lg:mx-8">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+              <p className="w-full sm:w-2/6">{t('authors')}:</p>
+              <div className="w-full sm:w-4/6 flex flex-col sm:flex-row">
                 <div className="items-center pt-1 pr-3">
                   <MdAddCircleOutline className="cursor-pointer" onClick={makeAuthorListVisible} size="1.4em" />
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full">
                   {state.authors.map((user, index) => (
                     <EhTagStingId
                       key={`record-authors-${index}`}
@@ -320,9 +322,10 @@ const UploadAchievementRecordModal: FC<IProps> = ({
                 </div>
               </div>
             </div>
-            <div className="flex flex-row gap-6">
-              <p className="w-2/6">{t('documentation')}:</p>
-              <div className="w-4/6">
+
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+              <p className="w-full sm:w-2/6">{t('documentation')}:</p>
+              <div className="w-full sm:w-4/6">
                 <UploadUI
                   onFileSelected={onFileChange}
                   acceptedFileTypes=""
@@ -332,11 +335,13 @@ const UploadAchievementRecordModal: FC<IProps> = ({
                 />
               </div>
             </div>
-            <div className='text-xs italic text-right'>{t('course:maxFileSize')}</div>
+
+            <div className="text-xs italic text-right">{t('course:maxFileSize')}</div>
             <div className="flex justify-center items-center">
-              <Button>{isLoading ? <CircularProgress></CircularProgress> : t('upload')}</Button>
+              <Button>{isLoading ? <CircularProgress /> : t('upload')}</Button>
             </div>
           </form>
+
           {isVisibleAchievementOptions && (
             <AchievementOptionDropDown
               anchorElement={archiveOptionsAnchorElement}
@@ -356,7 +361,6 @@ const UploadAchievementRecordModal: FC<IProps> = ({
           )}
         </div>
       </Modal>
-      {/* Error Message Dialog */}
       {error && <ErrorMessageDialog errorMessage={error} open={!!error} onClose={resetError} />}
     </>
   );

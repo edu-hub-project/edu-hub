@@ -3,11 +3,18 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { University_enum, Employment_enum } from "./../../__generated__/globalTypes";
+import { University_enum, UserOccupation_enum } from "./../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: User
 // ====================================================
+
+export interface User_User_by_pk_Organization {
+  __typename: "Organization";
+  id: number;
+  name: string;
+  aliases: any | null;
+}
 
 export interface User_User_by_pk {
   __typename: "User";
@@ -33,21 +40,25 @@ export interface User_User_by_pk {
    */
   university: University_enum | null;
   /**
-   * The user's profile picture
-   */
-  picture: string | null;
-  /**
    * A link to an external profile, for example in LinkedIn or Xing
    */
   externalProfile: string | null;
   /**
-   * The user's current employment status
+   * Provides the users occupation status.
    */
-  employment: Employment_enum | null;
+  occupation: UserOccupation_enum | null;
   /**
-   * The user's email address
+   * Referring to where the user is occupied. Could be the user's company, higher education institution, or any organization.
    */
-  email: string;
+  organizationId: number | null;
+  /**
+   * The user's profile picture
+   */
+  picture: string | null;
+  /**
+   * An object relationship
+   */
+  Organization: User_User_by_pk_Organization | null;
 }
 
 export interface User {

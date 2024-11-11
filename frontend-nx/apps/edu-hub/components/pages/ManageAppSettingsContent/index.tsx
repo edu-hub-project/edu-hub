@@ -5,8 +5,8 @@ import useTranslation from 'next-translate/useTranslation';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 import { Button } from '../../common/Button';
-import FormFieldRow from '../../forms/FormFieldRow';
-import EduHubDropdownSelector from '../../forms/EduHubDropdownSelector';
+import FormFieldRow from '../../inputs/FormFieldRow';
+import DropDownSelector from '../../inputs/DropDownSelector';
 
 import { useAdminQuery } from '../../../hooks/authedQuery';
 
@@ -28,20 +28,20 @@ type Inputs = {
   bannerTextEn: string;
 };
 
-const timeZones = [
-  'Europe/Berlin',
-  'Europe/London',
-  'Europe/Paris',
-  'UTC',
-  'America/New_York',
-  'America/Los_Angeles',
-  'Asia/Tokyo',
-  // Add more time zones as needed
-];
-
 const ManageAppSettingsContent: FC = () => {
   const { data: sessionData } = useSession();
   const { t } = useTranslation('manageAppSettings');
+
+  const timeZoneOptions = [
+    { value: 'Europe/Berlin', label: t('time_zone.values.Europe/Berlin') },
+    { value: 'Europe/London', label: t('time_zone.values.Europe/London') },
+    { value: 'Europe/Paris', label: t('time_zone.values.Europe/Paris') },
+    { value: 'UTC', label: t('time_zone.values.UTC') },
+    { value: 'America/New_York', label: t('time_zone.values.America/New_York') },
+    { value: 'America/Los_Angeles', label: t('time_zone.values.America/Los_Angeles') },
+    { value: 'Asia/Tokyo', label: t('time_zone.values.Asia/Tokyo') },
+    // Add more time zones as needed
+  ];
 
   const methods = useForm<Inputs>({
     defaultValues: {
@@ -240,15 +240,14 @@ const ManageAppSettingsContent: FC = () => {
             <label className="text-xs uppercase tracking-widest font-medium text-gray-400 mb-2 block">
               {t('time_zone.label')}
             </label>
-            <EduHubDropdownSelector
-              options={timeZones}
+            <DropDownSelector
+              variant="material"
+              options={timeZoneOptions}
               value={appSettingsData?.AppSettings[0]?.timeZone}
               helpText={t('time_zone.help_text')}
-              updateMutation={UPDATE_APP_SETTINGS_TIME_ZONE}
-              idVariables={{ appName: 'edu' }}
-              refetchQueries={['AppSettings']} // Name of the query to refetch
-              translationPrefix="time_zone.values."
-              translationNamespace="manageAppSettings"
+              updateValueMutation={UPDATE_APP_SETTINGS_TIME_ZONE}
+              identifierVariables={{ appName: 'edu' }}
+              refetchQueries={['AppSettings']}
             />
           </div>
         </>

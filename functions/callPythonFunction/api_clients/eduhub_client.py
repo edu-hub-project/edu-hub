@@ -62,7 +62,6 @@ class EduHubClient:
                 }
                 SessionAddresses {
                     address
-                    type
                 }
             }
         }"""

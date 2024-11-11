@@ -2,6 +2,12 @@ table:
   name: User
   schema: public
 object_relationships:
+  - name: Organization
+    using:
+      foreign_key_constraint_on: organizationId
+  - name: UserOccupation
+    using:
+      foreign_key_constraint_on: occupation
   - name: UserStatus
     using:
       foreign_key_constraint_on: status
@@ -80,6 +86,7 @@ select_permissions:
         - firstName
         - id
         - lastName
+        - organizationId
         - otherUniversity
         - picture
         - university
@@ -115,6 +122,8 @@ select_permissions:
         - lastName
         - matriculationNumber
         - newsletterRegistration
+        - occupation
+        - organizationId
         - otherUniversity
         - picture
         - status
@@ -134,6 +143,8 @@ update_permissions:
         - lastName
         - matriculationNumber
         - newsletterRegistration
+        - occupation
+        - organizationId
         - otherUniversity
         - picture
         - university
@@ -141,3 +152,21 @@ update_permissions:
         id:
           _eq: X-Hasura-User-Id
       check: null
+event_triggers:
+  - name: update_keycloak_user
+    definition:
+      enable_manual: false
+      update:
+        columns:
+          - firstName
+          - lastName
+    retry_conf:
+      interval_sec: 10
+      num_retries: 5
+      timeout_sec: 60
+    webhook: '{{CLOUD_FUNCTION_LINK_CALL_NODE_FUNCTION}}'
+    headers:
+      - name: secret
+        value_from_env: HASURA_CLOUD_FUNCTION_SECRET
+      - name: name
+        value: updateKeycloakUser

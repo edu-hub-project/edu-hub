@@ -1,0 +1,33 @@
+{
+  "first_name": "First name",
+  "last_name": "Last name",
+  "university": "University",
+  "university_enrollment_number": "Enrollment number",
+  "company": "Company",
+  "occupation": {
+    "label": "Occupation",
+    "HIGH_SCHOOL_STUDENT": "High school student",
+    "UNIVERSITY_STUDENT": "University student",
+    "EMPLOYED_FULL_TIME": "Full-time employed",
+    "EMPLOYED_PART_TIME": "Part-time employed",
+    "SELF_EMPLOYED": "Self-employed",
+    "UNEMPLOYED": "Unemployed",
+    "RETIRED": "Retired",
+    "RESEARCHER": "Researcher",
+    "EDUCATOR": "Educator",
+    "HOMEMAKER": "Housewife/Househusband",
+    "OTHER": "Other"
+  },
+  "organization": {
+    "label_base": "Organization",
+    "label_school": "School",
+    "label_university": "University",
+    "label_company": "Company",
+    "label_research": "University/Research institution",
+    "label_education": "School",
+    "placeholder": "Select or add new one"
+  },
+  "external_profile": "Link to external profile (LinkedIn, XING, ...)",
+  "matriculation_number": "Matriculation number",
+  "change_password_or_email": "Change password or email"
+}
