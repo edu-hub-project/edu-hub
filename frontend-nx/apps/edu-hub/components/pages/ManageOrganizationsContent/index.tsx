@@ -230,6 +230,20 @@ const ManageOrganizationsContent: FC = () => {
           },
         });
 
+        // Update all users to the new organization
+        await Promise.all(
+          selectedRowsForBulkAction.flatMap((org) =>
+            (org.Users || []).map((user) =>
+              updateUserOrganizationId({
+                variables: {
+                  userId: user.id,
+                  value: parseInt(targetOrgId, 10),
+                },
+              })
+            )
+          )
+        );
+
         // Delete all selected organizations except the target one
         const orgsToDelete = selectedRowsForBulkAction.filter((org) => org.id !== parseInt(targetOrgId, 10));
 
