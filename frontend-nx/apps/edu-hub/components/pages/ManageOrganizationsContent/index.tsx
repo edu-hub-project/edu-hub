@@ -213,10 +213,12 @@ const ManageOrganizationsContent: FC = () => {
   );
 
   const handleBulkAction = useCallback((action: string, selectedRows: OrganizationList_Organization[]) => {
-    if (action === 'delete' && selectedRows.length > 0) {
+    if (selectedRows.length === 0) return;
+
+    if (action === 'delete') {
       setBulkActionDialogOpen(true);
       setSelectedRowsForBulkAction(selectedRows);
-    } else if (action === 'merge' && selectedRows.length > 0) {
+    } else if (action === 'merge') {
       setMergeDialogOpen(true);
       setSelectedRowsForBulkAction(selectedRows);
     }
@@ -226,8 +228,6 @@ const ManageOrganizationsContent: FC = () => {
     async (targetOrgId: string) => {
       setMergeDialogOpen(false);
       try {
-        console.log('Starting merge process...');
-
         // Find target organization from the full organization list
         const targetOrg = data?.Organization?.find((org) => org.id === parseInt(targetOrgId, 10));
         const targetOrgExistingAliases = targetOrg?.aliases || [];
@@ -251,34 +251,20 @@ const ManageOrganizationsContent: FC = () => {
         // Combine existing target aliases with new aliases, removing duplicates
         const combinedAliases = Array.from(new Set([...targetOrgExistingAliases, ...aliasesToMerge]));
 
-        console.log('Combined aliases to be added:', combinedAliases);
-
         await updateOrganizationAliases({
           variables: {
             id: parseInt(targetOrgId, 10),
             tags: combinedAliases,
           },
         });
-        console.log('Updated target organization aliases');
 
         // Delete all selected organizations except the target one
         const orgsToDelete = selectedRowsForBulkAction.filter((org) => org.id !== parseInt(targetOrgId, 10));
 
-        console.log(
-          'Organizations to be deleted:',
-          orgsToDelete.map((org) => ({
-            id: org.id,
-            name: org.name,
-          }))
-        );
-
         await Promise.all(orgsToDelete.map((org) => deleteOrganization({ variables: { id: org.id } })));
-        console.log('Deleted merged organizations');
 
         refetch();
-        console.log('Merge process completed successfully');
       } catch (error) {
-        console.error('Error merging organizations:', error);
         setError(t('error.merge_failed'));
       }
       setSelectedRowsForBulkAction([]);
@@ -304,23 +290,12 @@ const ManageOrganizationsContent: FC = () => {
       await Promise.all(selectedRowsForBulkAction.map((org) => deleteOrganization({ variables: { id: org.id } })));
       refetch();
     } catch (error) {
-      console.error('Error deleting organizations:', error);
       setError(t('error.bulk_delete_failed'));
     }
     setSelectedRowsForBulkAction([]);
   }, [selectedRowsForBulkAction, deleteOrganization, refetch, t]);
 
-  useEffect(() => {
-    console.log('Data state:', {
-      loading,
-      hasError: !!queryError,
-      hasData: !!data,
-      organizationCount: data?.Organization?.length,
-      pageCount: Math.ceil((data?.Organization_aggregate?.aggregate?.count || 0) / PAGE_SIZE),
-    });
-  }, [loading, queryError, data]);
-
-  if (loading) {
+  if (loading || !data?.Organization) {
     return (
       <PageBlock>
         <div className="max-w-screen-xl mx-auto mt-20">
@@ -341,15 +316,7 @@ const ManageOrganizationsContent: FC = () => {
     );
   }
 
-  if (!data?.Organization) {
-    return (
-      <PageBlock>
-        <div className="max-w-screen-xl mx-auto mt-20">
-          <div>{t('error.no_data')}</div>
-        </div>
-      </PageBlock>
-    );
-  }
+  const totalPages = Math.max(1, Math.ceil((data?.Organization?.length || 0) / PAGE_SIZE));
 
   return (
     <PageBlock>
@@ -370,7 +337,7 @@ const ManageOrganizationsContent: FC = () => {
           searchFilter={searchFilter}
           setPageIndex={setPageIndex}
           setSearchFilter={setSearchFilter}
-          pages={Math.max(1, Math.ceil((data?.Organization_aggregate?.aggregate?.count || 0) / PAGE_SIZE))}
+          pages={totalPages}
           generateDeletionConfirmationQuestion={generateDeletionConfirmation}
           expandableRowComponent={({ row }) => <ExpandableOrganizationRow row={row} />}
           onAddButtonClick={onAddOrganizationClick}
