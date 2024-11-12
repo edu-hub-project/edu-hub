@@ -66,6 +66,17 @@ const ManageUsersContent: FC = () => {
 
   const debouncedRefetch = useDebouncedCallback(refetch, 1000);
 
+  const refetchFilter = useCallback(
+    (searchFilter: string) => ({
+      _or: [
+        { lastName: { _ilike: `%${searchFilter}%` } },
+        { firstName: { _ilike: `%${searchFilter}%` } },
+        { email: { _ilike: `%${searchFilter}%` } },
+      ],
+    }),
+    []
+  );
+
   useEffect(() => {
     debouncedRefetch({
       offset: pageIndex * pageSize,
@@ -136,16 +147,6 @@ const ManageUsersContent: FC = () => {
               deleteIdType="uuidString"
               generateDeletionConfirmationQuestion={generateDeletionConfirmation}
               refetchQueries={['UsersByLastName']}
-              showDelete
-              translationNamespace="users"
-              enablePagination
-              pageIndex={pageIndex}
-              searchFilter={searchFilter}
-              setPageIndex={setPageIndex}
-              setSearchFilter={setSearchFilter}
-              pages={Math.ceil(data.User_aggregate.aggregate.count / pageSize)}
-              // addButtonText={t('addUserButtonText')}
-              // onAddButtonClick={onAddUserClick}
               expandableRowComponent={({ row }) => <ExpandableUserRow row={row} />}
             />
           </div>

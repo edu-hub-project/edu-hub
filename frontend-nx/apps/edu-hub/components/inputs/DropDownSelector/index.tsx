@@ -7,6 +7,7 @@ import { useRoleMutation } from '../../../hooks/authedMutation';
 import useTranslation from 'next-translate/useTranslation';
 import NotificationSnackbar from '../../common/dialogs/NotificationSnackbar';
 import { ErrorMessageDialog } from '../../common/dialogs/ErrorMessageDialog';
+import { gql } from '@apollo/client';
 
 const DropDownSelector: React.FC<DropDownSelectorProps> = ({
   variant,
@@ -44,7 +45,28 @@ const DropDownSelector: React.FC<DropDownSelectorProps> = ({
     debouncedUpdateValue,
   } = useDropDownLogic(value, options, updateValueMutation, identifierVariables, onValueUpdated, refetchQueries);
 
-  const [createValue] = useRoleMutation(createOptionMutation || updateValueMutation);
+  const [createValue] = useRoleMutation(
+    createOptionMutation ||
+      updateValueMutation ||
+      gql`
+        mutation NoOp {
+          __typename
+        }
+      `,
+    {
+      onError: (error) => handleError(error.message),
+      onCompleted: (data) => {
+        const newValue = data?.createOption?.value || data?.insert_Organization_one?.id;
+        if (newValue) {
+          const newValueStr = newValue.toString();
+          onOptionCreated?.(newValueStr);
+          debouncedUpdateValue(newValueStr);
+          setInputValue('');
+        }
+      },
+      refetchQueries,
+    }
+  );
 
   const getLabelForValue = useCallback(
     (value?: string) => {

@@ -9,6 +9,11 @@ import { Organization_bool_exp, Organization_order_by, OrganizationType_enum } f
 // GraphQL query operation: OrganizationList
 // ====================================================
 
+export interface OrganizationList_Organization_Users {
+  __typename: "User";
+  id: any;
+}
+
 export interface OrganizationList_Organization {
   __typename: "Organization";
   id: number;
@@ -16,16 +21,10 @@ export interface OrganizationList_Organization {
   type: OrganizationType_enum;
   description: string | null;
   aliases: any | null;
-}
-
-export interface OrganizationList_Organization_aggregate_aggregate {
-  __typename: "Organization_aggregate_fields";
-  count: number;
-}
-
-export interface OrganizationList_Organization_aggregate {
-  __typename: "Organization_aggregate";
-  aggregate: OrganizationList_Organization_aggregate_aggregate | null;
+  /**
+   * An array relationship
+   */
+  Users: OrganizationList_Organization_Users[];
 }
 
 export interface OrganizationList_OrganizationType {
@@ -38,10 +37,6 @@ export interface OrganizationList {
    * fetch data from the table: "Organization"
    */
   Organization: OrganizationList_Organization[];
-  /**
-   * fetch aggregated fields from the table: "Organization"
-   */
-  Organization_aggregate: OrganizationList_Organization_aggregate;
   /**
    * fetch data from the table: "OrganizationType"
    */
