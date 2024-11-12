@@ -18,10 +18,8 @@ export const ORGANIZATION_LIST = gql`
       type
       description
       aliases
-    }
-    Organization_aggregate(where: $filter) {
-      aggregate {
-        count
+      Users {
+        id
       }
     }
     OrganizationType {

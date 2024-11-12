@@ -47,9 +47,6 @@ const ProfileContent: FC = () => {
   });
 
   const { data: organizationData } = useRoleQuery<OrganizationList>(ORGANIZATION_LIST, {
-    variables: {
-      limit: 100, // Adjust as needed
-    },
     skip: sessionStatus === 'loading',
   });
 
@@ -166,6 +163,7 @@ const ProfileContent: FC = () => {
               updateValueMutation={UPDATE_USER_ORGANIZATION_ID}
               identifierVariables={{ userId: userData?.User_by_pk?.id }}
               createOptionMutation={CREATE_ORGANIZATION}
+              refetchQueries={['OrganizationList']}
             />
           </div>
         </div>

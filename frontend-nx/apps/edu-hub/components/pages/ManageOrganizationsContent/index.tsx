@@ -1,7 +1,6 @@
-import React, { FC, useMemo, useState, useEffect, useCallback } from 'react';
+import React, { FC, useMemo, useState, useCallback } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import { ColumnDef } from '@tanstack/react-table';
-import { useDebouncedCallback } from 'use-debounce';
 import { ApolloError } from '@apollo/client';
 import { ErrorMessageDialog } from '../../common/dialogs/ErrorMessageDialog';
 import { QuestionConfirmationDialog } from '../../common/dialogs/QuestionConfirmationDialog';
@@ -10,8 +9,8 @@ import TableGrid from '../../common/TableGrid';
 import Loading from '../../common/Loading';
 import InputField from '../../inputs/InputField';
 import DropDownSelector from '../../inputs/DropDownSelector';
-import { useAdminQuery } from '../../../hooks/authedQuery';
-import { useAdminMutation } from '../../../hooks/authedMutation';
+import { useRoleQuery } from '../../../hooks/authedQuery';
+import { useRoleMutation } from '../../../hooks/authedMutation';
 import { PageBlock } from '../../common/PageBlock';
 
 import { OrganizationList, OrganizationList_Organization } from '../../../queries/__generated__/OrganizationList';
@@ -25,10 +24,11 @@ import {
   DELETE_ORGANIZATION,
   UPDATE_ORGANIZATION_ALIASES,
 } from '../../../queries/organization';
+import { UPDATE_USER_ORGANIZATION_ID } from '../../../queries/updateUser';
 import CreatableTagSelector from '../../inputs/CreatableTagSelector';
 import { OrganizationType_enum } from '../../../__generated__/globalTypes';
-
-const PAGE_SIZE = 15;
+import { MergeOrganizationsDialog } from './MergeOrganizationsDialog';
+import CommonPageHeader from '../../common/CommonPageHeader';
 
 type ExpandableRowProps = {
   row: OrganizationList_Organization;
@@ -69,53 +69,26 @@ const ExpandableOrganizationRow: React.FC<ExpandableRowProps> = ({ row }): React
         value={row.description || ''}
         updateValueMutation={UPDATE_ORGANIZATION_DESCRIPTION}
         refetchQueries={['OrganizationList']}
-        translationNamespace="manageOrganizations"
       />
     </div>
   );
 };
 
 const ManageOrganizationsContent: FC = () => {
-  const [searchFilter, setSearchFilter] = useState('');
-  const [pageIndex, setPageIndex] = useState(0);
   const { t } = useTranslation('manageOrganizations');
   const [error, setError] = useState<string | null>(null);
   const [bulkActionDialogOpen, setBulkActionDialogOpen] = useState(false);
   const [selectedRowsForBulkAction, setSelectedRowsForBulkAction] = useState<OrganizationList_Organization[]>([]);
+  const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
 
-  const {
-    data,
-    loading,
-    error: queryError,
-    refetch,
-  } = useAdminQuery<OrganizationList>(ORGANIZATION_LIST, {
-    variables: {
-      offset: pageIndex * PAGE_SIZE,
-      limit: PAGE_SIZE,
-      filter: searchFilter
-        ? {
-            _or: [{ name: { _ilike: `%${searchFilter}%` } }, { type: { _eq: searchFilter } }],
-          }
-        : {},
-      order_by: { name: 'asc' },
-    },
-  });
-  const [insertOrganization] = useAdminMutation<InsertOrganization, InsertOrganizationVariables>(INSERT_ORGANIZATION);
-  const [deleteOrganization] = useAdminMutation(DELETE_ORGANIZATION);
+  const organizationQueryResult = useRoleQuery<OrganizationList>(ORGANIZATION_LIST);
 
-  const debouncedRefetch = useDebouncedCallback(refetch, 300);
+  const { data, loading, error: queryError, refetch } = organizationQueryResult;
 
-  useEffect(() => {
-    debouncedRefetch({
-      offset: pageIndex * PAGE_SIZE,
-      limit: PAGE_SIZE,
-      filter: searchFilter
-        ? {
-            _or: [{ name: { _ilike: `%${searchFilter}%` } }, { type: { _eq: searchFilter } }],
-          }
-        : {},
-    });
-  }, [pageIndex, debouncedRefetch, searchFilter]);
+  const [insertOrganization] = useRoleMutation<InsertOrganization, InsertOrganizationVariables>(INSERT_ORGANIZATION);
+  const [deleteOrganization] = useRoleMutation(DELETE_ORGANIZATION);
+  const [updateOrganizationAliases] = useRoleMutation(UPDATE_ORGANIZATION_ALIASES);
+  const [updateUserOrganizationId] = useRoleMutation(UPDATE_USER_ORGANIZATION_ID);
 
   const organizationTypes = useMemo(
     () =>
@@ -127,7 +100,7 @@ const ManageOrganizationsContent: FC = () => {
     () => [
       {
         accessorKey: 'name',
-        header: 'organization.name',
+        header: t('organization.name'),
         meta: { width: 3 },
         cell: ({ getValue, row }) => (
           <InputField
@@ -155,6 +128,13 @@ const ManageOrganizationsContent: FC = () => {
             refetchQueries={['OrganizationList']}
           />
         ),
+      },
+      {
+        id: 'userCount',
+        accessorFn: (row) => row.Users?.length ?? 0,
+        header: t('organization.user_count'),
+        meta: { width: 2 },
+        cell: ({ getValue }) => <div className="px-4 py-2">{getValue<number>()}</div>,
       },
     ],
     [t, organizationTypes]
@@ -196,79 +176,158 @@ const ManageOrganizationsContent: FC = () => {
     [t]
   );
 
-  const bulkActions = useMemo(() => [{ value: 'delete', label: t('action.bulk_delete') }], [t]);
+  const bulkActions = useMemo(
+    () => [
+      { value: 'delete', label: t('bulk_action.delete.label') },
+      { value: 'merge', label: t('bulk_action.merge.label') },
+    ],
+    [t]
+  );
 
   const handleBulkAction = useCallback((action: string, selectedRows: OrganizationList_Organization[]) => {
-    if (action === 'delete' && selectedRows.length > 0) {
+    if (selectedRows.length === 0) return;
+
+    if (action === 'delete') {
       setBulkActionDialogOpen(true);
+      setSelectedRowsForBulkAction(selectedRows);
+    } else if (action === 'merge') {
+      setMergeDialogOpen(true);
       setSelectedRowsForBulkAction(selectedRows);
     }
   }, []);
 
-  const handleBulkActionConfirmation = useCallback(
-    async (confirmed: boolean) => {
-      setBulkActionDialogOpen(false);
-      if (confirmed) {
-        try {
-          await Promise.all(selectedRowsForBulkAction.map((row) => deleteOrganization({ variables: { id: row.id } })));
-          refetch();
-        } catch (error) {
-          console.error('Error deleting organizations:', error);
-          setError(t('error.bulk_delete'));
-        }
+  const handleMergeConfirmation = useCallback(
+    async (targetOrgId: string) => {
+      setMergeDialogOpen(false);
+      try {
+        // Find target organization from the full organization list
+        const targetOrg = data?.Organization?.find((org) => org.id === parseInt(targetOrgId, 10));
+        const targetOrgExistingAliases = targetOrg?.aliases || [];
+
+        // Get all aliases from selected organizations and their names
+        const aliasesToMerge = selectedRowsForBulkAction.flatMap((org) => {
+          const orgAliases = Array.isArray(org.aliases)
+            ? org.aliases
+                .filter((alias) => alias != null)
+                .map((alias) => {
+                  if (typeof alias === 'string') return alias;
+                  if (typeof alias === 'object' && alias !== null && 'name' in alias) return alias.name;
+                  return null;
+                })
+                .filter((alias): alias is string => alias !== null)
+            : [];
+
+          return org.id !== parseInt(targetOrgId, 10) ? [...orgAliases, org.name] : [];
+        });
+
+        // Combine existing target aliases with new aliases, removing duplicates
+        const combinedAliases = Array.from(new Set([...targetOrgExistingAliases, ...aliasesToMerge]));
+
+        await updateOrganizationAliases({
+          variables: {
+            id: parseInt(targetOrgId, 10),
+            tags: combinedAliases,
+          },
+        });
+
+        // Update all users to the new organization
+        await Promise.all(
+          selectedRowsForBulkAction.flatMap((org) =>
+            (org.Users || []).map((user) =>
+              updateUserOrganizationId({
+                variables: {
+                  userId: user.id,
+                  value: parseInt(targetOrgId, 10),
+                },
+              })
+            )
+          )
+        );
+
+        // Delete all selected organizations except the target one
+        const orgsToDelete = selectedRowsForBulkAction.filter((org) => org.id !== parseInt(targetOrgId, 10));
+
+        await Promise.all(orgsToDelete.map((org) => deleteOrganization({ variables: { id: org.id } })));
+
+        refetch();
+      } catch (error) {
+        setError(t('error.merge_failed'));
       }
       setSelectedRowsForBulkAction([]);
     },
-    [selectedRowsForBulkAction, deleteOrganization, refetch, t]
+    [
+      selectedRowsForBulkAction,
+      data?.Organization,
+      deleteOrganization,
+      updateOrganizationAliases,
+      updateUserOrganizationId,
+      refetch,
+      t,
+    ]
   );
 
   const handleCloseErrorDialog = () => {
     setError(null);
   };
 
-  if (loading) return <Loading />;
-  if (queryError) {
-    console.error('Error loading organizations:', queryError);
-    return <div>{t('error.loading')}</div>;
-  }
+  const handleBulkActionConfirmation = useCallback(async () => {
+    setBulkActionDialogOpen(false);
+    try {
+      await Promise.all(selectedRowsForBulkAction.map((org) => deleteOrganization({ variables: { id: org.id } })));
+      refetch();
+    } catch (error) {
+      setError(t('error.bulk_delete_failed'));
+    }
+    setSelectedRowsForBulkAction([]);
+  }, [selectedRowsForBulkAction, deleteOrganization, refetch, t]);
 
   return (
     <PageBlock>
       <div className="max-w-screen-xl mx-auto mt-20">
-        <TableGrid
-          columns={columns}
-          data={data.Organization}
-          deleteMutation={DELETE_ORGANIZATION}
-          error={queryError}
-          loading={loading}
-          refetchQueries={['OrganizationList']}
-          showDelete
-          bulkActions={bulkActions}
-          onBulkAction={handleBulkAction}
-          translationNamespace="manageOrganizations"
-          enablePagination
-          pageIndex={pageIndex}
-          searchFilter={searchFilter}
-          setPageIndex={setPageIndex}
-          setSearchFilter={setSearchFilter}
-          pages={Math.ceil(data.Organization_aggregate.aggregate.count / PAGE_SIZE)}
-          generateDeletionConfirmationQuestion={generateDeletionConfirmation}
-          expandableRowComponent={({ row }) => <ExpandableOrganizationRow row={row} />}
-          onAddButtonClick={onAddOrganizationClick}
-          addButtonText={t('action.add')}
-        />
-        <ErrorMessageDialog errorMessage={error || ''} open={!!error} onClose={handleCloseErrorDialog} />
-        <QuestionConfirmationDialog
-          open={bulkActionDialogOpen}
-          question={t('action.bulk_delete_confirmation', {
-            count: selectedRowsForBulkAction.length,
-          })}
-          confirmationText={t('confirm')}
-          onClose={handleBulkActionConfirmation}
-        />
+        {loading && <Loading />}
+        {!loading && (
+          <div>
+            <CommonPageHeader headline={t('headline')} />
+            <TableGrid
+              columns={columns}
+              data={data?.Organization || []}
+              deleteMutation={DELETE_ORGANIZATION}
+              error={queryError}
+              loading={loading}
+              refetchQueries={['OrganizationList']}
+              bulkActions={bulkActions}
+              onBulkAction={handleBulkAction}
+              generateDeletionConfirmationQuestion={generateDeletionConfirmation}
+              expandableRowComponent={({ row }) => <ExpandableOrganizationRow row={row} />}
+              onAddButtonClick={onAddOrganizationClick}
+              addButtonText={t('action.add')}
+            />
+            <ErrorMessageDialog errorMessage={error || ''} open={!!error} onClose={handleCloseErrorDialog} />
+            <QuestionConfirmationDialog
+              open={bulkActionDialogOpen}
+              question={t('bulk_action.delete.description', {
+                count: selectedRowsForBulkAction.length,
+              })}
+              onConfirm={handleBulkActionConfirmation}
+              onClose={() => {
+                setBulkActionDialogOpen(false);
+                setSelectedRowsForBulkAction([]);
+              }}
+            />
+            <MergeOrganizationsDialog
+              open={mergeDialogOpen}
+              organizationList={data.Organization}
+              onClose={() => {
+                setMergeDialogOpen(false);
+                setSelectedRowsForBulkAction([]);
+              }}
+              onConfirm={handleMergeConfirmation}
+            />
+          </div>
+        )}
       </div>
     </PageBlock>
   );
 };
 
-export default ManageOrganizationsContent;
+export default React.memo(ManageOrganizationsContent);

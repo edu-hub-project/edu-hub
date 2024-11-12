@@ -110,7 +110,7 @@ export const MaterialDropDown: React.FC<MaterialDropDownProps> = ({
               )
             }
           >
-            {!localValue && placeholder && (
+            {placeholder && (
               <MenuItem value="" disabled>
                 {placeholder}
               </MenuItem>
