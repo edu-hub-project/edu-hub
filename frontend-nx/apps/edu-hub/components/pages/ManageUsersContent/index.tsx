@@ -147,7 +147,6 @@ const ManageUsersContent: FC = () => {
               deleteIdType="uuidString"
               generateDeletionConfirmationQuestion={generateDeletionConfirmation}
               refetchQueries={['UsersByLastName']}
-              translationNamespace="users"
               expandableRowComponent={({ row }) => <ExpandableUserRow row={row} />}
             />
           </div>

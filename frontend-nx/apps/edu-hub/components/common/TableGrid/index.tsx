@@ -35,7 +35,6 @@ const TableGrid = <T extends BaseRow>({
   pageSize = 15,
   refetchQueries,
   showGlobalSearchField = true,
-  translationNamespace,
   onAddButtonClick,
   onBulkAction,
   bulkActions = [],
@@ -48,7 +47,7 @@ const TableGrid = <T extends BaseRow>({
     setPageIndex(0);
   }, []);
 
-  const { t } = useTranslation(translationNamespace);
+  const { t } = useTranslation();
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -256,7 +255,9 @@ const TableGrid = <T extends BaseRow>({
                       <div className="flex-grow">
                         {header.column.id === 'selection'
                           ? flexRender(header.column.columnDef.header, header.getContext())
-                          : t(header.column.id)}
+                          : typeof header.column.columnDef.header === 'string'
+                            ? header.column.columnDef.header
+                            : flexRender(header.column.columnDef.header, header.getContext())}
                       </div>
                     )}
                     {header.column.getCanSort() && (

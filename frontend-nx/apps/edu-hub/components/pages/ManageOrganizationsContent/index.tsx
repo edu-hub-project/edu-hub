@@ -100,7 +100,7 @@ const ManageOrganizationsContent: FC = () => {
     () => [
       {
         accessorKey: 'name',
-        header: 'organization.name',
+        header: t('organization.name'),
         meta: { width: 3 },
         cell: ({ getValue, row }) => (
           <InputField
@@ -128,6 +128,13 @@ const ManageOrganizationsContent: FC = () => {
             refetchQueries={['OrganizationList']}
           />
         ),
+      },
+      {
+        id: 'userCount',
+        accessorFn: (row) => row.Users?.length ?? 0,
+        header: t('organization.user_count'),
+        meta: { width: 2 },
+        cell: ({ getValue }) => <div className="px-4 py-2">{getValue<number>()}</div>,
       },
     ],
     [t, organizationTypes]
@@ -276,7 +283,6 @@ const ManageOrganizationsContent: FC = () => {
               refetchQueries={['OrganizationList']}
               bulkActions={bulkActions}
               onBulkAction={handleBulkAction}
-              translationNamespace="manageOrganizations"
               generateDeletionConfirmationQuestion={generateDeletionConfirmation}
               expandableRowComponent={({ row }) => <ExpandableOrganizationRow row={row} />}
               onAddButtonClick={onAddOrganizationClick}

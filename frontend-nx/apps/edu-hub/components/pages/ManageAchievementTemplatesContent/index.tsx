@@ -166,7 +166,6 @@ const ManageAchievementTemplatesContent: FC = () => {
           error={error}
           loading={loading}
           refetchQueries={['AchievementDocumentationTemplates']}
-          translationNamespace="manageAchievementTemplates"
           onAddButtonClick={onAddAchievementDocumentationTemplateClick}
           addButtonText={t('addUserAchievementDocumentationTemplateText')}
         />

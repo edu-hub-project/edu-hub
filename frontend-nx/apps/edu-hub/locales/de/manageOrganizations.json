@@ -1,8 +1,9 @@
 {
   "headline": "Organisationen",
-  "name": "Name",
-  "type": "Typ",
   "organization": {
+    "name": "Name",
+    "type": "Typ",
+    "user_count": "Zugehörige Nutzer",
     "aliases": "Alias",
     "description": "Beschreibung",
     "new_organization": "Neue Organisation",

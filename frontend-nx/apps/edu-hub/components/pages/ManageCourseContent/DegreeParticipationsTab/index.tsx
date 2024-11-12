@@ -180,7 +180,6 @@ export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = ({ cou
         error={error}
         loading={loading}
         showCheckbox={false}
-        translationNamespace="manageCourse"
         refetchQueries={['DegreeParticipantsWithDegreeEnrollments']}
       />
     </>

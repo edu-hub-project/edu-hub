@@ -26,7 +26,6 @@ export interface TableGridProps<T extends BaseRow> {
   refetchQueries: string[];
   showCheckbox?: boolean;
   showGlobalSearchField?: boolean;
-  translationNamespace?: string;
   onAddButtonClick?: () => void;
   onBulkAction?: (action: string, selectedRows: T[]) => void;
   bulkActions?: BulkAction[];
