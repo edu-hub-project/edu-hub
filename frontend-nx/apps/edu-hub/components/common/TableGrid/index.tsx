@@ -18,7 +18,7 @@ import {
 import { rankItem } from '@tanstack/match-sorter-utils';
 
 import EhAddButton from '../EhAddButton';
-import { useBulkActions } from '../../../hooks/bulkActions';
+import { useBulkActions } from './hooks';
 import TableGridDeleteButton from './components/TableGridDeleteButton';
 
 const TableGrid = <T extends BaseRow>({
