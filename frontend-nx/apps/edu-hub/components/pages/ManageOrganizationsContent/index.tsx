@@ -1,7 +1,6 @@
-import React, { FC, useMemo, useState, useEffect, useCallback } from 'react';
+import React, { FC, useMemo, useState, useCallback } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import { ColumnDef } from '@tanstack/react-table';
-import { useDebouncedCallback } from 'use-debounce';
 import { ApolloError } from '@apollo/client';
 import { ErrorMessageDialog } from '../../common/dialogs/ErrorMessageDialog';
 import { QuestionConfirmationDialog } from '../../common/dialogs/QuestionConfirmationDialog';
@@ -76,21 +75,13 @@ const ExpandableOrganizationRow: React.FC<ExpandableRowProps> = ({ row }): React
 };
 
 const ManageOrganizationsContent: FC = () => {
-  const [searchFilter, setSearchFilter] = useState('');
-  const [pageIndex, setPageIndex] = useState(0);
-  const PAGE_SIZE = 15;
   const { t } = useTranslation('manageOrganizations');
   const [error, setError] = useState<string | null>(null);
   const [bulkActionDialogOpen, setBulkActionDialogOpen] = useState(false);
   const [selectedRowsForBulkAction, setSelectedRowsForBulkAction] = useState<OrganizationList_Organization[]>([]);
   const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
 
-  const organizationQueryResult = useRoleQuery<OrganizationList>(ORGANIZATION_LIST, {
-    variables: {
-      offset: pageIndex * PAGE_SIZE,
-      limit: PAGE_SIZE,
-    },
-  });
+  const organizationQueryResult = useRoleQuery<OrganizationList>(ORGANIZATION_LIST);
 
   const { data, loading, error: queryError, refetch } = organizationQueryResult;
 
@@ -98,20 +89,6 @@ const ManageOrganizationsContent: FC = () => {
   const [deleteOrganization] = useRoleMutation(DELETE_ORGANIZATION);
   const [updateOrganizationAliases] = useRoleMutation(UPDATE_ORGANIZATION_ALIASES);
   const [updateUserOrganizationId] = useRoleMutation(UPDATE_USER_ORGANIZATION_ID);
-
-  const debouncedRefetch = useDebouncedCallback(refetch, 300);
-
-  useEffect(() => {
-    debouncedRefetch({
-      offset: pageIndex * PAGE_SIZE,
-      limit: PAGE_SIZE,
-      filter: searchFilter
-        ? {
-            _or: [{ name: { _ilike: `%${searchFilter}%` } }],
-          }
-        : {},
-    });
-  }, [pageIndex, debouncedRefetch, searchFilter]);
 
   const organizationTypes = useMemo(
     () =>
@@ -283,26 +260,11 @@ const ManageOrganizationsContent: FC = () => {
     setSelectedRowsForBulkAction([]);
   }, [selectedRowsForBulkAction, deleteOrganization, refetch, t]);
 
-  const handleSetSearchFilter = useCallback((value: string) => {
-    setSearchFilter(value);
-    setPageIndex(0); // Reset page when searching
-  }, []);
-
-  const handleSetPageIndex = useCallback((index: number) => {
-    setPageIndex(index);
-  }, []);
-
-  const totalPages = useMemo(
-    () => Math.max(1, Math.ceil((data?.Organization?.length || 0) / PAGE_SIZE)),
-    [data?.Organization?.length]
-  );
-
   return (
     <PageBlock>
       <div className="max-w-screen-xl mx-auto mt-20">
         {loading && <Loading />}
-        {error && <div>Es ist ein Fehler aufgetreten</div>}
-        {!loading && !error && (
+        {!loading && (
           <div>
             <CommonPageHeader headline={t('headline')} />
             <TableGrid
@@ -316,16 +278,8 @@ const ManageOrganizationsContent: FC = () => {
               bulkActions={bulkActions}
               onBulkAction={handleBulkAction}
               translationNamespace="manageOrganizations"
-              enablePagination
-              pageIndex={pageIndex}
-              searchFilter={searchFilter}
-              setPageIndex={handleSetPageIndex}
-              setSearchFilter={handleSetSearchFilter}
-              pages={totalPages}
               generateDeletionConfirmationQuestion={generateDeletionConfirmation}
-              expandableRowComponent={({ row }: { row: OrganizationList_Organization }) => (
-                <ExpandableOrganizationRow row={row} />
-              )}
+              expandableRowComponent={({ row }) => <ExpandableOrganizationRow row={row} />}
               onAddButtonClick={onAddOrganizationClick}
               addButtonText={t('action.add')}
             />
