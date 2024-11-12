@@ -47,9 +47,6 @@ const ProfileContent: FC = () => {
   });
 
   const { data: organizationData } = useRoleQuery<OrganizationList>(ORGANIZATION_LIST, {
-    variables: {
-      limit: 100, // Adjust as needed
-    },
     skip: sessionStatus === 'loading',
   });
 
