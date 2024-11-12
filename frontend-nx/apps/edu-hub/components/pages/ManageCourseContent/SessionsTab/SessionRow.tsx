@@ -295,7 +295,8 @@ export const SessionRow: FC<IProps> = ({
       {/* Confirmation Dialog for Deletion */}
       <QuestionConfirmationDialog
         open={isConfirmDialogOpen}
-        onClose={handleConfirmDelete}
+        onClose={() => handleConfirmDelete(false)}
+        onConfirm={() => handleConfirmDelete(true)}
         question={t('confirmDeleteSession')}
         confirmationText={t('delete')}
       />

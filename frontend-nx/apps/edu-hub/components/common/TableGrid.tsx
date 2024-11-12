@@ -120,7 +120,8 @@ const TableGridDeleteButton = ({
         question={confirmationQuestion}
         confirmationText={t('common:confirm_delete')}
         open={isConfirmationOpen}
-        onClose={handleConfirmationClose}
+        onClose={() => handleConfirmationClose(false)}
+        onConfirm={() => handleConfirmationClose(true)}
       />
     </>
   );

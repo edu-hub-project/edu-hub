@@ -1,8 +1,8 @@
-import { Dialog, DialogTitle } from "@material-ui/core";
-import { FC, useCallback } from "react";
-import { MdClose } from "react-icons/md";
+import { Dialog, DialogTitle } from '@mui/material';
+import { FC, useCallback } from 'react';
+import { MdClose } from 'react-icons/md';
 
-import { Button } from "../../common/Button";
+import { Button } from '../../common/Button';
 
 interface QuestionProps {
   question: string;
@@ -11,12 +11,7 @@ interface QuestionProps {
   open: boolean;
 }
 
-export const QuestionConfirmationDialog: FC<QuestionProps> = ({
-  question,
-  confirmationText,
-  onClose,
-  open,
-}) => {
+export const QuestionConfirmationDialog: FC<QuestionProps> = ({ question, confirmationText, onClose, open }) => {
   const handleCancel = useCallback(() => onClose(false), [onClose]);
   const handleConfirm = useCallback(() => onClose(true), [onClose]);
 
