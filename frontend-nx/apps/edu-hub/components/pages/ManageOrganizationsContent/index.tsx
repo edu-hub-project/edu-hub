@@ -97,7 +97,7 @@ const ManageOrganizationsContent: FC = () => {
       limit: PAGE_SIZE,
       filter: searchFilter
         ? {
-            _or: [{ name: { _ilike: `%${searchFilter}%` } }, { type: { _eq: searchFilter } }],
+            _or: [{ name: { _ilike: `%${searchFilter}%` } }],
           }
         : {},
       order_by: { name: 'asc' },
@@ -119,7 +119,7 @@ const ManageOrganizationsContent: FC = () => {
       limit: PAGE_SIZE,
       filter: searchFilter
         ? {
-            _or: [{ name: { _ilike: `%${searchFilter}%` } }, { type: { _eq: searchFilter } }],
+            _or: [{ name: { _ilike: `%${searchFilter}%` } }],
           }
         : {},
     });
