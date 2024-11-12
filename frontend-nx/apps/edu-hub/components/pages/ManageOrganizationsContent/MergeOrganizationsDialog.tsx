@@ -29,15 +29,10 @@ export const MergeOrganizationsDialog: React.FC<MergeOrganizationsDialogProps> =
     setSelectedTargetOrg(data.value || data);
   };
 
-  const handleClose = () => {
-    setSelectedTargetOrg('');
-    onClose();
-  };
-
   return (
     <BaseDialog
       open={open}
-      onClose={handleClose}
+      onClose={onClose}
       onConfirm={() => onConfirm(selectedTargetOrg)}
       confirmDisabled={!selectedTargetOrg}
     >

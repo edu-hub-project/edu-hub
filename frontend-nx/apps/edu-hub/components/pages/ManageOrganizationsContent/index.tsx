@@ -382,7 +382,6 @@ const ManageOrganizationsContent: FC = () => {
           question={t('bulk_action.delete.description', {
             count: selectedRowsForBulkAction.length,
           })}
-          confirmationText={t('confirm')}
           onConfirm={handleBulkActionConfirmation}
           onClose={() => {
             setBulkActionDialogOpen(false);
