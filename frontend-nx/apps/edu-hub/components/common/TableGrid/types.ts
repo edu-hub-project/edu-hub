@@ -25,7 +25,6 @@ export interface TableGridProps<T extends BaseRow> {
   pageSize?: number;
   refetchQueries: string[];
   showCheckbox?: boolean;
-  showDelete?: boolean;
   showGlobalSearchField?: boolean;
   translationNamespace?: string;
   onAddButtonClick?: () => void;

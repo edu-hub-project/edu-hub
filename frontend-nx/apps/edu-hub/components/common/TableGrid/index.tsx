@@ -34,7 +34,6 @@ const TableGrid = <T extends BaseRow>({
   loading,
   pageSize = 15,
   refetchQueries,
-  showDelete,
   showGlobalSearchField = true,
   translationNamespace,
   onAddButtonClick,
@@ -272,7 +271,7 @@ const TableGrid = <T extends BaseRow>({
             </React.Fragment>
           ))}
         </div>
-        {showDelete && <div className="w-20 flex-shrink-0" />}
+        {deleteMutation && <div className="w-20 flex-shrink-0" />}
         {expandableRowComponent && <div className="w-10 flex-shrink-0" />}
       </div>
 
@@ -306,7 +305,7 @@ const TableGrid = <T extends BaseRow>({
                   </button>
                 </div>
               )}
-              {showDelete && deleteMutation && (
+              {deleteMutation && (
                 <div className="w-20 flex-shrink-0 flex items-center justify-center py-2 pl-4">
                   <TableGridDeleteButton
                     deleteMutation={deleteMutation}
@@ -329,7 +328,7 @@ const TableGrid = <T extends BaseRow>({
                   <ExpandableRowComponent key={`expandableRow-${row.id}`} row={row.original} />
                 </div>
                 <div className="w-10 flex-shrink-0"></div>
-                {showDelete && <div className="w-20 flex-shrink-0"></div>}
+                {deleteMutation && <div className="w-20 flex-shrink-0"></div>}
               </div>
             )}
           </React.Fragment>

@@ -274,7 +274,6 @@ const ManageOrganizationsContent: FC = () => {
               error={queryError}
               loading={loading}
               refetchQueries={['OrganizationList']}
-              showDelete
               bulkActions={bulkActions}
               onBulkAction={handleBulkAction}
               translationNamespace="manageOrganizations"
