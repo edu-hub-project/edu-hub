@@ -43,9 +43,18 @@ export const COMPLETED_DEGREE_ENROLLMENTS = gql`
 `;
 
 export const DEGREE_PARTICIPANTS_WITH_DEGREE_ENROLLMENTS = gql`
-  query DegreeParticipantsWithDegreeEnrollments($degreeCourseId: Int!) {
+  query DegreeParticipantsWithDegreeEnrollments(
+    $degreeCourseId: Int!
+    $limit: Int = 15
+    $offset: Int = 0
+    $filter: CourseEnrollment_bool_exp = {}
+  ) {
     Course_by_pk(id: $degreeCourseId) {
-      CourseEnrollments {
+      CourseEnrollments(
+        limit: $limit
+        offset: $offset
+        where: $filter
+      ) {
         id
         status
         achievementCertificateURL
@@ -72,6 +81,11 @@ export const DEGREE_PARTICIPANTS_WITH_DEGREE_ENROLLMENTS = gql`
               }
             }
           }
+        }
+      }
+      CourseEnrollments_aggregate(where: $filter) {
+        aggregate {
+          count
         }
       }
     }

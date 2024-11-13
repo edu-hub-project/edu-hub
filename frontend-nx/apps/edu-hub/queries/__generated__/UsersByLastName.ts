@@ -3,11 +3,17 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { User_bool_exp, University_enum, Employment_enum, CourseEnrollmentStatus_enum } from "./../../__generated__/globalTypes";
+import { User_bool_exp, UserOccupation_enum, CourseEnrollmentStatus_enum } from "./../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: UsersByLastName
 // ====================================================
+
+export interface UsersByLastName_User_Organization {
+  __typename: "Organization";
+  id: number;
+  name: string;
+}
 
 export interface UsersByLastName_User_CourseEnrollments_Course_Program {
   __typename: "Program";
@@ -77,13 +83,13 @@ export interface UsersByLastName_User {
    */
   matriculationNumber: string | null;
   /**
-   * The university the user is attending or workin at (only provided if he is a student or working in academia)
+   * Provides the users occupation status.
    */
-  university: University_enum | null;
+  occupation: UserOccupation_enum | null;
   /**
-   * The user's current employment status
+   * An object relationship
    */
-  employment: Employment_enum | null;
+  Organization: UsersByLastName_User_Organization | null;
   /**
    * An array relationship
    */

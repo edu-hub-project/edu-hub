@@ -21,10 +21,7 @@ import {
   SaveAchievementDocumentationTemplate,
   SaveAchievementDocumentationTemplateVariables,
 } from '../../../queries/__generated__/SaveAchievementDocumentationTemplate';
-import {
-  AchievementDocumentationTemplates,
-  AchievementDocumentationTemplates_AchievementDocumentationTemplate,
-} from '../../../queries/__generated__/AchievementDocumentationTemplates';
+import { AchievementDocumentationTemplates_AchievementDocumentationTemplate } from '../../../queries/__generated__/AchievementDocumentationTemplates';
 import { PageBlock } from '../../common/PageBlock';
 import { useAdminMutation } from '../../../hooks/authedMutation';
 import {
@@ -37,11 +34,21 @@ import {
 } from '../../../queries/__generated__/UpdateAchievementDocumentationTemplate';
 import FileDownload from '../../inputs/FileDownload';
 import { ApolloError } from '@apollo/client';
+import { useTableGrid } from '../../common/TableGrid/hooks';
 
 const ManageAchievementTemplatesContent: FC = () => {
-  const { data, loading, error, refetch } = useAdminQuery<AchievementDocumentationTemplates>(
-    ACHIEVEMENT_DOCUMENTATION_TEMPLATES
-  );
+  const { t } = useTranslation('manageAchievementTemplates');
+  const pageSize = 15;
+
+  const { data, loading, error, pageIndex, setPageIndex, searchFilter, setSearchFilter, refetch } = useTableGrid({
+    queryHook: useAdminQuery,
+    query: ACHIEVEMENT_DOCUMENTATION_TEMPLATES,
+    pageSize,
+    refetchFilter: (searchFilter) => ({
+      _or: [{ title: { _ilike: `%${searchFilter}%` } }],
+    }),
+  });
+
   const [insertAchievementDocumentationTemplate] = useAdminMutation<
     InsertAchievementDocumentationTemplate,
     InsertAchievementDocumentationTemplateVariables
@@ -57,13 +64,12 @@ const ManageAchievementTemplatesContent: FC = () => {
     SaveAchievementDocumentationTemplateVariables
   >(SAVE_ACHIEVEMENT_DOCUMENTATION_TEMPLATE);
 
-  const { t } = useTranslation('manageAchievementTemplates');
-
   const columns = useMemo<ColumnDef<AchievementDocumentationTemplates_AchievementDocumentationTemplate>[]>(
     () => [
       {
         accessorKey: 'title',
         enableSorting: true,
+        header: t('title'),
         meta: {
           width: 3,
         },
@@ -72,10 +78,10 @@ const ManageAchievementTemplatesContent: FC = () => {
             variant="material"
             type="input"
             value={getValue<string>()}
-            label={t(column.columnDef.id)}
+            label={t(column.columnDef.id as string)}
             updateValueMutation={UPDATE_ACHIEVEMENT_DOCUMENTATION_TEMPLATE_TITLE}
             itemId={row.original.id}
-            placeholder={t(column.columnDef.id)}
+            placeholder={t(column.columnDef.id as string)}
             refetchQueries={['AchievementDocumentationTemplates']}
           />
         ),
@@ -83,7 +89,7 @@ const ManageAchievementTemplatesContent: FC = () => {
       {
         accessorKey: 'url',
         accessorFn: (row) => ({ url: row.url }),
-        header: 'Download',
+        header: t('url'),
         meta: {
           width: 3,
         },
@@ -100,6 +106,7 @@ const ManageAchievementTemplatesContent: FC = () => {
       },
       {
         accessorKey: 'upload',
+        header: t('upload'),
         accessorFn: (row) => row.id,
         meta: {
           width: 3,
@@ -150,26 +157,31 @@ const ManageAchievementTemplatesContent: FC = () => {
     setErrorMessage(null);
   }, []);
 
-  if (error) {
-    console.log(error);
-  }
-  if (loading) {
-    return <Loading />;
-  }
   return (
     <PageBlock>
       <div className="max-w-screen-xl mx-auto mt-20">
-        <TableGrid
-          columns={columns}
-          data={data.AchievementDocumentationTemplate}
-          deleteMutation={DELETE_ACHIEVEMENT_DOCUMENTATION_TEMPLATE}
-          error={error}
-          loading={loading}
-          refetchQueries={['AchievementDocumentationTemplates']}
-          onAddButtonClick={onAddAchievementDocumentationTemplateClick}
-          addButtonText={t('addUserAchievementDocumentationTemplateText')}
-        />
-        <ErrorMessageDialog errorMessage={errorMessage} open={!!errorMessage} onClose={handleCloseErrorDialog} />
+        {loading && <Loading />}
+        {!loading && (
+          <>
+            <TableGrid
+              columns={columns}
+              data={data?.AchievementDocumentationTemplate || []}
+              totalCount={data?.AchievementDocumentationTemplate_aggregate?.aggregate?.count || 0}
+              pageIndex={pageIndex}
+              onPageChange={setPageIndex}
+              pageSize={pageSize}
+              searchFilter={searchFilter}
+              onSearchFilterChange={setSearchFilter}
+              deleteMutation={DELETE_ACHIEVEMENT_DOCUMENTATION_TEMPLATE}
+              error={error}
+              loading={loading}
+              refetchQueries={['AchievementDocumentationTemplates']}
+              onAddButtonClick={onAddAchievementDocumentationTemplateClick}
+              addButtonText={t('addUserAchievementDocumentationTemplateText')}
+            />
+            <ErrorMessageDialog errorMessage={errorMessage} open={!!errorMessage} onClose={handleCloseErrorDialog} />
+          </>
+        )}
       </div>
     </PageBlock>
   );

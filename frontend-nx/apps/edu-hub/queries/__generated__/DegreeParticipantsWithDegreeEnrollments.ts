@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CourseEnrollmentStatus_enum } from "./../../__generated__/globalTypes";
+import { CourseEnrollment_bool_exp, CourseEnrollmentStatus_enum } from "./../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: DegreeParticipantsWithDegreeEnrollments
@@ -103,12 +103,26 @@ export interface DegreeParticipantsWithDegreeEnrollments_Course_by_pk_CourseEnro
   User: DegreeParticipantsWithDegreeEnrollments_Course_by_pk_CourseEnrollments_User;
 }
 
+export interface DegreeParticipantsWithDegreeEnrollments_Course_by_pk_CourseEnrollments_aggregate_aggregate {
+  __typename: "CourseEnrollment_aggregate_fields";
+  count: number;
+}
+
+export interface DegreeParticipantsWithDegreeEnrollments_Course_by_pk_CourseEnrollments_aggregate {
+  __typename: "CourseEnrollment_aggregate";
+  aggregate: DegreeParticipantsWithDegreeEnrollments_Course_by_pk_CourseEnrollments_aggregate_aggregate | null;
+}
+
 export interface DegreeParticipantsWithDegreeEnrollments_Course_by_pk {
   __typename: "Course";
   /**
    * An array relationship
    */
   CourseEnrollments: DegreeParticipantsWithDegreeEnrollments_Course_by_pk_CourseEnrollments[];
+  /**
+   * An aggregate relationship
+   */
+  CourseEnrollments_aggregate: DegreeParticipantsWithDegreeEnrollments_Course_by_pk_CourseEnrollments_aggregate;
 }
 
 export interface DegreeParticipantsWithDegreeEnrollments {
@@ -120,4 +134,7 @@ export interface DegreeParticipantsWithDegreeEnrollments {
 
 export interface DegreeParticipantsWithDegreeEnrollmentsVariables {
   degreeCourseId: number;
+  limit?: number | null;
+  offset?: number | null;
+  filter?: CourseEnrollment_bool_exp | null;
 }
