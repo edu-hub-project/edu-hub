@@ -1,12 +1,27 @@
 import { gql } from '@apollo/client';
 
 export const ACHIEVEMENT_DOCUMENTATION_TEMPLATES = gql`
-  query AchievementDocumentationTemplates {
-    AchievementDocumentationTemplate(order_by: { updated_at: desc }) {
+  query AchievementDocumentationTemplates(
+    $limit: Int = 15
+    $offset: Int = 0
+    $filter: AchievementDocumentationTemplate_bool_exp = {}
+    $order_by: [AchievementDocumentationTemplate_order_by!] = {title: asc}
+  ) {
+    AchievementDocumentationTemplate(
+      limit: $limit
+      offset: $offset
+      order_by: $order_by
+      where: $filter
+    ) {
       id
       title
       url
       updated_at
+    }
+    AchievementDocumentationTemplate_aggregate(where: $filter) {
+      aggregate {
+        count
+      }
     }
   }
 `;

@@ -27,6 +27,16 @@ export interface OrganizationList_Organization {
   Users: OrganizationList_Organization_Users[];
 }
 
+export interface OrganizationList_Organization_aggregate_aggregate {
+  __typename: "Organization_aggregate_fields";
+  count: number;
+}
+
+export interface OrganizationList_Organization_aggregate {
+  __typename: "Organization_aggregate";
+  aggregate: OrganizationList_Organization_aggregate_aggregate | null;
+}
+
 export interface OrganizationList_OrganizationType {
   __typename: "OrganizationType";
   value: string;
@@ -37,6 +47,10 @@ export interface OrganizationList {
    * fetch data from the table: "Organization"
    */
   Organization: OrganizationList_Organization[];
+  /**
+   * fetch aggregated fields from the table: "Organization"
+   */
+  Organization_aggregate: OrganizationList_Organization_aggregate;
   /**
    * fetch data from the table: "OrganizationType"
    */

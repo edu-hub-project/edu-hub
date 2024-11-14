@@ -28,24 +28,39 @@ const TableGrid = <T extends BaseRow>({
   deleteMutation,
   deleteIdType,
   generateDeletionConfirmationQuestion,
-  enablePagination = true,
   error,
   expandableRowComponent,
   loading,
+  enablePagination = true,
   pageSize = 15,
+  pageIndex,
+  onPageChange,
   refetchQueries,
   showGlobalSearchField = true,
+  totalCount,
+  searchFilter,
+  onSearchFilterChange,
   onAddButtonClick,
   onBulkAction,
   bulkActions = [],
 }: TableGridProps<T>) => {
-  const [searchFilter, setSearchFilter] = useState('');
-  const [pageIndex, setPageIndex] = useState(0);
+  const onGlobalFilterChange = useCallback(
+    (value: string) => {
+      onSearchFilterChange(value);
+    },
+    [onSearchFilterChange]
+  );
+  if (enablePagination && typeof totalCount === 'undefined') {
+    console.warn('TableGrid: totalCount prop is required when enablePagination is true');
+  }
 
-  const onGlobalFilterChange = useCallback((value: string) => {
-    setSearchFilter(value);
-    setPageIndex(0);
-  }, []);
+  if (enablePagination && typeof pageIndex === 'undefined') {
+    console.warn('TableGrid: pageIndex prop is required when enablePagination is true');
+  }
+
+  if (enablePagination && typeof onPageChange === 'undefined') {
+    console.warn('TableGrid: onPageChange prop is required when enablePagination is true');
+  }
 
   const { t } = useTranslation();
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
@@ -71,9 +86,15 @@ const TableGrid = <T extends BaseRow>({
     handleBulkActionChange(selectedAction, data);
   };
 
-  const handlePrevious = () => setPageIndex(Math.max(0, pageIndex - 1));
-  const handleNext = () => setPageIndex(pageIndex + 1);
+  const handlePrevious = () => {
+    const newIndex = Math.max(0, pageIndex - 1);
+    onPageChange?.(newIndex);
+  };
 
+  const handleNext = () => {
+    const newIndex = pageIndex + 1;
+    onPageChange?.(newIndex);
+  };
   const ExpandableRowComponent = expandableRowComponent;
 
   const toggleRowExpansion = useCallback(
@@ -141,6 +162,8 @@ const TableGrid = <T extends BaseRow>({
     defaultColumn: { enableSorting: false },
     columns: memoizedColumns,
     filterFns: { fuzzy: fuzzyFilter },
+    manualPagination: enablePagination,
+    manualFiltering: true,
     state: {
       sorting,
       globalFilter: searchFilter,
@@ -151,14 +174,13 @@ const TableGrid = <T extends BaseRow>({
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     debugTable: true,
     getRowId: (row) => row.id.toString(),
     enableRowSelection: true,
     enableMultiRowSelection: true,
   });
 
-  const totalPages = Math.ceil((data?.length || 0) / pageSize);
+  const totalPages = Math.ceil((totalCount || 0) / pageSize);
 
   return (
     <div>
@@ -336,7 +358,7 @@ const TableGrid = <T extends BaseRow>({
         ))}
 
       {/* Pagination */}
-      {!loading && !error && enablePagination && (
+      {!loading && !error && enablePagination && totalCount > 0 && (
         <div className="flex justify-end pb-10 text-white mt-4">
           <div className="flex flex-row items-center space-x-5">
             {pageIndex > 0 && (

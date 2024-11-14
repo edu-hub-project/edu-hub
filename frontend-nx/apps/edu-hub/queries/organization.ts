@@ -22,6 +22,11 @@ export const ORGANIZATION_LIST = gql`
         id
       }
     }
+    Organization_aggregate(where: $filter) {
+      aggregate {
+        count
+      }
+    }
     OrganizationType {
       value
     }

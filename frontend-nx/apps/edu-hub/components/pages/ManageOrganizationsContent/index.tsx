@@ -13,7 +13,7 @@ import { useRoleQuery } from '../../../hooks/authedQuery';
 import { useRoleMutation } from '../../../hooks/authedMutation';
 import { PageBlock } from '../../common/PageBlock';
 
-import { OrganizationList, OrganizationList_Organization } from '../../../queries/__generated__/OrganizationList';
+import { OrganizationList_Organization } from '../../../queries/__generated__/OrganizationList';
 import { InsertOrganization, InsertOrganizationVariables } from '../../../queries/__generated__/InsertOrganization';
 import {
   ORGANIZATION_LIST,
@@ -29,6 +29,7 @@ import CreatableTagSelector from '../../inputs/CreatableTagSelector';
 import { OrganizationType_enum } from '../../../__generated__/globalTypes';
 import { MergeOrganizationsDialog } from './MergeOrganizationsDialog';
 import CommonPageHeader from '../../common/CommonPageHeader';
+import { useTableGrid } from '../../common/TableGrid/hooks';
 
 type ExpandableRowProps = {
   row: OrganizationList_Organization;
@@ -81,9 +82,27 @@ const ManageOrganizationsContent: FC = () => {
   const [selectedRowsForBulkAction, setSelectedRowsForBulkAction] = useState<OrganizationList_Organization[]>([]);
   const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
 
-  const organizationQueryResult = useRoleQuery<OrganizationList>(ORGANIZATION_LIST);
-
-  const { data, loading, error: queryError, refetch } = organizationQueryResult;
+  const {
+    data,
+    loading,
+    error: queryError,
+    pageIndex,
+    setPageIndex,
+    searchFilter,
+    setSearchFilter,
+    refetch: debouncedRefetch,
+  } = useTableGrid({
+    queryHook: useRoleQuery,
+    query: ORGANIZATION_LIST,
+    pageSize: 15,
+    refetchFilter: (searchFilter) => ({
+      _or: [
+        { name: { _ilike: `%${searchFilter}%` } },
+        { description: { _ilike: `%${searchFilter}%` } },
+        { aliases: { _contains: searchFilter } },
+      ],
+    }),
+  });
 
   const [insertOrganization] = useRoleMutation<InsertOrganization, InsertOrganizationVariables>(INSERT_ORGANIZATION);
   const [deleteOrganization] = useRoleMutation(DELETE_ORGANIZATION);
@@ -151,7 +170,7 @@ const ManageOrganizationsContent: FC = () => {
           },
         },
       });
-      refetch();
+      debouncedRefetch();
     } catch (error) {
       let errorMessage = '';
       if (error instanceof ApolloError) {
@@ -167,7 +186,7 @@ const ManageOrganizationsContent: FC = () => {
       setError(errorMessage);
       console.error('Error adding organization:', error);
     }
-  }, [insertOrganization, t, organizationTypes, refetch]);
+  }, [insertOrganization, t, organizationTypes, debouncedRefetch]);
 
   const generateDeletionConfirmation = useCallback(
     (row: OrganizationList_Organization) => {
@@ -249,7 +268,7 @@ const ManageOrganizationsContent: FC = () => {
 
         await Promise.all(orgsToDelete.map((org) => deleteOrganization({ variables: { id: org.id } })));
 
-        refetch();
+        debouncedRefetch();
       } catch (error) {
         setError(t('error.merge_failed'));
       }
@@ -261,7 +280,7 @@ const ManageOrganizationsContent: FC = () => {
       deleteOrganization,
       updateOrganizationAliases,
       updateUserOrganizationId,
-      refetch,
+      debouncedRefetch,
       t,
     ]
   );
@@ -274,12 +293,12 @@ const ManageOrganizationsContent: FC = () => {
     setBulkActionDialogOpen(false);
     try {
       await Promise.all(selectedRowsForBulkAction.map((org) => deleteOrganization({ variables: { id: org.id } })));
-      refetch();
+      debouncedRefetch();
     } catch (error) {
       setError(t('error.bulk_delete_failed'));
     }
     setSelectedRowsForBulkAction([]);
-  }, [selectedRowsForBulkAction, deleteOrganization, refetch, t]);
+  }, [selectedRowsForBulkAction, deleteOrganization, debouncedRefetch, t]);
 
   return (
     <PageBlock>
@@ -291,6 +310,11 @@ const ManageOrganizationsContent: FC = () => {
             <TableGrid
               columns={columns}
               data={data?.Organization || []}
+              totalCount={data?.Organization_aggregate?.aggregate?.count || 0}
+              pageIndex={pageIndex}
+              onPageChange={setPageIndex}
+              searchFilter={searchFilter}
+              onSearchFilterChange={setSearchFilter}
               deleteMutation={DELETE_ORGANIZATION}
               error={queryError}
               loading={loading}
@@ -316,7 +340,7 @@ const ManageOrganizationsContent: FC = () => {
             />
             <MergeOrganizationsDialog
               open={mergeDialogOpen}
-              organizationList={data.Organization}
+              organizationList={data?.Organization || []}
               onClose={() => {
                 setMergeDialogOpen(false);
                 setSelectedRowsForBulkAction([]);
