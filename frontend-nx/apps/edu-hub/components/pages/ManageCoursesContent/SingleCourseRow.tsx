@@ -40,7 +40,6 @@ import EhSelect from '../../common/EhSelect';
 import EhTag from '../../common/EhTag';
 
 import { getPublicImageUrl, parseFileUploadEvent } from '../../../helpers/filehandling';
-import EhDebounceInput from '../../common/EhDebounceInput';
 
 import useTranslation from 'next-translate/useTranslation';
 import draftPie from '../../../public/images/course/status/draft.svg';
@@ -372,11 +371,14 @@ const SingleCourseRow: FC<IPropsCourseOneRow> = ({
         </td>
         <td className={tdClass}>
           <p className={pClass}>
-            <EhDebounceInput
-              placeholder={`${t('course-page:default-course-title')}`}
-              onChangeHandler={handleSetCourseTitle}
-              inputText={course.title || ''}
-            />
+          <InputField
+            variant="material"
+            type="input" 
+            placeholder={t('course-page:default-course-title')}
+            itemId={course.id}
+            value={course.title || ''}
+            onValueUpdated={handleSetCourseTitle}
+          />
           </p>
         </td>
         <td className={`${tdClass}`}>
