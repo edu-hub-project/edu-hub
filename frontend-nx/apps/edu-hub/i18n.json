@@ -18,8 +18,7 @@
       "manageUsers",
       "manageOrganizations",
       "profile",
-      "start-page",
-      "users"
+      "start-page"
     ]
   },
   "defaultNS": "common"

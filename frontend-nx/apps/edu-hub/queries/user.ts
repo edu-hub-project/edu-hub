@@ -123,8 +123,11 @@ export const USERS_BY_LAST_NAME = gql`
       lastName
       email
       matriculationNumber
-      university
-      employment
+      occupation
+      Organization {
+        id
+        name
+      }
       CourseEnrollments {
         id
         courseId

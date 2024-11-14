@@ -45,8 +45,8 @@ There are two ways to manage seed data:
 You can export the current database state as a seed file using the provided script:
 
 ```bash
-# Navigate to the seeds directory
-cd backend/seeds
+# Navigate to the seeds/utils directory
+cd backend/seeds/utils
 
 # Make the script executable (first time only)
 chmod +x export_seeds.sh

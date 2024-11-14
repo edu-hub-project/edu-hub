@@ -29,6 +29,11 @@ export interface TableGridProps<T extends BaseRow> {
   onAddButtonClick?: () => void;
   onBulkAction?: (action: string, selectedRows: T[]) => void;
   bulkActions?: BulkAction[];
+  totalCount?: number;
+  pageIndex: number;
+  onPageChange: (index: number) => void;
+  searchFilter: string;
+  onSearchFilterChange: (value: string) => void;
 }
 
 export interface UseTableGridProps<T, V> {

@@ -55,7 +55,7 @@ export function useTableGrid<T extends { id: number }, V>({
     data,
     loading,
     error,
-    refetch,
+    refetch: debouncedRefetch,
     searchFilter,
     pageIndex,
     setSearchFilter: handleSetSearchFilter,
