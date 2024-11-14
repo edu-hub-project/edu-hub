@@ -82,7 +82,7 @@ resource "google_cloudfunctions2_function" "call_python_function" {
       LMS_ATTENDANCE_SURVEY_ID     = var.lms_attendance_survey_id
     }
     max_instance_count    = 500
-    available_memory      = "256M"
+    available_memory      = "512M"
     timeout_seconds       = 3600
     ingress_settings      = var.cloud_function_ingress_settings
     service_account_email = google_service_account.custom_cloud_function_account.email
