@@ -5,12 +5,13 @@ import useErrorHandler from '../../../hooks/useErrorHandler';
 import { Option } from './types';
 import { DocumentNode } from 'graphql';
 import { SelectChangeEvent } from '@mui/material';
+import { gql } from '@apollo/client';
 
 export const useDropDownLogic = (
   value: string,
   options: Option[],
-  updateValueMutation: DocumentNode,
-  identifierVariables: Record<string, any>,
+  updateValueMutation: DocumentNode = gql`mutation NoOp { __typename }`,
+  identifierVariables: Record<string, any> = {},
   onValueUpdated?: (data: any) => void,
   refetchQueries: string[] = []
 ) => {
@@ -21,7 +22,12 @@ export const useDropDownLogic = (
   const [hasBlurred, setHasBlurred] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [updateValue] = useRoleMutation(updateValueMutation, {
+  const [updateValue] = useRoleMutation(updateValueMutation||
+    gql`
+      mutation NoOp {
+        __typename
+      }
+    `,{
     onError: (error) => handleError(error.message),
     onCompleted: (data) => {
       if (onValueUpdated) onValueUpdated(data);
@@ -36,11 +42,15 @@ export const useDropDownLogic = (
 
   const debouncedUpdateValue = useDebouncedCallback((newValue: string, isMandatory = false) => {
     if (validateValue(newValue, isMandatory)) {
-      const variables = {
-        ...identifierVariables,
-        value: newValue,
-      };
-      updateValue({ variables });
+      if (updateValueMutation !== gql`mutation NoOp { __typename }`) {
+        const variables = {
+          ...identifierVariables,
+          value: newValue,
+        };
+        updateValue({ variables });
+      } else if (onValueUpdated) {
+        onValueUpdated({ value: newValue });  
+      }
       setErrorMessage('');
     } else {
       setErrorMessage('unified_dropdown_selector.invalid_selection');

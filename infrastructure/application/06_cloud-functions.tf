@@ -82,7 +82,7 @@ resource "google_cloudfunctions2_function" "call_python_function" {
       LMS_ATTENDANCE_SURVEY_ID     = var.lms_attendance_survey_id
     }
     max_instance_count    = 500
-    available_memory      = "256M"
+    available_memory      = "512M"
     timeout_seconds       = 3600
     ingress_settings      = var.cloud_function_ingress_settings
     service_account_email = google_service_account.custom_cloud_function_account.email
@@ -112,7 +112,7 @@ resource "google_cloudfunctions2_function" "call_node_function" {
   description = "Calls a node function specificed via the function header."
 
   build_config {
-    runtime     = "nodejs18"
+    runtime     = "nodejs20"
     entry_point = "callNodeFunction"
     environment_variables = {
       # Causes a re-deploy of the function when the source changes
@@ -167,7 +167,7 @@ resource "google_cloudfunctions2_function" "send_mail" {
   description = "Sends an email as defined in the Hasura mail log table"
 
   build_config {
-    runtime     = "nodejs14"
+    runtime     = "nodejs20"
     entry_point = "sendMail"
     source {
       storage_source {
@@ -215,7 +215,7 @@ resource "google_cloudfunctions2_function" "add_keycloak_role" {
   description = "Adds role mapping for given role for keycloak hasura client"
 
   build_config {
-    runtime     = "nodejs14"
+    runtime     = "nodejs20"
     entry_point = "addKeycloakRole"
     source {
       storage_source {
@@ -262,7 +262,7 @@ resource "google_cloudfunctions2_function" "update_from_keycloak" {
   description = "Looks up keycloak user of given uuid and creates new hasura user if necessary or updates existing"
 
   build_config {
-    runtime     = "nodejs14"
+    runtime     = "nodejs20"
     entry_point = "updateFromKeycloak"
     source {
       storage_source {
@@ -312,7 +312,7 @@ resource "google_cloudfunctions2_function" "send_questionaires" {
   description = "send out questionaires for published past sessions"
 
   build_config {
-    runtime     = "nodejs16"
+    runtime     = "nodejs20"
     entry_point = "sendQuestionaires"
     source {
       storage_source {

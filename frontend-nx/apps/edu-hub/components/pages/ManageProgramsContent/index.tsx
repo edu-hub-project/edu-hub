@@ -474,7 +474,8 @@ export const ManageProgramsContent: FC = () => {
             title: activeDialogProgram?.title,
           })}
           confirmationText={t('course-page:publish')}
-          onClose={handleMakeVisibleDialogClose}
+          onClose={() => handleMakeVisibleDialogClose(false)}
+          onConfirm={() => handleMakeVisibleDialogClose(true)}
           open={confirmMakeVisibleOpen}
         />
         <QuestionConfirmationDialog
@@ -482,7 +483,8 @@ export const ManageProgramsContent: FC = () => {
             title: activeDialogProgram?.title,
           })}
           confirmationText={t('course-page:withdraw')}
-          onClose={handleMakeInvisibleDialogClose}
+          onClose={() => handleMakeInvisibleDialogClose(false)}
+          onConfirm={() => handleMakeInvisibleDialogClose(true)}
           open={confirmMakeInvisibleOpen}
         />
         <QuestionConfirmationDialog
@@ -490,7 +492,8 @@ export const ManageProgramsContent: FC = () => {
             title: activeDialogProgram?.title,
           })}
           confirmationText={t('delete')}
-          onClose={handleConfirmDeleteProgramClose}
+          onClose={() => handleConfirmDeleteProgramClose(false)}
+          onConfirm={() => handleConfirmDeleteProgramClose(true)}
           open={confirmDeleteProgramOpen}
         />
       </div>

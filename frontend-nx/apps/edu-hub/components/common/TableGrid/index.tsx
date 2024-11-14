@@ -1,15 +1,6 @@
-import React, { useState, useMemo, useCallback, ReactElement, Dispatch, SetStateAction, useEffect } from 'react';
-import { ApolloError, DocumentNode } from '@apollo/client';
-import {
-  TextField,
-  Checkbox,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  SelectChangeEvent,
-  IconButton,
-} from '@mui/material';
+import { BaseRow, TableGridProps } from './types';
+import React, { useState, useMemo, useCallback } from 'react';
+import { TextField, Checkbox, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
 import useTranslation from 'next-translate/useTranslation';
 import { ArrowDropUp, ArrowDropDown } from '@mui/icons-material';
 import { MdArrowBack, MdArrowForward, MdDelete } from 'react-icons/md';
@@ -23,134 +14,12 @@ import {
   SortingState,
   useReactTable,
   FilterFn,
-  OnChangeFn,
 } from '@tanstack/react-table';
 import { rankItem } from '@tanstack/match-sorter-utils';
 
-import EhAddButton from '../common/EhAddButton';
-import { QuestionConfirmationDialog } from './dialogs/QuestionConfirmationDialog';
-import { useAdminMutation } from '../../hooks/authedMutation';
-import { useBulkActions } from '../../hooks/bulkActions';
-
-export interface BaseRow {
-  id: number;
-}
-
-export interface BulkAction {
-  value: string;
-  label: string;
-}
-
-interface TableGridDeleteButtonProps {
-  deleteMutation: DocumentNode;
-  id: string | number;
-  refetchQueries: string[];
-  idType: 'number' | 'uuidString';
-  deletionConfirmationQuestion?: string;
-}
-
-const TableGridDeleteButton = ({
-  deleteMutation,
-  id,
-  refetchQueries,
-  idType,
-  deletionConfirmationQuestion,
-}: TableGridDeleteButtonProps) => {
-  const [deleteItem] = useAdminMutation(deleteMutation);
-  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-  const { t } = useTranslation();
-
-  // If no question is provided, use the default one
-  const confirmationQuestion = deletionConfirmationQuestion || t('common:deletion_confirmation_question');
-
-  const handleDeleteClick = () => {
-    setIsConfirmationOpen(true);
-  };
-
-  const handleConfirmationClose = (confirmed: boolean) => {
-    setIsConfirmationOpen(false);
-    if (confirmed) {
-      performDelete();
-    }
-  };
-
-  const performDelete = () => {
-    let variableId: string | number = id;
-
-    if (idType === 'number') {
-      if (typeof id === 'string') {
-        variableId = parseInt(id, 10);
-        if (isNaN(variableId)) {
-          console.error('Invalid numeric ID:', id);
-          return;
-        }
-      }
-    } else if (idType === 'uuidString') {
-      if (typeof id !== 'string') {
-        console.error('Invalid UUID string:', id);
-        return;
-      }
-      // Optionally, you could add a UUID validation regex here
-    }
-
-    deleteItem({
-      variables: { id: variableId },
-      refetchQueries,
-    });
-  };
-
-  return (
-    <>
-      <IconButton
-        size="small"
-        onClick={handleDeleteClick}
-        className="delete-button"
-        sx={{
-          backgroundColor: 'transparent !important',
-          padding: 0,
-          boxShadow: 'none',
-          '&:hover': {
-            backgroundColor: 'rgba(255, 0, 0, 0.1) !important',
-          },
-        }}
-      >
-        <MdDelete size="1.25em" color="red" />
-      </IconButton>
-      <QuestionConfirmationDialog
-        question={confirmationQuestion}
-        confirmationText={t('common:confirm_delete')}
-        open={isConfirmationOpen}
-        onClose={handleConfirmationClose}
-      />
-    </>
-  );
-};
-
-interface TableGridProps<T extends BaseRow> {
-  addButtonText?: string;
-  data: T[];
-  columns: ColumnDef<T>[];
-  deleteMutation?: DocumentNode;
-  deleteIdType?: 'number' | 'uuidString';
-  generateDeletionConfirmationQuestion?: (row: T) => string;
-  enablePagination?: boolean;
-  error: ApolloError;
-  expandableRowComponent?: (props: { row: T }) => ReactElement | null;
-  loading: boolean;
-  pageIndex?: number;
-  pages?: number;
-  refetchQueries: string[];
-  searchFilter?: string;
-  setPageIndex?: (number) => void;
-  setSearchFilter?: Dispatch<SetStateAction<string>>;
-  showCheckbox?: boolean;
-  showDelete?: boolean;
-  showGlobalSearchField?: boolean;
-  translationNamespace?: string;
-  onAddButtonClick?: () => void;
-  onBulkAction?: (action: string, selectedRows: T[]) => void;
-  bulkActions?: BulkAction[];
-}
+import EhAddButton from '../EhAddButton';
+import { useBulkActions } from './hooks';
+import TableGridDeleteButton from './components/TableGridDeleteButton';
 
 const TableGrid = <T extends BaseRow>({
   addButtonText,
@@ -159,24 +28,41 @@ const TableGrid = <T extends BaseRow>({
   deleteMutation,
   deleteIdType,
   generateDeletionConfirmationQuestion,
-  enablePagination = false,
   error,
   expandableRowComponent,
   loading,
-  pageIndex = 0,
-  pages,
+  enablePagination = true,
+  pageSize = 15,
+  pageIndex,
+  onPageChange,
   refetchQueries,
-  searchFilter,
-  setSearchFilter,
-  setPageIndex,
-  showDelete,
   showGlobalSearchField = true,
-  translationNamespace,
+  totalCount,
+  searchFilter,
+  onSearchFilterChange,
   onAddButtonClick,
   onBulkAction,
   bulkActions = [],
 }: TableGridProps<T>) => {
-  const { t } = useTranslation(translationNamespace);
+  const onGlobalFilterChange = useCallback(
+    (value: string) => {
+      onSearchFilterChange(value);
+    },
+    [onSearchFilterChange]
+  );
+  if (enablePagination && typeof totalCount === 'undefined') {
+    console.warn('TableGrid: totalCount prop is required when enablePagination is true');
+  }
+
+  if (enablePagination && typeof pageIndex === 'undefined') {
+    console.warn('TableGrid: pageIndex prop is required when enablePagination is true');
+  }
+
+  if (enablePagination && typeof onPageChange === 'undefined') {
+    console.warn('TableGrid: onPageChange prop is required when enablePagination is true');
+  }
+
+  const { t } = useTranslation();
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -193,11 +79,6 @@ const TableGrid = <T extends BaseRow>({
     isSomeSelected,
   } = useBulkActions<T>(bulkActions, onBulkAction);
 
-  // Add this useEffect to log when bulk actions change
-  useEffect(() => {
-    console.log('Bulk action changed:', bulkAction);
-  }, [bulkAction]);
-
   // Add this new function to handle the Select onChange event
   const handleSelectChange = (event: SelectChangeEvent<string>) => {
     const selectedAction = event.target.value;
@@ -205,9 +86,15 @@ const TableGrid = <T extends BaseRow>({
     handleBulkActionChange(selectedAction, data);
   };
 
-  const handlePrevious = () => setPageIndex(Math.max(0, pageIndex - 1));
-  const handleNext = () => setPageIndex(pageIndex + 1);
+  const handlePrevious = () => {
+    const newIndex = Math.max(0, pageIndex - 1);
+    onPageChange?.(newIndex);
+  };
 
+  const handleNext = () => {
+    const newIndex = pageIndex + 1;
+    onPageChange?.(newIndex);
+  };
   const ExpandableRowComponent = expandableRowComponent;
 
   const toggleRowExpansion = useCallback(
@@ -228,14 +115,6 @@ const TableGrid = <T extends BaseRow>({
     addMeta({ itemRank });
     return itemRank.passed;
   };
-
-  const onGlobalFilterChange: OnChangeFn<string> = useCallback(
-    async (value) => {
-      setSearchFilter(value);
-      setPageIndex(0);
-    },
-    [setPageIndex, setSearchFilter]
-  );
 
   const memoizedColumns = useMemo(() => {
     const selectionColumn: ColumnDef<T>[] = showCheckbox
@@ -283,22 +162,25 @@ const TableGrid = <T extends BaseRow>({
     defaultColumn: { enableSorting: false },
     columns: memoizedColumns,
     filterFns: { fuzzy: fuzzyFilter },
+    manualPagination: enablePagination,
+    manualFiltering: true,
     state: {
       sorting,
       globalFilter: searchFilter,
-      ...(enablePagination && { pagination: { pageIndex, pageSize: 15 } }),
+      ...(enablePagination && { pagination: { pageIndex, pageSize } }),
     },
     globalFilterFn: fuzzyFilter,
     onGlobalFilterChange: onGlobalFilterChange,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     debugTable: true,
     getRowId: (row) => row.id.toString(),
     enableRowSelection: true,
     enableMultiRowSelection: true,
   });
+
+  const totalPages = Math.ceil((totalCount || 0) / pageSize);
 
   return (
     <div>
@@ -395,7 +277,9 @@ const TableGrid = <T extends BaseRow>({
                       <div className="flex-grow">
                         {header.column.id === 'selection'
                           ? flexRender(header.column.columnDef.header, header.getContext())
-                          : t(header.column.id)}
+                          : typeof header.column.columnDef.header === 'string'
+                            ? header.column.columnDef.header
+                            : flexRender(header.column.columnDef.header, header.getContext())}
                       </div>
                     )}
                     {header.column.getCanSort() && (
@@ -410,7 +294,7 @@ const TableGrid = <T extends BaseRow>({
             </React.Fragment>
           ))}
         </div>
-        {showDelete && <div className="w-20 flex-shrink-0" />}
+        {deleteMutation && <div className="w-20 flex-shrink-0" />}
         {expandableRowComponent && <div className="w-10 flex-shrink-0" />}
       </div>
 
@@ -444,7 +328,7 @@ const TableGrid = <T extends BaseRow>({
                   </button>
                 </div>
               )}
-              {showDelete && deleteMutation && (
+              {deleteMutation && (
                 <div className="w-20 flex-shrink-0 flex items-center justify-center py-2 pl-4">
                   <TableGridDeleteButton
                     deleteMutation={deleteMutation}
@@ -467,14 +351,14 @@ const TableGrid = <T extends BaseRow>({
                   <ExpandableRowComponent key={`expandableRow-${row.id}`} row={row.original} />
                 </div>
                 <div className="w-10 flex-shrink-0"></div>
-                {showDelete && <div className="w-20 flex-shrink-0"></div>}
+                {deleteMutation && <div className="w-20 flex-shrink-0"></div>}
               </div>
             )}
           </React.Fragment>
         ))}
 
       {/* Pagination */}
-      {!loading && !error && enablePagination && (
+      {!loading && !error && enablePagination && totalCount > 0 && (
         <div className="flex justify-end pb-10 text-white mt-4">
           <div className="flex flex-row items-center space-x-5">
             {pageIndex > 0 && (
@@ -485,9 +369,9 @@ const TableGrid = <T extends BaseRow>({
               />
             )}
             <p className="font-medium">
-              {t('common:table_grid.pagination_text', { currentPage: pageIndex + 1, totalPage: pages })}
+              {t('common:table_grid.pagination_text', { currentPage: pageIndex + 1, totalPage: totalPages })}
             </p>
-            {pageIndex < (pages ?? 0) - 1 && (
+            {pageIndex < totalPages - 1 && (
               <MdArrowForward
                 className="border-2 rounded-full cursor-pointer hover:bg-indigo-100"
                 size={30}

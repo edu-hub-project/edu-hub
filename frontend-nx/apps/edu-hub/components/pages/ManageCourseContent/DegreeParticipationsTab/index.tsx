@@ -4,13 +4,10 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ManagedCourse_Course_by_pk } from '../../../../queries/__generated__/ManagedCourse';
 import TableGrid from '../../../common/TableGrid';
 import { useRoleQuery } from '../../../../hooks/authedQuery';
-import {
-  DegreeParticipantsWithDegreeEnrollments,
-  DegreeParticipantsWithDegreeEnrollmentsVariables,
-  DegreeParticipantsWithDegreeEnrollments_Course_by_pk_CourseEnrollments,
-} from '../../../../queries/__generated__/DegreeParticipantsWithDegreeEnrollments';
+import { DegreeParticipantsWithDegreeEnrollments_Course_by_pk_CourseEnrollments } from '../../../../queries/__generated__/DegreeParticipantsWithDegreeEnrollments';
 import { DEGREE_PARTICIPANTS_WITH_DEGREE_ENROLLMENTS } from '../../../../queries/courseDegree';
 import { CertificateDownload } from '../../../common/CertificateDownload';
+import { useTableGrid } from '../../../common/TableGrid/hooks';
 
 interface DegreeParticipationsTabIProps {
   course: ManagedCourse_Course_by_pk;
@@ -25,14 +22,18 @@ export interface ExtendedDegreeParticipantsEnrollment
 }
 
 export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = ({ course }) => {
-  const { lang } = useTranslation();
+  const { t, lang } = useTranslation('manageCourse');
 
   const degreeCourseId = course?.id;
-  const { data, error, loading } = useRoleQuery<
-    DegreeParticipantsWithDegreeEnrollments,
-    DegreeParticipantsWithDegreeEnrollmentsVariables
-  >(DEGREE_PARTICIPANTS_WITH_DEGREE_ENROLLMENTS, {
-    variables: { degreeCourseId },
+  const { data, loading, error, pageIndex, setPageIndex, searchFilter, setSearchFilter } = useTableGrid({
+    queryHook: useRoleQuery,
+    query: DEGREE_PARTICIPANTS_WITH_DEGREE_ENROLLMENTS,
+    pageSize: 15,
+    refetchFilter: (searchFilter) => ({
+      User: {
+        _or: [{ firstName: { _ilike: `%${searchFilter}%` } }, { lastName: { _ilike: `%${searchFilter}%` } }],
+      },
+    }),
   });
   const degreeParticipantsEnrollments =
     data?.Course_by_pk?.CourseEnrollments.filter(
@@ -102,6 +103,7 @@ export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = ({ cou
   const columns = useMemo<ColumnDef<ExtendedDegreeParticipantsEnrollment>[]>(
     () => [
       {
+        header: t('name'),
         accessorKey: 'name',
         enableSorting: true,
         className: '',
@@ -111,6 +113,7 @@ export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = ({ cou
         cell: ({ getValue }) => <div className="uppercase">{getValue<string>()}</div>,
       },
       {
+        header: t('participations'),
         accessorKey: 'participations', // Use the flattened summary string
         meta: {
           width: 4,
@@ -118,6 +121,7 @@ export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = ({ cou
         cell: ({ getValue }) => <div>{getValue<string>()}</div>, // Display the summary string
       },
       {
+        header: t('lastApplication'),
         accessorKey: 'lastApplication',
         meta: {
           className: 'text-center',
@@ -125,6 +129,7 @@ export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = ({ cou
         },
       },
       {
+        header: t('status'),
         accessorKey: 'status',
         meta: {
           className: 'text-center',
@@ -132,6 +137,7 @@ export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = ({ cou
         },
       },
       {
+        header: t('ectsTotal'),
         accessorKey: 'ectsTotal',
         meta: {
           className: 'text-center',
@@ -140,6 +146,7 @@ export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = ({ cou
         enableSorting: true,
       },
       {
+        header: t('attendedEvents'),
         accessorKey: 'attendedEvents',
         meta: {
           className: 'text-center',
@@ -147,6 +154,7 @@ export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = ({ cou
         },
       },
       {
+        header: t('certificate'),
         accessorKey: 'certificate',
         accessorFn: (row) => row,
         meta: {
@@ -171,94 +179,20 @@ export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = ({ cou
     attendedEvents?: number;
   }
 
-  // const columnsNew = useMemo<ColumnDef<ExtendedDegreeParticipantsEnrollment>[]>(
-  //   () => [
-  //     {
-  //       accessorKey: 'name',
-  //       enableSorting: true,
-  //       className: '',
-  //       meta: {
-  //         width: 3,
-  //       },
-  //       cell: ({ getValue }) => <div className="uppercase">{getValue<string>()}</div>,
-  //     },
-  //     {
-  //       accessorKey: 'participations',
-  //       accessorFn: (row) => row.User.CourseEnrollments,
-  //       meta: {
-  //         width: 4,
-  //       },
-  //       cell: ({ getValue }) => (
-  //         <div>
-  //           {getValue<
-  //             DegreeParticipantsWithDegreeEnrollments_Course_by_pk_CourseEnrollments_User_CourseEnrollments[]
-  //           >().map((enrollment, index) => (
-  //             <span key={`enrollment-${index}`}>
-  //               {enrollment.Course.title} - {enrollment.Course.Program.shortTitle} (
-  //               {enrollment.achievementCertificateURL ? 'COMPLETED' : enrollment.status})
-  //               <br />
-  //             </span>
-  //           ))}
-  //         </div>
-  //       ),
-  //     },
-  //     {
-  //       accessorKey: 'lastApplication',
-  //       meta: {
-  //         className: 'text-center',
-  //         width: 1,
-  //       },
-  //     },
-  //     {
-  //       accessorKey: 'status',
-  //       meta: {
-  //         className: 'text-center',
-  //         width: 1,
-  //       },
-  //     },
-  //     {
-  //       accessorKey: 'ectsTotal',
-  //       meta: {
-  //         className: 'text-center',
-  //         width: 1,
-  //       },
-  //       enableSorting: true,
-  //     },
-  //     {
-  //       accessorKey: 'attendedEvents',
-  //       meta: {
-  //         className: 'text-center',
-  //         width: 1,
-  //       },
-  //     },
-  //     {
-  //       accessorKey: 'certificate',
-  //       accessorFn: (row) => row,
-  //       meta: {
-  //         className: 'text-center',
-  //         width: 1,
-  //       },
-  //       cell: ({ getValue }) => (
-  //         <div>
-  //           <CertificateDownload courseEnrollment={getValue<ExtendedDegreeParticipantsEnrollment>()} manageView />
-  //         </div>
-  //       ),
-  //     },
-  //   ],
-  //   []
-  // );
-
   // Render component
   return (
     <>
       <TableGrid
-        data={extendedDegreeParticipantsEnrollments}
         columns={columns}
+        data={extendedDegreeParticipantsEnrollments}
+        totalCount={data?.Course_by_pk?.CourseEnrollments?.length || 0}
+        pageIndex={pageIndex}
+        onPageChange={setPageIndex}
+        searchFilter={searchFilter}
+        onSearchFilterChange={setSearchFilter}
         error={error}
         loading={loading}
         showCheckbox={false}
-        showDelete={false}
-        translationNamespace="manageCourse"
         refetchQueries={['DegreeParticipantsWithDegreeEnrollments']}
       />
     </>
