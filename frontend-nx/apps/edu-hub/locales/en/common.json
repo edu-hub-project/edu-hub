@@ -153,6 +153,10 @@
     "invalid_integer_format": "The value must be an integer",
     "invalid_input": "Invalid input"
   },
+  "server_side_combobox": {
+    "create_option": "Create new entry \"{{option}}\"",
+    "no_results": "No results found"
+  },
   "dropdown_selector": {
     "create_option": "Create new entry \"{{option}}\""
   },

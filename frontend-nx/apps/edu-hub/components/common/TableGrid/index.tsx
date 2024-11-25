@@ -17,7 +17,7 @@ import {
 } from '@tanstack/react-table';
 import { rankItem } from '@tanstack/match-sorter-utils';
 
-import EhAddButton from '../EhAddButton';
+import AddButton from '../AddButton';
 import { useBulkActions } from './hooks';
 import TableGridDeleteButton from './components/TableGridDeleteButton';
 
@@ -188,7 +188,7 @@ const TableGrid = <T extends BaseRow>({
         <div className="flex items-center">
           {onAddButtonClick && (
             <div className="text-white mr-4">
-              <EhAddButton buttonClickCallBack={onAddButtonClick} text={addButtonText} />
+              <AddButton onClick={onAddButtonClick} title={addButtonText} size="medium" />
             </div>
           )}
           {showCheckbox && (

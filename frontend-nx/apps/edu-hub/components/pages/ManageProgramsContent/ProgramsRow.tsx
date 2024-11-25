@@ -40,8 +40,8 @@ import {
   UpdateProgramParticipationTemplate,
   UpdateProgramParticipationTemplateVariables,
 } from '../../../queries/__generated__/UpdateProgramParticipationTemplate';
-import EhDebounceInput from '../../common/EhDebounceInput';
 import path from 'path';
+import InputField from '../../inputs/InputField';
 
 interface ProgramsRowProps {
   program: ProgramList_Program;
@@ -297,18 +297,24 @@ export const ProgramsRow: FC<ProgramsRowProps> = ({
         </div>
 
         <div className="col-span-2">
-          <EhDebounceInput
-            placeholder={t('title.placeholder')}
-            onChangeHandler={handleSetTitle}
-            inputText={program.title}
-          />
+        <InputField 
+          variant="material"
+          type="input"
+          placeholder={t('title.placeholder')}
+          itemId={program.id}
+          value={program.title}
+          onValueUpdated={handleSetTitle}
+        />
         </div>
 
         <div>
-          <EhDebounceInput
+          <InputField
+            variant="material" 
+            type="input"
             placeholder={t('short_title.placeholder')}
-            onChangeHandler={handleSetShortTitle}
-            inputText={program.shortTitle ?? ''}
+            itemId={program.id}
+            value={program.shortTitle ?? ''}
+            onValueUpdated={handleSetShortTitle}
           />
         </div>
 
@@ -390,28 +396,37 @@ export const ProgramsRow: FC<ProgramsRowProps> = ({
             <div className="p-3">
               <span>{t('start_evaluation.label')}</span>
               <br />
-              <EhDebounceInput
+              <InputField
+                variant="material"
+                type="link"
                 placeholder={t('start_evaluation.placeholder')}
-                onChangeHandler={handleSetStartQuestionnaire}
-                inputText={program.startQuestionnaire || ''}
+                itemId={program.id}
+                value={program.startQuestionnaire || ''}
+                onValueUpdated={handleSetStartQuestionnaire}
               />
             </div>
             <div className="p-3">
               <span>{t('speaker_evaluation.label')}</span>
               <br />
-              <EhDebounceInput
+              <InputField
+                variant="material"
+                type="link"
                 placeholder={t('speaker_evaluation.placeholder')}
-                onChangeHandler={handleSetSpeakerQuestionnaire}
-                inputText={program.speakerQuestionnaire || ''}
+                itemId={program.id}
+                value={program.speakerQuestionnaire || ''}
+                onValueUpdated={handleSetSpeakerQuestionnaire}
               />
             </div>
             <div className="p-3">
               <span>{t('final_evaluation.label')}</span>
               <br />
-              <EhDebounceInput
+              <InputField
+                variant="material"
+                type="link"
                 placeholder={t('final_evaluation.placeholder')}
-                onChangeHandler={handleSetClosingQuestionnaire}
-                inputText={program.closingQuestionnaire || ''}
+                itemId={program.id}
+                value={program.closingQuestionnaire || ''}
+                onValueUpdated={handleSetClosingQuestionnaire}
               />
             </div>
 
