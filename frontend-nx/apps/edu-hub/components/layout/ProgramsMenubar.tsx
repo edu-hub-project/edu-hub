@@ -1,7 +1,7 @@
 import { FC, useCallback, useState } from 'react';
 import { Programs_Program } from '../../queries/__generated__/Programs';
 import { StaticComponentProperty } from '../../types/UIComponents';
-import EhMenuItem from '../common/EhMenuItem';
+import MenuItem from '../common/MenuItem';
 
 interface IMenubarProps {
   programs: Programs_Program[];
@@ -67,7 +67,7 @@ export const ProgramsMenubar: FC<IMenubarProps> = ({ programs, defaultProgramId,
   return (
     <div className="flex items-center space-x-0 flex-wrap">
       {menuItems.map((tab) => (
-        <EhMenuItem key={tab.key} property={tab} onClickCallback={handleTabClick} />
+        <MenuItem key={tab.key} property={tab} onClickCallback={handleTabClick} />
       ))}
     </div>
   );
