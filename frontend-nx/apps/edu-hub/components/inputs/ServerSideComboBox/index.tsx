@@ -8,6 +8,7 @@ import { useRoleMutation } from '../../../hooks/authedMutation';
 import { ErrorMessageDialog } from '../../common/dialogs/ErrorMessageDialog';
 import * as Label from '@radix-ui/react-label';
 import NotificationSnackbar from '../../common/dialogs/NotificationSnackbar';
+import useTranslation from 'next-translate/useTranslation';
 
 // Add type for variant
 type VariantType = 'default' | 'minimal';
@@ -26,7 +27,7 @@ const VARIANTS: Record<
   default: {
     // Styles for the main button/trigger that opens the dropdown
     trigger:
-      'inline-flex items-center justify-between w-full px-3 py-3 text-sm border rounded-md shadow-sm bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+      'inline-flex items-center justify-between w-full px-3 py-3 text-base text-gray-500 border rounded-md shadow-sm bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
     // Styles for the dropdown container
     content: 'overflow-hidden bg-white rounded-md shadow-lg border max-h-[300px]',
     // Styles for the search input field
@@ -153,6 +154,8 @@ const ServerSideCombobox = ({
   const [executeMutationCreate] = useRoleMutation(createMutation);
   const [executeMutationSelect] = useRoleMutation(selectMutation);
 
+  const { t } = useTranslation('common');
+
   // Update selectedValue when value prop changes
   useEffect(() => {
     setSelectedValue(value || null);
@@ -165,7 +168,7 @@ const ServerSideCombobox = ({
           onCreate(searchTerm);
         } else if (createMutation && createMutationVariables) {
           try {
-            const result = await executeMutationCreate({
+            await executeMutationCreate({
               variables: createMutationVariables(searchTerm),
             });
             setShowSavedNotification(true);
@@ -255,7 +258,7 @@ const ServerSideCombobox = ({
         <Label.Root
           className={cn(
             'mb-2 text-base text-gray-400 block',
-            required && "after:content-['*'] after:ml-0.5 after:text-red-500"
+            required && 'after:content-[&quot;*&quot;] after:ml-0.5 after:text-red-500'
           )}
         >
           {label}
@@ -292,7 +295,7 @@ const ServerSideCombobox = ({
               {searchTerm && !options.some((opt) => opt.label === searchTerm) && !isLoading && (
                 <ComboboxItem value="create-new" variant={variant} isCreateOption={true} className="">
                   <Plus className="absolute left-2 w-4 h-4" />
-                  <Select.ItemText>Create "{searchTerm}"</Select.ItemText>
+                  <Select.ItemText>{t('server_side_combobox.create_option', { option: searchTerm })}</Select.ItemText>
                 </ComboboxItem>
               )}
 
