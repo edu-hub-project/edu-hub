@@ -315,7 +315,9 @@ const ServerSideCombobox = ({
               ))}
 
               {!isLoading && options.length === 0 && searchTerm && (
-                <div className="px-2 py-4 text-sm text-gray-500 text-center">No results found</div>
+                <div className="px-2 py-4 text-sm text-gray-500 text-center">
+                  {t('server_side_combobox.no_results')}
+                </div>
               )}
             </Select.Viewport>
           </ComboboxContent>
