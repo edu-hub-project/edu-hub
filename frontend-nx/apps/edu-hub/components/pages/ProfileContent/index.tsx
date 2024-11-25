@@ -25,6 +25,7 @@ import DropDownSelector from '../../inputs/DropDownSelector';
 import { UserOccupation } from '../../../queries/__generated__/UserOccupation';
 import { CREATE_ORGANIZATION, ORGANIZATION_LIST } from '../../../queries/organization';
 import { OrganizationList } from '../../../queries/__generated__/OrganizationList';
+import ServerSideCombobox from '../../inputs/ServerSideComboBox';
 
 const ProfileContent: FC = () => {
   const { t } = useTranslation('profile');
@@ -63,6 +64,30 @@ const ProfileContent: FC = () => {
       value: org.id.toString(),
       aliases: org.aliases,
     })) || [];
+
+  // Add query for organizations
+  const { data: orgData, refetch: refetchOrgs } = useRoleQuery(ORGANIZATION_LIST, {
+    variables: {
+      limit: 10,
+      order_by: [{ name: 'asc' }],
+    },
+  });
+
+  // Handler for searching organizations
+  const handleOrganizationSearch = async (term: string) => {
+    const { data } = await refetchOrgs({
+      filter: {
+        name: { _ilike: `%${term}%` },
+      },
+    });
+
+    return (
+      data?.Organization?.map((org) => ({
+        value: org.id.toString(),
+        label: org.name,
+      })) || []
+    );
+  };
 
   // Render loading state
   if (sessionStatus === 'loading') {
@@ -118,7 +143,7 @@ const ProfileContent: FC = () => {
           user={userData?.User_by_pk}
         />
         <div className="flex flex-wrap">
-          <div className="w-full md:w-1/2 pr-0 md:pr-3">
+          <div className="w-full md:w-1/2 md:p-0">
             <InputField
               variant="eduhub"
               type="input"
@@ -129,7 +154,7 @@ const ProfileContent: FC = () => {
               showCharacterCount={false}
             />
           </div>
-          <div className="w-full md:w-1/2 pl-0 md:pl-3">
+          <div className="w-full md:w-1/2 md:p-0">
             <InputField
               variant="eduhub"
               type="input"
@@ -142,7 +167,7 @@ const ProfileContent: FC = () => {
           </div>
         </div>
         <div className="flex flex-wrap">
-          <div className="w-full md:w-1/2 pr-0 md:pr-3">
+          <div className="w-full md:w-1/2 md:p-0 pb-6">
             <DropDownSelector
               variant="eduhub"
               label={t('occupation.label')}
@@ -152,37 +177,28 @@ const ProfileContent: FC = () => {
               identifierVariables={{ userId: userData?.User_by_pk?.id }}
             />
           </div>
-          <div className="w-full md:w-1/2 pl-0 md:pl-3">
-            <DropDownSelector
-              variant="eduhub"
-              creatable={true}
+          <div className="w-full md:w-1/2 md:p-0">
+            <ServerSideCombobox
               label={getOrganizationLabel(userData?.User_by_pk?.occupation)}
-              value={userData?.User_by_pk?.Organization?.id.toString()}
               placeholder={t('organization.placeholder')}
-              options={organizationOptions}
-              updateValueMutation={UPDATE_USER_ORGANIZATION_ID}
-              identifierVariables={{ userId: userData?.User_by_pk?.id }}
-              createOptionMutation={CREATE_ORGANIZATION}
-              refetchQueries={['OrganizationList']}
+              value={userData?.User_by_pk?.Organization?.name}
+              onSearch={handleOrganizationSearch}
+              createMutation={CREATE_ORGANIZATION}
+              createMutationVariables={(value) => ({
+                value,
+              })}
+              selectMutation={UPDATE_USER_ORGANIZATION_ID}
+              selectMutationVariables={(value) => ({
+                userId: userData?.User_by_pk?.id,
+                value: parseInt(value),
+              })}
             />
           </div>
         </div>
 
         <div className="flex flex-wrap mt-8">
-          <div className="w-full md:w-1/2 pr-0 md:pr-3">
-            <InputField
-              variant="eduhub"
-              type="link"
-              label={t('external_profile')}
-              itemId={userData?.User_by_pk?.id}
-              value={userData?.User_by_pk?.externalProfile}
-              updateValueMutation={UPDATE_USER_EXTERNAL_PROFILE}
-              showCharacterCount={false}
-            />
-          </div>
-          {/* only show for university students */}
           {userData?.User_by_pk?.occupation === 'UNIVERSITY_STUDENT' && (
-            <div className="w-full md:w-1/2 pl-0 md:pl-3">
+            <div className="w-full md:w-1/2 pr-0 md:p-0">
               <InputField
                 variant="eduhub"
                 type="number"
@@ -194,8 +210,18 @@ const ProfileContent: FC = () => {
               />
             </div>
           )}
+          <div className="w-full md:w-1/2 pr-0 md:p-0">
+            <InputField
+              variant="eduhub"
+              type="link"
+              label={t('external_profile')}
+              itemId={userData?.User_by_pk?.id}
+              value={userData?.User_by_pk?.externalProfile}
+              updateValueMutation={UPDATE_USER_EXTERNAL_PROFILE}
+              showCharacterCount={false}
+            />
+          </div>
         </div>
-
         <div className="flex flex-wrap">
           <div className="w-full md:w-1/2 pl-0 md:pl-3 flex justify-center items-center text-center"></div>
           <div className="w-full md:w-1/2 pl-0 md:pl-3 flex justify-center items-center text-center">
