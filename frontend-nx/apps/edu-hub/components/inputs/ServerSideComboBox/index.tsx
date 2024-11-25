@@ -9,6 +9,14 @@ import { ErrorMessageDialog } from '../../common/dialogs/ErrorMessageDialog';
 import * as Label from '@radix-ui/react-label';
 import NotificationSnackbar from '../../common/dialogs/NotificationSnackbar';
 import useTranslation from 'next-translate/useTranslation';
+import { gql } from '@apollo/client';
+
+// Add this constant at the top of the file, after imports
+const NO_OP_MUTATION = gql`
+  mutation NoOp {
+    __typename
+  }
+`;
 
 // Add type for variant
 type VariantType = 'default' | 'minimal';
@@ -101,10 +109,18 @@ interface Option {
 
 // Update ServerSideCombobox props interface
 interface ServerSideComboboxProps {
-  // External handler props (optional)
-  onSearch?: (term: string) => Promise<Option[]>;
-  onSelect?: (value: string) => void;
+  // External handler props
+  onSearch: (term: string) => Promise<Option[]>; // Required
+  onSelect?: (value: string) => void; // Optional if selectMutation is provided
+
+  // Create-related props (all optional)
   onCreate?: (value: string) => void;
+  createMutation?: DocumentNode;
+  createMutationVariables?: (value: string) => Record<string, any>;
+
+  // Select-related props (at least one of onSelect or selectMutation must be provided)
+  selectMutation?: DocumentNode;
+  selectMutationVariables?: (value: string) => Record<string, any>;
 
   // Basic props
   placeholder?: string;
@@ -112,17 +128,6 @@ interface ServerSideComboboxProps {
   value?: string | null;
   className?: string;
   debounceMs?: number;
-
-  // Internal handling props (optional)
-  queryDocument?: DocumentNode;
-  queryVariables?: Record<string, any>;
-
-  createMutation?: DocumentNode;
-  createMutationVariables?: (value: string) => Record<string, any>;
-
-  selectMutation?: DocumentNode;
-  selectMutationVariables?: (value: string) => Record<string, any>;
-
   label?: string;
   required?: boolean;
 }
@@ -151,8 +156,8 @@ const ServerSideCombobox = ({
   const [error, setError] = useState<string | null>(null);
   const [showSavedNotification, setShowSavedNotification] = useState(false);
 
-  const [executeMutationCreate] = useRoleMutation(createMutation);
-  const [executeMutationSelect] = useRoleMutation(selectMutation);
+  const [executeMutationCreate] = useRoleMutation(createMutation || NO_OP_MUTATION);
+  const [executeMutationSelect] = useRoleMutation(selectMutation || NO_OP_MUTATION);
 
   const { t } = useTranslation('common');
 
@@ -168,21 +173,28 @@ const ServerSideCombobox = ({
           onCreate(searchTerm);
         } else if (createMutation && createMutationVariables) {
           try {
-            await executeMutationCreate({
+            const createResult = await executeMutationCreate({
               variables: createMutationVariables(searchTerm),
             });
-            setShowSavedNotification(true);
 
-            // Use the search term as the display value for the newly created option
+            // Get the new organization's ID from the creation result
+            const newOrgId = createResult.data?.insert_Organization_one?.id;
+
+            // Execute the select mutation with the new organization's ID
+            if (selectMutation && selectMutationVariables && newOrgId) {
+              await executeMutationSelect({
+                variables: selectMutationVariables(newOrgId.toString()),
+              });
+            }
+
+            setShowSavedNotification(true);
             setSelectedValue(searchTerm);
 
             // After creation, trigger a new search to refresh the list
-            if (onSearch) {
-              setIsLoading(true);
-              const results = await onSearch(searchTerm);
-              setOptions(results);
-              setIsLoading(false);
-            }
+            setIsLoading(true);
+            const results = await onSearch(searchTerm);
+            setOptions(results);
+            setIsLoading(false);
           } catch (error) {
             setError(error.message);
             return;
@@ -192,6 +204,10 @@ const ServerSideCombobox = ({
       } else {
         if (onSelect) {
           onSelect(value);
+          const selectedOption = options.find((opt) => opt.value === value);
+          if (selectedOption) {
+            setSelectedValue(selectedOption.label);
+          }
         } else if (selectMutation && selectMutationVariables) {
           try {
             await executeMutationSelect({
@@ -199,7 +215,6 @@ const ServerSideCombobox = ({
             });
             setShowSavedNotification(true);
 
-            // Find the selected option to get its label
             const selectedOption = options.find((opt) => opt.value === value);
             if (selectedOption) {
               setSelectedValue(selectedOption.label);
