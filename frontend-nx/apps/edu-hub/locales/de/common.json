@@ -153,6 +153,10 @@
     "invalid_integer_format": "Der Wert muss eine ganze Zahl sein",
     "invalid_input": "Ungültige Eingabe"
   },
+  "server_side_combobox": {
+    "create_option": "\"{{option}}\" neu hinzufügen",
+    "no_results": "Keine Ergebnisse gefunden"
+  },
   "dropdown_selector": {
     "create_option": "\"{{option}}\" neu hinzufügen"
   },

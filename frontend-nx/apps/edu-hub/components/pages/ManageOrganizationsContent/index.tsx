@@ -340,7 +340,6 @@ const ManageOrganizationsContent: FC = () => {
             />
             <MergeOrganizationsDialog
               open={mergeDialogOpen}
-              organizationList={data?.Organization || []}
               onClose={() => {
                 setMergeDialogOpen(false);
                 setSelectedRowsForBulkAction([]);
