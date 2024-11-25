@@ -57,14 +57,6 @@ const ProfileContent: FC = () => {
     value: x.value,
   }));
 
-  // Organization ids and their corresponding names
-  const organizationOptions =
-    organizationData?.Organization?.map((org) => ({
-      label: org.name,
-      value: org.id.toString(),
-      aliases: org.aliases,
-    })) || [];
-
   // Add query for organizations
   const { data: orgData, refetch: refetchOrgs } = useRoleQuery(ORGANIZATION_LIST, {
     variables: {
