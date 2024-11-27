@@ -24,6 +24,6 @@ export interface UpdateUserMatriculationNumber {
 }
 
 export interface UpdateUserMatriculationNumberVariables {
-  userId: any;
-  value: string;
+  itemId: any;
+  text: string;
 }

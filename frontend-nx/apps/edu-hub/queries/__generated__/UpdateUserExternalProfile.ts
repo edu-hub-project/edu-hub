@@ -24,6 +24,6 @@ export interface UpdateUserExternalProfile {
 }
 
 export interface UpdateUserExternalProfileVariables {
-  userId: any;
-  value: string;
+  itemId: any;
+  text: string;
 }
