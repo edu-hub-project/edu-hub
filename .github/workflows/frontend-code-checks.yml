@@ -7,9 +7,15 @@ on:
   push:
     paths:
       - frontend-nx/**
+    branches-ignore:
+      - staging
+      - production
   pull_request:
     paths:
       - frontend-nx/**
+    branches-ignore:
+      - staging
+      - production
 
 jobs:
   build:
