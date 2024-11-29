@@ -46,24 +46,23 @@ const ProfileContent: FC = () => {
   const queryOccupationOptions = useRoleQuery<UserOccupation>(USER_OCCUPATION, {
     skip: sessionStatus === 'loading',
   });
-
-  const { data: organizationData } = useRoleQuery<OrganizationList>(ORGANIZATION_LIST, {
-    skip: sessionStatus === 'loading',
-  });
-
   // Occupation enums and their translated labels
   const occupationOptions = (queryOccupationOptions.data?.UserOccupation || []).map((x) => ({
     label: t(`profile:occupation.${x.value}`), // Apply translation here
     value: x.value,
   }));
 
-  // Add query for organizations
-  const { data: orgData, refetch: refetchOrgs } = useRoleQuery(ORGANIZATION_LIST, {
+  const { data: queryOrganizationOptions, refetch: refetchOrgs } = useRoleQuery(ORGANIZATION_LIST, {
     variables: {
-      limit: 10,
+      limit: 10000,
       order_by: [{ name: 'asc' }],
     },
   });
+  const organizationOptions = queryOrganizationOptions?.Organization?.map((org) => ({
+    value: org.id.toString(),
+    label: org.name,
+    aliases: org.aliases, // Make sure to include this
+  }));
 
   // Handler for searching organizations
   const handleOrganizationSearch = async (term: string) => {
@@ -170,20 +169,17 @@ const ProfileContent: FC = () => {
             />
           </div>
           <div className="w-full md:w-1/2 md:p-0">
-            <ServerSideCombobox
+            <DropDownSelector
+              variant="eduhub"
               label={getOrganizationLabel(userData?.User_by_pk?.occupation)}
               placeholder={t('organization.placeholder')}
-              value={userData?.User_by_pk?.Organization?.name}
-              onSearch={handleOrganizationSearch}
-              createMutation={CREATE_ORGANIZATION}
-              createMutationVariables={(value) => ({
-                value,
-              })}
-              selectMutation={UPDATE_USER_ORGANIZATION_ID}
-              selectMutationVariables={(value) => ({
-                userId: userData?.User_by_pk?.id,
-                value: parseInt(value),
-              })}
+              value={userData?.User_by_pk?.Organization?.id?.toString() || ''}
+              options={organizationOptions || []}
+              updateValueMutation={UPDATE_USER_ORGANIZATION_ID}
+              identifierVariables={{ userId: userData?.User_by_pk?.id }}
+              creatable={true}
+              createOptionMutation={CREATE_ORGANIZATION}
+              refetchQueries={['OrganizationList', 'User']}
             />
           </div>
         </div>
