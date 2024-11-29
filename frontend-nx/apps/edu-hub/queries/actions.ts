@@ -135,29 +135,13 @@ export const SAVE_COURSE_IMAGE = gql`
   }
 `;
 
-export const CREATE_CERTIFICATE = gql`
-  mutation createCertificate(
-    $userIds: [uuid!]!
-    $courseId: Int!
-    $certificateType: String!
-  ) {
-    createCertificate(
-      userIds: $userIds
-      courseId: $courseId
-      certificateType: $certificateType
-    ) {
-      result
-    }
-  }
-`;
-
 export const CREATE_CERTIFICATES = gql`
   mutation createCertificates(
     $userIds: [uuid!]!
     $courseId: Int!
     $certificateType: String!
   ) {
-    createCertificate(
+    createCertificates(
       userIds: $userIds
       courseId: $courseId
       certificateType: $certificateType
