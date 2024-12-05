@@ -55,6 +55,7 @@ import {
   UPDATE_COURSE_CHAT_LINK,
   UPDATE_COURSE_ECTS,
   UPDATE_COURSE_EXTERNAL_REGISTRATION_LINK,
+  UPDATE_COURSE_TITLE,
 } from '../../../queries/course';
 import useErrorHandler from '../../../hooks/useErrorHandler';
 import { ErrorMessageDialog } from '../../common/dialogs/ErrorMessageDialog';
@@ -377,7 +378,8 @@ const SingleCourseRow: FC<IPropsCourseOneRow> = ({
             placeholder={t('course-page:default-course-title')}
             itemId={course.id}
             value={course.title || ''}
-            onValueUpdated={handleSetCourseTitle}
+            updateValueMutation={UPDATE_COURSE_TITLE}
+            refetchQueries={['AdminCourseList']}
           />
           </p>
         </td>

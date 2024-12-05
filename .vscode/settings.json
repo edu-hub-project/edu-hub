@@ -12,5 +12,6 @@
   "githubIssues.issueBranchTitle": "issue${issueNumber}/${sanitizedIssueTitle}",
   "[github-actions-workflow]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "npm.packageManager": "yarn"
 }

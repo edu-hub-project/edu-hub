@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import { Dispatch, SetStateAction } from 'react';
-
+import { useEffect } from 'react';
 import { useRoleQuery } from '../../hooks/authedQuery';
 import { CourseWithEnrollment_Course_by_pk_CourseEnrollments } from '../../queries/__generated__/CourseWithEnrollment';
 import { GET_SIGNED_URL } from '../../queries/actions';
@@ -27,10 +27,19 @@ export const CertificateDownload: FC<IProps> = ({
   hideAttendanceCertificateButton = false,
   manageView,
 }) => {
+  console.log('=== CertificateDownload Component State ===', {
+    enrollmentId: courseEnrollment?.id,
+    achievementCertificateURL: courseEnrollment?.achievementCertificateURL,
+    attendanceCertificateURL: courseEnrollment?.attendanceCertificateURL,
+    hideAchievementButton: hideAchievementCertificateButton,
+    hideAttendanceButton: hideAttendanceCertificateButton
+  });
+
   const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleQueryError = (error: string) => {
+    console.error('Certificate Query Error:', error);
     setErrorMessage(error);
   };
 
@@ -43,6 +52,12 @@ export const CertificateDownload: FC<IProps> = ({
     },
     skip: !courseEnrollment?.achievementCertificateURL,
     onError: () => handleQueryError(t('errorMessages:loadAchievementCertificateError')),
+    onCompleted: (data) => {
+      console.log('Achievement Certificate Query Completed:', {
+        url: data?.getSignedUrl?.link,
+        hasData: !!data
+      });
+    }
   });
 
   const { data: loadAttendanceCertificateData, loading: loadAttendanceCertificateLoading } = useRoleQuery<
@@ -54,8 +69,20 @@ export const CertificateDownload: FC<IProps> = ({
     },
     skip: !courseEnrollment?.attendanceCertificateURL,
     onError: () => handleQueryError(t('errorMessages:loadAttendanceCertificateError')),
+    onCompleted: (data) => {
+      console.log('Attendance Certificate Query Completed:', {
+        url: data?.getSignedUrl?.link,
+        hasData: !!data
+      });
+    }
   });
 
+  useEffect(() => {
+    console.log('Certificate URLs Updated:', {
+      achievement: courseEnrollment?.achievementCertificateURL,
+      attendance: courseEnrollment?.attendanceCertificateURL
+    });
+  }, [courseEnrollment?.achievementCertificateURL, courseEnrollment?.attendanceCertificateURL]);
   return (
     <div className={!manageView ? 'mt-4' : ''}>
       <div className={`flex gap-4 ${!manageView ? 'flex-col sm:px-24' : ''}`}>

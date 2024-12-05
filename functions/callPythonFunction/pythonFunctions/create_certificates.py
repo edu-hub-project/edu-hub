@@ -60,6 +60,7 @@ class CertificateCreator:
                 logging.error(f"Error in processing enrollment {i}: {e}")
     
         logging.info(f"{successful_count}/{len(self.enrollments)} {self.certificate_type} certificate(s) successfully   generated.")
+        return successful_count
 
     def generate_and_save_certificate_to_gcs(self, template_image_url, template_text, enrollment):
         """
@@ -131,6 +132,7 @@ class CertificateCreator:
         """
         record_type = self.enrollments[0]['User']['AchievementRecordAuthors'][0]['AchievementRecord']['AchievementOption']['recordType']
         program_id = self.enrollments[0]['Course']['Program']['id']
+        logging.info(f"##########################retrieved recordtype {record_type}")
 
         query = """
         query getTemplateHtml($programId: Int!) {
@@ -167,8 +169,11 @@ class CertificateCreator:
                 return None
 
             # Run through the templates and find the right template.
+            #logging.info(f"recieved data:{data['data']}")
             templates = data['data']['CertificateTemplateProgram']
+            #logging.info(f"Found templates: {templates}")
             certificate_type_in_caps = self.certificate_type.upper()
+            #logging.info(f"#######################Retrieved certificatetype: {certificate_type_in_caps}")
             for program in templates:
                 template = program['CertificateTemplateText']
                 if template['recordType'] == record_type and template['certificateType'] == certificate_type_in_caps:
@@ -301,7 +306,9 @@ def create_certificates(hasura_secret, arguments):
     """
     try:
         certificate_creator = CertificateCreator(arguments)
-        certificate_creator.create_certificates()
+        successful_count = certificate_creator.create_certificates()
         logging.info("Certificates creation process completed.")
+        return {"result": successful_count}
     except Exception as e:
         logging.error("Error in creating certificates: %s", str(e))
+        return {"result": 0}

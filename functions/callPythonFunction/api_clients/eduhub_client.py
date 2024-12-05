@@ -365,25 +365,41 @@ class EduHubClient:
         Returns:
             tuple: A tuple containing a boolean indicating success and the number of affected rows.
         """
-        mutation = """
-        mutation UpdateEnrollment($userId: uuid!, $courseId: Int!, $certificateUrl: String!, $certificateType: String!) {
-         update_CourseEnrollment(
-            where: { userId: { _eq: $userId }, courseId: { _eq: $courseId } }
-                _set: { 
-                    attendanceCertificateURL: $certificateType == "attendance" ? $certificateUrl : attendanceCertificateURL,
-                    achievementCertificateURL: $certificateType == "achievement" ? $certificateUrl : achievementCertificateURL
+        if certificate_type == "achievement":
+            mutation = """
+            mutation UpdateAchievementCertificate($userId: uuid!, $courseId: Int!, $certificateUrl: String!) {
+                update_CourseEnrollment(
+                    where: { 
+                        userId: { _eq: $userId }, 
+                        courseId: { _eq: $courseId } 
+                    },
+                    _set: {
+                        achievementCertificateURL: $certificateUrl
                     }
-                 ) {
-            affected_rows
-            }
-        }"""
-
+                ) {
+                    affected_rows
+                }
+            }"""
+        else:
+            mutation = """
+            mutation UpdateAttendanceCertificate($userId: uuid!, $courseId: Int!, $certificateUrl: String!) {
+                update_CourseEnrollment(
+                    where: { 
+                        userId: { _eq: $userId }, 
+                        courseId: { _eq: $courseId } 
+                    },
+                    _set: {
+                        attendanceCertificateURL: $certificateUrl
+                    }
+                ) {
+                    affected_rows
+                }
+            }"""
 
         variables = {
             "userId": user_id,
             "courseId": course_id,
-            "certificateUrl": certificate_url,
-            "certificateType": certificate_type
+            "certificateUrl": certificate_url
         }
 
         return self.send_query(mutation, variables)
