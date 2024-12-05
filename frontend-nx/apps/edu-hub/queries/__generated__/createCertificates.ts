@@ -7,11 +7,16 @@
 // GraphQL mutation operation: createCertificates
 // ====================================================
 
+export interface createCertificates_createCertificates {
+  __typename: "result";
+  result: string;
+}
+
 export interface createCertificates {
   /**
    * createCertificates
    */
-  createCertificates: string;
+  createCertificates: createCertificates_createCertificates | null;
 }
 
 export interface createCertificatesVariables {
