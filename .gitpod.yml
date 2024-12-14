@@ -12,13 +12,21 @@ tasks:
 
   - name: Frontend Development
     init: |
+      gp sync-await workspace-init && # Wait for workspace to be ready
       cd frontend-nx &&
       yarn install
     command: |
+      gp sync-await workspace-init && # Wait for workspace to be ready
       cd frontend-nx &&
       export NEXT_PUBLIC_STORAGE_BUCKET_URL=https://4001-${GITPOD_WORKSPACE_URL#https://}/emulated-bucket &&
       export NEXT_PUBLIC_ENVIRONMENT=development &&
       yarn dev
+
+workspaceLocation: /workspace/eduhub
+
+# Add this to ensure workspace is initialized before tasks run
+before: |
+  gp sync-done workspace-init
 
 ports:
   - port: 5000
