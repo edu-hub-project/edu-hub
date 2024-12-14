@@ -11,7 +11,7 @@ cd /hasura
 graphql-engine serve &
 
 # Wait for Hasura to become ready
-while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8080/healthz)" != "200" ]]; do
+while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://hasura:8080/healthz)" != "200" ]]; do
     sleep 2
 done
 
