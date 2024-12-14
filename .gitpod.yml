@@ -1,8 +1,8 @@
 tasks:
   - name: Setup Environment and Docker
     init: |
-      echo "STORAGE_BUCKET_URL=${GITPOD_WORKSPACE_ID}/${GITPOD_WORKSPACE_URL}:4001" > .env
-      echo "HASURA_ADMIN_SECRET=myadminsecretkey" >> .env &&
+      echo "STORAGE_BUCKET_URL=${GITPOD_WORKSPACE_URL}" > .env
+      echo "HASURA_GRAPHQL_ADMIN_SECRET=myadminsecretkey" >> .env &&
       docker compose -f docker-compose.yml up -d &&
       curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
     command: |
