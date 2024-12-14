@@ -22,8 +22,6 @@ tasks:
       export NEXT_PUBLIC_ENVIRONMENT=development &&
       yarn dev
 
-workspaceLocation: /workspace/eduhub
-
 # Add this to ensure workspace is initialized before tasks run
 before: |
   gp sync-done workspace-init
