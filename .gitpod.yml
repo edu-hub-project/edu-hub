@@ -4,7 +4,8 @@ tasks:
       echo "STORAGE_BUCKET_URL=https://4001-${GITPOD_WORKSPACE_URL#https://}" > .env
       echo "HASURA_GRAPHQL_ADMIN_SECRET=myadminsecretkey" >> .env
       docker compose -f docker-compose.yml up -d db_hasura hasura keycloak node_functions python_functions &&
-      curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
+      curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash &&
+      gp sync-done setup
     command: |
       source .env
       echo "Environment is ready! You can now use Hasura Console with:"
@@ -12,19 +13,14 @@ tasks:
 
   - name: Frontend Development
     init: |
-      gp sync-await workspace-init && # Wait for workspace to be ready
+      gp sync-await setup &&
       cd frontend-nx &&
       yarn install
     command: |
-      gp sync-await workspace-init && # Wait for workspace to be ready
       cd frontend-nx &&
       export NEXT_PUBLIC_STORAGE_BUCKET_URL=https://4001-${GITPOD_WORKSPACE_URL#https://}/emulated-bucket &&
       export NEXT_PUBLIC_ENVIRONMENT=development &&
       yarn dev
-
-# Add this to ensure workspace is initialized before tasks run
-before: |
-  gp sync-done workspace-init
 
 ports:
   - port: 5000
