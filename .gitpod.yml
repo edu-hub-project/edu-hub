@@ -1,8 +1,9 @@
 tasks:
   - name: Setup Environment and Docker
     init: |
-      echo "STORAGE_BUCKET_URL=${GITPOD_WORKSPACE_URL}" > .env
-      echo "HASURA_GRAPHQL_ADMIN_SECRET=myadminsecretkey" >> .env &&
+      echo "STORAGE_BUCKET_URL=https://4001-${GITPOD_WORKSPACE_URL#https://}" > .env
+      echo "HASURA_GRAPHQL_ADMIN_SECRET=myadminsecretkey" >> .env
+      echo "HASURA_ENDPOINT=https://8080-${GITPOD_WORKSPACE_URL#https://}" >> .env
       docker compose -f docker-compose.yml up -d &&
       curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
     command: |
@@ -23,5 +24,6 @@ ports:
     onOpen: ignore
   - port: 8080
     onOpen: ignore
+    visibility: public
   - port: 28080
     onOpen: ignore
