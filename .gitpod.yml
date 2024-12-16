@@ -9,19 +9,34 @@ tasks:
         sleep 2
       done &&
       curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash &&
-      cd frontend-nx &&
-      yarn install &&
-      cd ..
+      # Install frontend dependencies
+      if [ -d "frontend-nx" ]; then
+        cd frontend-nx &&
+        yarn install --ignore-engines &&
+        cd ..
+      else
+        echo "frontend-nx directory not found!"
+      fi
     command: |
-      cd backend &&
-      source ../.env &&
-      echo "Environment is ready! You can now use Hasura Console with:" &&
-      echo "hasura console --endpoint https://8080-${GITPOD_WORKSPACE_URL#https://} --address 0.0.0.0" &&
-      hasura console --endpoint https://8080-${GITPOD_WORKSPACE_URL#https://} --address 0.0.0.0 &
-      cd ../frontend-nx &&
-      export NEXT_PUBLIC_STORAGE_BUCKET_URL=https://4001-${GITPOD_WORKSPACE_URL#https://}/emulated-bucket &&
-      export NEXT_PUBLIC_ENVIRONMENT=development &&
-      yarn dev
+      # Start Hasura console
+      if [ -d "backend" ]; then
+        cd backend &&
+        source ../.env &&
+        echo "Environment is ready! You can now use Hasura Console with:" &&
+        echo "hasura console --endpoint https://8080-${GITPOD_WORKSPACE_URL#https://} --address 0.0.0.0" &&
+        hasura console --endpoint https://8080-${GITPOD_WORKSPACE_URL#https://} --address 0.0.0.0 &
+        cd ..
+      fi
+      
+      # Start frontend development
+      if [ -d "frontend-nx" ]; then
+        cd frontend-nx &&
+        export NEXT_PUBLIC_STORAGE_BUCKET_URL=https://4001-${GITPOD_WORKSPACE_URL#https://}/emulated-bucket &&
+        export NEXT_PUBLIC_ENVIRONMENT=development &&
+        yarn dev
+      else
+        echo "frontend-nx directory not found!"
+      fi
 
 ports:
   - port: 5000
