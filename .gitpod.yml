@@ -1,22 +1,16 @@
 tasks:
-  - name: Setup Environment and Docker
+  - name: Development Environment
     init: |
       echo "STORAGE_BUCKET_URL=https://4001-${GITPOD_WORKSPACE_URL#https://}" > .env
       echo "HASURA_GRAPHQL_ADMIN_SECRET=myadminsecretkey" >> .env
-      docker compose -f docker-compose.yml up -d db_hasura hasura keycloak node_functions python_functions &&
+      docker compose -f docker-compose.yml up -d &&
       curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash &&
-      gp sync-done setup
+      cd frontend-nx &&
+      yarn install
     command: |
       source .env
       echo "Environment is ready! You can now use Hasura Console with:"
       echo "hasura console --endpoint https://8080-${GITPOD_WORKSPACE_URL#https://} --address 0.0.0.0"
-
-  - name: Frontend Development
-    init: |
-      gp sync-await setup &&
-      cd frontend-nx &&
-      yarn install
-    command: |
       cd frontend-nx &&
       export NEXT_PUBLIC_STORAGE_BUCKET_URL=https://4001-${GITPOD_WORKSPACE_URL#https://}/emulated-bucket &&
       export NEXT_PUBLIC_ENVIRONMENT=development &&
