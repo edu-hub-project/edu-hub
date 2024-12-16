@@ -4,14 +4,21 @@ tasks:
       echo "STORAGE_BUCKET_URL=https://4001-${GITPOD_WORKSPACE_URL#https://}" > .env
       echo "HASURA_GRAPHQL_ADMIN_SECRET=myadminsecretkey" >> .env
       docker compose -f docker-compose.yml up -d &&
+      echo "Waiting for Hasura to be ready..." &&
+      until curl -s -f -o /dev/null "https://8080-${GITPOD_WORKSPACE_URL#https://}/healthz"; do
+        sleep 2
+      done &&
       curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash &&
       cd frontend-nx &&
-      yarn install
+      yarn install &&
+      cd ..
     command: |
-      source .env
-      echo "Environment is ready! You can now use Hasura Console with:"
-      echo "hasura console --endpoint https://8080-${GITPOD_WORKSPACE_URL#https://} --address 0.0.0.0"
-      cd frontend-nx &&
+      cd backend &&
+      source ../.env &&
+      echo "Environment is ready! You can now use Hasura Console with:" &&
+      echo "hasura console --endpoint https://8080-${GITPOD_WORKSPACE_URL#https://} --address 0.0.0.0" &&
+      hasura console --endpoint https://8080-${GITPOD_WORKSPACE_URL#https://} --address 0.0.0.0 &
+      cd ../frontend-nx &&
       export NEXT_PUBLIC_STORAGE_BUCKET_URL=https://4001-${GITPOD_WORKSPACE_URL#https://}/emulated-bucket &&
       export NEXT_PUBLIC_ENVIRONMENT=development &&
       yarn dev
@@ -32,3 +39,7 @@ ports:
     visibility: public
   - port: 28080
     onOpen: ignore
+  - port: 9695
+    onOpen: open-browser
+    visibility: public
+    
