@@ -40,9 +40,11 @@ tasks:
 
 ports:
   - port: 5000
-    onOpen: ignore
+    onOpen: open-browser
+    visibility: public
   - port: 5001
-    onOpen: ignore
+    onOpen: open-browser
+    visibility: public
   - port: 42000
     onOpen: ignore
   - port: 42001-42024
@@ -57,4 +59,3 @@ ports:
   - port: 9695
     onOpen: open-browser
     visibility: public
-    
