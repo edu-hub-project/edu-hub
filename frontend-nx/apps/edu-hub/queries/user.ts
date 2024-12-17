@@ -18,8 +18,6 @@ export const USER = gql`
       firstName
       lastName
       matriculationNumber
-      otherUniversity
-      university
       externalProfile
       occupation
       organizationId

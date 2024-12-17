@@ -27,8 +27,6 @@ export const SESSION_FRAGMENT = gql`
           lastName
           picture
           externalProfile
-          university
-          otherUniversity
         }
       }
     }
