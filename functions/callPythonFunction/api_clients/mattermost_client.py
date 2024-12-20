@@ -2,14 +2,17 @@ import os
 import requests
 import random
 import string
+import logging
 
 
 class MattermostClient:
 
     def __init__(self):
+        logging.info("Init wird aufgerufen")
         self.url = os.environ.get('MM_URL')
+        logging.debug(f"MM_URl:{len(self.url)}")
         self.token = os.environ.get('MM_TOKEN')
-
+        logging.debug(f"MM_Token:{len(self.token)}")
 # Getter
 
     def get_user_id(self, email):
@@ -61,7 +64,7 @@ class MattermostClient:
             return channel_id
         else:
             print(
-                f"Failed to get Channel ID for Channel '{channel_name}' in Team '{team_name}'. Response code: {response.status_code}")
+                f"Failed to get Channel ID for Channel '{channel_name}'. Response code: {response.status_code}")
             return None
 
     # This function checks if somebody has a MM Use via their email and returns their User ID if they do, else it returns False
