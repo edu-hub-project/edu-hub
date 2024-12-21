@@ -255,9 +255,9 @@ variable "lms_attendance_survey_id" {
 }
 variable "mm_url" {
   description = "URL of the Opencampus Mattermost Server"
-  type = string
+  type        = string
 }
 variable "mm_token" {
   description = "The Admin Token from the Opencampus Mattermost Server"
-  type = string
+  type        = string
 }
