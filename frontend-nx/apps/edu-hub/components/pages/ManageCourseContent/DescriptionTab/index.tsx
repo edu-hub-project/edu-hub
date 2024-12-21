@@ -1,6 +1,6 @@
 import { QueryResult } from '@apollo/client';
 import { FC } from 'react';
-import { eventTargetNumberMapper, useRoleMutation, useUpdateCallback } from '../../../../hooks/authedMutation';
+import { useRoleMutation } from '../../../../hooks/authedMutation';
 import {
   DELETE_COURSE_LOCATION,
   INSERT_COURSE_LOCATION,
@@ -36,10 +36,6 @@ import {
   InsertCourseLocation,
   InsertCourseLocationVariables,
 } from '../../../../queries/__generated__/InsertCourseLocation';
-import {
-  UpdateCourseMaxParticipants,
-  UpdateCourseMaxParticipantsVariables,
-} from '../../../../queries/__generated__/UpdateCourseMaxParticipants';
 import {
   DeleteSessionAddressesByCourseAndLocation,
   DeleteSessionAddressesByCourseAndLocationVariables,
@@ -148,15 +144,6 @@ export const DescriptionTab: FC<IProps> = ({ course, qResult }) => {
     }); // Call the function directly
     qResult.refetch(); // Refetch the query to update the UI
   };
-
-  const updateMaxParticipants = useUpdateCallback<UpdateCourseMaxParticipants, UpdateCourseMaxParticipantsVariables>(
-    UPDATE_COURSE_MAX_PARTICIPANTS,
-    'itemId',
-    'text',
-    course?.id,
-    eventTargetNumberMapper,
-    qResult
-  );
 
   const weekDayOptions = [
     { value: 'NONE', label: t('weekdays.NONE') },

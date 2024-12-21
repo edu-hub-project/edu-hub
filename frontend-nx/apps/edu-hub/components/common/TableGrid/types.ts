@@ -36,7 +36,7 @@ export interface TableGridProps<T extends BaseRow> {
   onSearchFilterChange: (value: string) => void;
 }
 
-export interface UseTableGridProps<T, V> {
+export interface UseTableGridProps<V> {
   queryHook: any; // useRoleQuery or useAdminQuery
   query: DocumentNode;
   queryVariables?: V;

@@ -95,8 +95,8 @@ const ManageCoursesContent: FC<IProps> = ({ courseListRequest, programs, t, upda
     async (c: AdminCourseList_Course, title: string) => {
       await updateTitle({
         variables: {
-          courseId: c.id,
-          courseTitle: title,
+          itemId: c.id,
+          text: title,
         },
       });
       courseListRequest.refetch();

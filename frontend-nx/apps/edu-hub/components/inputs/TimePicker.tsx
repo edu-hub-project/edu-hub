@@ -23,14 +23,12 @@ type TimePickerProps = {
 };
 
 const TimePicker: React.FC<TimePickerProps> = ({
-  variant,
   label,
   identifierVariables,
   currentValue,
   updateValueMutation,
   onValueUpdated,
   refetchQueries = [],
-  helpText,
   isMandatory = false,
   className = '',
 }) => {

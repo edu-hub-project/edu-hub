@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { Weekday_enum, LocationOption_enum, University_enum, CourseStatus_enum, CourseEnrollmentStatus_enum, MotivationRating_enum, AttendanceStatus_enum, AchievementRecordRating_enum, AchievementRecordType_enum } from "./../../__generated__/globalTypes";
+import { Weekday_enum, LocationOption_enum, CourseStatus_enum, CourseEnrollmentStatus_enum, MotivationRating_enum, AttendanceStatus_enum, AchievementRecordRating_enum, AchievementRecordType_enum } from "./../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: ManagedCourse
@@ -54,14 +54,6 @@ export interface ManagedCourse_Course_by_pk_Sessions_SessionSpeakers_Expert_User
    * A link to an external profile, for example in LinkedIn or Xing
    */
   externalProfile: string | null;
-  /**
-   * The university the user is attending or workin at (only provided if he is a student or working in academia)
-   */
-  university: University_enum | null;
-  /**
-   * Name of the university the student is attending or working at (only provided if his/her university is not part of the provided list)
-   */
-  otherUniversity: string | null;
   /**
    * The user's email address
    */
@@ -134,14 +126,6 @@ export interface ManagedCourse_Course_by_pk_CourseInstructors_Expert_User {
    * The user's last name
    */
   lastName: string;
-  /**
-   * The university the user is attending or workin at (only provided if he is a student or working in academia)
-   */
-  university: University_enum | null;
-  /**
-   * Name of the university the student is attending or working at (only provided if his/her university is not part of the provided list)
-   */
-  otherUniversity: string | null;
   /**
    * A link to an external profile, for example in LinkedIn or Xing
    */
@@ -361,14 +345,6 @@ export interface ManagedCourse_Course_by_pk_CourseEnrollments_User {
    * A link to an external profile, for example in LinkedIn or Xing
    */
   externalProfile: string | null;
-  /**
-   * The university the user is attending or workin at (only provided if he is a student or working in academia)
-   */
-  university: University_enum | null;
-  /**
-   * Name of the university the student is attending or working at (only provided if his/her university is not part of the provided list)
-   */
-  otherUniversity: string | null;
   /**
    * An array relationship
    */
