@@ -24,8 +24,6 @@ import InputField from '../../inputs/InputField';
 import DropDownSelector from '../../inputs/DropDownSelector';
 import { UserOccupation } from '../../../queries/__generated__/UserOccupation';
 import { CREATE_ORGANIZATION, ORGANIZATION_LIST } from '../../../queries/organization';
-import { OrganizationList } from '../../../queries/__generated__/OrganizationList';
-import ServerSideCombobox from '../../inputs/ServerSideComboBox';
 
 const ProfileContent: FC = () => {
   const { t } = useTranslation('profile');
@@ -52,7 +50,7 @@ const ProfileContent: FC = () => {
     value: x.value,
   }));
 
-  const { data: queryOrganizationOptions, refetch: refetchOrgs } = useRoleQuery(ORGANIZATION_LIST, {
+  const { data: queryOrganizationOptions } = useRoleQuery(ORGANIZATION_LIST, {
     variables: {
       limit: 10000,
       order_by: [{ name: 'asc' }],
@@ -63,22 +61,6 @@ const ProfileContent: FC = () => {
     label: org.name,
     aliases: org.aliases, // Make sure to include this
   }));
-
-  // Handler for searching organizations
-  const handleOrganizationSearch = async (term: string) => {
-    const { data } = await refetchOrgs({
-      filter: {
-        name: { _ilike: `%${term}%` },
-      },
-    });
-
-    return (
-      data?.Organization?.map((org) => ({
-        value: org.id.toString(),
-        label: org.name,
-      })) || []
-    );
-  };
 
   // Render loading state
   if (sessionStatus === 'loading') {

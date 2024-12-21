@@ -82,13 +82,9 @@ const CreatableTagSelector: React.FC<CreatableTagSelectorProps> = ({
   values,
   options,
   updateValuesMutation,
-  onTagsUpdated,
   refetchQueries,
   helpText,
-  isMandatory,
-  debounceTimeout,
   className,
-  invertColors,
 }) => {
   const [tags, setTags] = useState<TagOption[]>(values.map((tag) => ({ value: tag })));
   const [inputValue, setInputValue] = useState('');
