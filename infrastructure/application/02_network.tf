@@ -106,7 +106,7 @@ resource "cloudflare_record" "keycloak" {
   zone_id = var.cloudflare_zone_id
   name    = local.keycloak_service_name
   type    = "A"
-  value   = module.lb-http.external_ip
+  content = module.lb-http.external_ip
 }
 
 # Add a domain record for the Hasura service
@@ -114,7 +114,7 @@ resource "cloudflare_record" "hasura" {
   zone_id = var.cloudflare_zone_id
   name    = local.hasura_service_name
   type    = "A"
-  value   = module.lb-http.external_ip
+  content = module.lb-http.external_ip
 }
 
 # Add a domain record for the Hasura service
@@ -122,7 +122,7 @@ resource "cloudflare_record" "eduhub" {
   zone_id = var.cloudflare_zone_id
   name    = local.eduhub_service_name
   type    = "A"
-  value   = module.lb-http.external_ip
+  content = module.lb-http.external_ip
 }
 
 # Add a domain record for the Hasura service
@@ -130,5 +130,5 @@ resource "cloudflare_record" "rent_a_scientist" {
   zone_id = var.cloudflare_zone_id
   name    = local.rent_a_scientist_service_name
   type    = "A"
-  value   = module.lb-http.external_ip
+  content = module.lb-http.external_ip
 }
