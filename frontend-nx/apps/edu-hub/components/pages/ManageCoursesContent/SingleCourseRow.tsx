@@ -121,7 +121,6 @@ const SingleCourseRow: FC<IPropsCourseOneRow> = ({
   courseGroupOptions,
   degreeCourses,
   refetchCourses,
-  onSetTitle,
   onSetAttendanceCertificatePossible,
   onSetAchievementCertificatePossible,
   qResult,
@@ -212,13 +211,6 @@ const SingleCourseRow: FC<IPropsCourseOneRow> = ({
       refetchCourses();
     },
     [refetchCourses, course.id, updateCourse]
-  );
-
-  const handleSetCourseTitle = useCallback(
-    (value: string) => {
-      onSetTitle(course, value);
-    },
-    [course, onSetTitle]
   );
 
   const applicationStatus = () => {
@@ -372,15 +364,15 @@ const SingleCourseRow: FC<IPropsCourseOneRow> = ({
         </td>
         <td className={tdClass}>
           <p className={pClass}>
-          <InputField
-            variant="material"
-            type="input" 
-            placeholder={t('course-page:default-course-title')}
-            itemId={course.id}
-            value={course.title || ''}
-            updateValueMutation={UPDATE_COURSE_TITLE}
-            refetchQueries={['AdminCourseList']}
-          />
+            <InputField
+              variant="material"
+              type="input"
+              placeholder={t('course-page:default-course-title')}
+              itemId={course.id}
+              value={course.title || ''}
+              updateValueMutation={UPDATE_COURSE_TITLE}
+              refetchQueries={['AdminCourseList']}
+            />
           </p>
         </td>
         <td className={`${tdClass}`}>

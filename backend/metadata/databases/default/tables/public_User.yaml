@@ -11,12 +11,6 @@ object_relationships:
   - name: UserStatus
     using:
       foreign_key_constraint_on: status
-  - name: employmentByEmployment
-    using:
-      foreign_key_constraint_on: employment
-  - name: universityByUniversity
-    using:
-      foreign_key_constraint_on: university
 array_relationships:
   - name: AchievementOptionMentors
     using:
@@ -64,20 +58,18 @@ select_permissions:
   - role: admin-ras
     permission:
       columns:
-        - created_at
-        - updated_at
-        - id
-        - externalProfile
         - anonymousId
-        - newsletterRegistration
-        - otherUniversity
-        - university
-        - employment
+        - created_at
         - email
+        - externalProfile
         - firstName
+        - id
         - lastName
         - matriculationNumber
+        - newsletterRegistration
+        - occupation
         - picture
+        - updated_at
       filter: {}
   - role: anonymous
     permission:
@@ -86,10 +78,9 @@ select_permissions:
         - firstName
         - id
         - lastName
+        - occupation
         - organizationId
-        - otherUniversity
         - picture
-        - university
       filter: {}
       limit: 10
   - role: instructor_access
@@ -98,16 +89,14 @@ select_permissions:
         - anonymousId
         - created_at
         - email
-        - employment
         - externalProfile
         - firstName
         - id
         - lastName
         - matriculationNumber
         - newsletterRegistration
-        - otherUniversity
+        - occupation
         - picture
-        - university
         - updated_at
       filter: {}
       limit: 100
@@ -115,7 +104,6 @@ select_permissions:
     permission:
       columns:
         - email
-        - employment
         - externalProfile
         - firstName
         - id
@@ -124,10 +112,8 @@ select_permissions:
         - newsletterRegistration
         - occupation
         - organizationId
-        - otherUniversity
         - picture
         - status
-        - university
       filter:
         id:
           _eq: X-Hasura-User-Id
@@ -137,7 +123,6 @@ update_permissions:
     permission:
       columns:
         - email
-        - employment
         - externalProfile
         - firstName
         - lastName
@@ -145,9 +130,7 @@ update_permissions:
         - newsletterRegistration
         - occupation
         - organizationId
-        - otherUniversity
         - picture
-        - university
       filter:
         id:
           _eq: X-Hasura-User-Id

@@ -14,7 +14,7 @@ interface SessionsProps {
 }
 
 export const Sessions: FC<SessionsProps> = ({ sessions, isLoggedInParticipant }) => {
-  const { t, lang } = useTranslation('course-page');
+  const { t } = useTranslation('course-page');
   const [showAllSessions, setShowAllSessions] = useState(false);
   const displayDate = useDisplayDate();
   const formatTimeString = useFormatTimeString();

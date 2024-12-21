@@ -47,7 +47,7 @@ const Onboarding: FC<OnboardingProps> = ({ course, enrollmentId, refetchCourse, 
   const userId = useUserId();
   const [showDeclineDialog, setShowDeclineDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: sessionData, status: sessionStatus } = useSession();
+  const { status: sessionStatus } = useSession();
 
   const { data: userData } = useAuthedQuery<User>(USER, {
     variables: { userId },

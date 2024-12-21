@@ -1,4 +1,4 @@
-import React, { FC, useState, useMemo, useEffect, ErrorInfo, ReactNode } from 'react';
+import React, { FC, useState, useMemo, ErrorInfo, ReactNode } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import { Page } from '../../layout/Page';
 import { MULTI_PROGRAM_ENROLLMENTS } from '../../../queries/multiProgramEnrollments';
@@ -23,7 +23,7 @@ class ErrorBoundary extends React.Component<{ children: ReactNode }, { hasError:
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(_: Error) {
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
@@ -43,9 +43,8 @@ class ErrorBoundary extends React.Component<{ children: ReactNode }, { hasError:
 const StatisticsContent: FC = () => {
   const { t } = useTranslation('statistics');
   const [selectedPrograms, setSelectedPrograms] = useState<{ id: number; name: string }[]>([]);
-  const [key, setKey] = useState(0);
 
-  const { data: programsData, loading: programsLoading } = useRoleQuery<ProgramList>(PROGRAM_LIST);
+  const { data: programsData } = useRoleQuery<ProgramList>(PROGRAM_LIST);
 
   const { data, loading, error } = useRoleQuery<MultiProgramEnrollments>(MULTI_PROGRAM_ENROLLMENTS, {
     variables: { programIds: selectedPrograms.map((program) => program.id) },
