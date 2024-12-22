@@ -28,13 +28,13 @@ resource "google_service_networking_connection" "private" {
 
 # Create a serverless VPC Access connector
 resource "google_vpc_access_connector" "default" {
-  provider       = google-beta
-  name           = "vpc-lan-con"
-  ip_cidr_range  = "10.8.0.0/28"
-  network        = google_compute_network.private.name
-  min_instances  = 1
-  max_instances  = 3
-  machine_type   = "f1-micro"
+  provider      = google-beta
+  name          = "vpc-lan-con"
+  ip_cidr_range = "10.8.0.0/28"
+  network       = google_compute_network.private.name
+  min_instances = 1
+  max_instances = 3
+  machine_type  = "f1-micro"
 }
 
 
