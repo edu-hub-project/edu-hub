@@ -59,7 +59,7 @@ resource "google_compute_region_network_endpoint_group" "default" {
 # and place serverless services from Cloud Run, Cloud Functions and App Engine behind a Cloud Load Balancer
 module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
-  version = "~> 6.2.0"
+  version = "~> 12.0.0"
   name    = "load-balancer"
   project = var.project_id
 
