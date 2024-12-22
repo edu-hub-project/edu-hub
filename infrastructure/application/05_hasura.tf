@@ -66,7 +66,7 @@ resource "google_cloud_run_service_iam_policy" "hasura_noauth_invoker" {
 # Define the Google Cloud Run service for Keycloak
 module "hasura_service" {
   source  = "GoogleCloudPlatform/cloud-run/google"
-  version = "~> 0.8"
+  version = "~> 0.15.4"
 
   # Required variables
   service_name = local.hasura_service_name
