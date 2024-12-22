@@ -66,7 +66,6 @@ module "lb-http" {
   # Create Google-managed SSL certificates for the specified domains. 
   ssl                             = "true"
   managed_ssl_certificate_domains = ["${local.keycloak_service_name}.opencampus.sh", "${local.hasura_service_name}.opencampus.sh", "${local.eduhub_service_name}.opencampus.sh", "${local.rent_a_scientist_service_name}.opencampus.sh"]
-  use_ssl_certificates            = "false"
   https_redirect                  = "true"
   random_certificate_suffix       = "true"
 
