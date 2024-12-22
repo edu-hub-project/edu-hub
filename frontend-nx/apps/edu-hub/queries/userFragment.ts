@@ -8,7 +8,5 @@ export const USER_FRAGMENT = gql`
     email
     picture
     externalProfile
-    university
-    otherUniversity
   }
 `;

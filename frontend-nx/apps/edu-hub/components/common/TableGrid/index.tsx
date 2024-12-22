@@ -3,14 +3,13 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { TextField, Checkbox, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
 import useTranslation from 'next-translate/useTranslation';
 import { ArrowDropUp, ArrowDropDown } from '@mui/icons-material';
-import { MdArrowBack, MdArrowForward, MdDelete } from 'react-icons/md';
+import { MdArrowBack, MdArrowForward } from 'react-icons/md';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  getFilteredRowModel,
   SortingState,
   useReactTable,
   FilterFn,
@@ -121,7 +120,7 @@ const TableGrid = <T extends BaseRow>({
       ? [
           {
             id: 'selection',
-            header: ({ table }) => (
+            header: () => (
               <Checkbox
                 checked={isAllSelected(data)}
                 indeterminate={isSomeSelected(data)}

@@ -19,7 +19,6 @@ const DropDownSelector: React.FC<DropDownSelectorProps> = ({
   onValueUpdated,
   refetchQueries = [],
   helpText,
-  errorText,
   isMandatory = false,
   className = '',
   identifierVariables,

@@ -1,5 +1,4 @@
 version: 3
-endpoint: http://localhost:8080/
 admin_secret: myadminsecretkey
 api_paths:
   v1_query: v1/query

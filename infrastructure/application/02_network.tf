@@ -28,14 +28,13 @@ resource "google_service_networking_connection" "private" {
 
 # Create a serverless VPC Access connector
 resource "google_vpc_access_connector" "default" {
-  provider       = google-beta
-  name           = "vpc-lan-con"
-  ip_cidr_range  = "10.8.0.0/28"
-  network        = google_compute_network.private.name
-  min_instances  = 2
-  max_instances  = 3
-  max_throughput = 300
-  machine_type   = "f1-micro"
+  provider      = google-beta
+  name          = "vpc-lan-con"
+  ip_cidr_range = "10.8.0.0/28"
+  network       = google_compute_network.private.name
+  min_instances = 1
+  max_instances = 3
+  machine_type  = "f1-micro"
 }
 
 
@@ -59,14 +58,13 @@ resource "google_compute_region_network_endpoint_group" "default" {
 # and place serverless services from Cloud Run, Cloud Functions and App Engine behind a Cloud Load Balancer
 module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
-  version = "~> 6.2.0"
+  version = "~> 12.0.0"
   name    = "load-balancer"
   project = var.project_id
 
   # Create Google-managed SSL certificates for the specified domains. 
   ssl                             = "true"
   managed_ssl_certificate_domains = ["${local.keycloak_service_name}.opencampus.sh", "${local.hasura_service_name}.opencampus.sh", "${local.eduhub_service_name}.opencampus.sh", "${local.rent_a_scientist_service_name}.opencampus.sh"]
-  use_ssl_certificates            = "false"
   https_redirect                  = "true"
   random_certificate_suffix       = "true"
 

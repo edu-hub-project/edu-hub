@@ -762,33 +762,6 @@ export enum Course_update_column {
 }
 
 /**
- * unique or primary key constraints on table "Employment"
- */
-export enum Employment_constraint {
-  Employment_pkey = "Employment_pkey",
-}
-
-export enum Employment_enum {
-  ACADEMIA = "ACADEMIA",
-  EMPLOYED = "EMPLOYED",
-  OTHER = "OTHER",
-  PUPIL = "PUPIL",
-  RETIREE = "RETIREE",
-  SELFEMPLOYED = "SELFEMPLOYED",
-  STUDENT = "STUDENT",
-  TEACHER = "TEACHER",
-  UNEMPLOYED = "UNEMPLOYED",
-}
-
-/**
- * update columns of table "Employment"
- */
-export enum Employment_update_column {
-  comment = "comment",
-  value = "value",
-}
-
-/**
  * unique or primary key constraints on table "Expert"
  */
 export enum Expert_constraint {
@@ -1379,34 +1352,6 @@ export enum Teacher_update_column {
 }
 
 /**
- * unique or primary key constraints on table "University"
- */
-export enum University_constraint {
-  University_pkey = "University_pkey",
-}
-
-export enum University_enum {
-  CAU_KIEL = "CAU_KIEL",
-  DHSH = "DHSH",
-  FH_FLENSBURG = "FH_FLENSBURG",
-  FH_KIEL = "FH_KIEL",
-  FH_WESTKUESTE = "FH_WESTKUESTE",
-  MUTHESIUS = "MUTHESIUS",
-  OTHER = "OTHER",
-  TH_LUEBECK = "TH_LUEBECK",
-  UNI_FLENSBURG = "UNI_FLENSBURG",
-  UNI_LUEBECK = "UNI_LUEBECK",
-}
-
-/**
- * update columns of table "University"
- */
-export enum University_update_column {
-  comment = "comment",
-  value = "value",
-}
-
-/**
  * unique or primary key constraints on table "UserOccupation"
  */
 export enum UserOccupation_constraint {
@@ -1473,7 +1418,6 @@ export enum User_select_column {
   anonymousId = "anonymousId",
   created_at = "created_at",
   email = "email",
-  employment = "employment",
   externalProfile = "externalProfile",
   firstName = "firstName",
   id = "id",
@@ -1483,10 +1427,8 @@ export enum User_select_column {
   newsletterRegistration = "newsletterRegistration",
   occupation = "occupation",
   organizationId = "organizationId",
-  otherUniversity = "otherUniversity",
   picture = "picture",
   status = "status",
-  university = "university",
   updated_at = "updated_at",
 }
 
@@ -1511,7 +1453,6 @@ export enum User_update_column {
   anonymousId = "anonymousId",
   created_at = "created_at",
   email = "email",
-  employment = "employment",
   externalProfile = "externalProfile",
   firstName = "firstName",
   id = "id",
@@ -1521,10 +1462,8 @@ export enum User_update_column {
   newsletterRegistration = "newsletterRegistration",
   occupation = "occupation",
   organizationId = "organizationId",
-  otherUniversity = "otherUniversity",
   picture = "picture",
   status = "status",
-  university = "university",
   updated_at = "updated_at",
 }
 
@@ -4935,65 +4874,6 @@ export interface Course_variance_order_by {
   programId?: order_by | null;
 }
 
-/**
- * Boolean expression to filter rows from the table "Employment". All fields are combined with a logical 'AND'.
- */
-export interface Employment_bool_exp {
-  Users?: User_bool_exp | null;
-  Users_aggregate?: User_aggregate_bool_exp | null;
-  _and?: Employment_bool_exp[] | null;
-  _not?: Employment_bool_exp | null;
-  _or?: Employment_bool_exp[] | null;
-  comment?: String_comparison_exp | null;
-  value?: String_comparison_exp | null;
-}
-
-/**
- * Boolean expression to compare columns of type "Employment_enum". All fields are combined with logical 'AND'.
- */
-export interface Employment_enum_comparison_exp {
-  _eq?: Employment_enum | null;
-  _in?: Employment_enum[] | null;
-  _is_null?: boolean | null;
-  _neq?: Employment_enum | null;
-  _nin?: Employment_enum[] | null;
-}
-
-/**
- * input type for inserting data into table "Employment"
- */
-export interface Employment_insert_input {
-  Users?: User_arr_rel_insert_input | null;
-  comment?: string | null;
-  value?: string | null;
-}
-
-/**
- * input type for inserting object relation for remote table "Employment"
- */
-export interface Employment_obj_rel_insert_input {
-  data: Employment_insert_input;
-  on_conflict?: Employment_on_conflict | null;
-}
-
-/**
- * on_conflict condition type for table "Employment"
- */
-export interface Employment_on_conflict {
-  constraint: Employment_constraint;
-  update_columns: Employment_update_column[];
-  where?: Employment_bool_exp | null;
-}
-
-/**
- * Ordering options when selecting data from "Employment".
- */
-export interface Employment_order_by {
-  Users_aggregate?: User_aggregate_order_by | null;
-  comment?: order_by | null;
-  value?: order_by | null;
-}
-
 export interface Expert_aggregate_bool_exp {
   count?: Expert_aggregate_bool_exp_count | null;
 }
@@ -6811,65 +6691,6 @@ export interface Teacher_on_conflict {
 }
 
 /**
- * Boolean expression to filter rows from the table "University". All fields are combined with a logical 'AND'.
- */
-export interface University_bool_exp {
-  Users?: User_bool_exp | null;
-  Users_aggregate?: User_aggregate_bool_exp | null;
-  _and?: University_bool_exp[] | null;
-  _not?: University_bool_exp | null;
-  _or?: University_bool_exp[] | null;
-  comment?: String_comparison_exp | null;
-  value?: String_comparison_exp | null;
-}
-
-/**
- * Boolean expression to compare columns of type "University_enum". All fields are combined with logical 'AND'.
- */
-export interface University_enum_comparison_exp {
-  _eq?: University_enum | null;
-  _in?: University_enum[] | null;
-  _is_null?: boolean | null;
-  _neq?: University_enum | null;
-  _nin?: University_enum[] | null;
-}
-
-/**
- * input type for inserting data into table "University"
- */
-export interface University_insert_input {
-  Users?: User_arr_rel_insert_input | null;
-  comment?: string | null;
-  value?: string | null;
-}
-
-/**
- * input type for inserting object relation for remote table "University"
- */
-export interface University_obj_rel_insert_input {
-  data: University_insert_input;
-  on_conflict?: University_on_conflict | null;
-}
-
-/**
- * on_conflict condition type for table "University"
- */
-export interface University_on_conflict {
-  constraint: University_constraint;
-  update_columns: University_update_column[];
-  where?: University_bool_exp | null;
-}
-
-/**
- * Ordering options when selecting data from "University".
- */
-export interface University_order_by {
-  Users_aggregate?: User_aggregate_order_by | null;
-  comment?: order_by | null;
-  value?: order_by | null;
-}
-
-/**
  * Boolean expression to filter rows from the table "UserOccupation". All fields are combined with a logical 'AND'.
  */
 export interface UserOccupation_bool_exp {
@@ -7072,8 +6893,6 @@ export interface User_bool_exp {
   anonymousId?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   email?: String_comparison_exp | null;
-  employment?: Employment_enum_comparison_exp | null;
-  employmentByEmployment?: Employment_bool_exp | null;
   externalProfile?: String_comparison_exp | null;
   firstName?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -7083,11 +6902,8 @@ export interface User_bool_exp {
   newsletterRegistration?: Boolean_comparison_exp | null;
   occupation?: UserOccupation_enum_comparison_exp | null;
   organizationId?: Int_comparison_exp | null;
-  otherUniversity?: String_comparison_exp | null;
   picture?: String_comparison_exp | null;
   status?: UserStatus_enum_comparison_exp | null;
-  university?: University_enum_comparison_exp | null;
-  universityByUniversity?: University_bool_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
 
@@ -7107,8 +6923,6 @@ export interface User_insert_input {
   anonymousId?: string | null;
   created_at?: any | null;
   email?: string | null;
-  employment?: Employment_enum | null;
-  employmentByEmployment?: Employment_obj_rel_insert_input | null;
   externalProfile?: string | null;
   firstName?: string | null;
   id?: any | null;
@@ -7118,11 +6932,8 @@ export interface User_insert_input {
   newsletterRegistration?: boolean | null;
   occupation?: UserOccupation_enum | null;
   organizationId?: number | null;
-  otherUniversity?: string | null;
   picture?: string | null;
   status?: UserStatus_enum | null;
-  university?: University_enum | null;
-  universityByUniversity?: University_obj_rel_insert_input | null;
   updated_at?: any | null;
 }
 
@@ -7140,7 +6951,6 @@ export interface User_max_order_by {
   lastName?: order_by | null;
   matriculationNumber?: order_by | null;
   organizationId?: order_by | null;
-  otherUniversity?: order_by | null;
   picture?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -7159,7 +6969,6 @@ export interface User_min_order_by {
   lastName?: order_by | null;
   matriculationNumber?: order_by | null;
   organizationId?: order_by | null;
-  otherUniversity?: order_by | null;
   picture?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -7197,8 +7006,6 @@ export interface User_order_by {
   anonymousId?: order_by | null;
   created_at?: order_by | null;
   email?: order_by | null;
-  employment?: order_by | null;
-  employmentByEmployment?: Employment_order_by | null;
   externalProfile?: order_by | null;
   firstName?: order_by | null;
   id?: order_by | null;
@@ -7208,11 +7015,8 @@ export interface User_order_by {
   newsletterRegistration?: order_by | null;
   occupation?: order_by | null;
   organizationId?: order_by | null;
-  otherUniversity?: order_by | null;
   picture?: order_by | null;
   status?: order_by | null;
-  university?: order_by | null;
-  universityByUniversity?: University_order_by | null;
   updated_at?: order_by | null;
 }
 

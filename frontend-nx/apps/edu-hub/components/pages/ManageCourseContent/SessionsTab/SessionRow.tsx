@@ -7,7 +7,6 @@ import {
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import TimePicker from '../../../inputs/TimePicker';
-import { useFormatTime } from '../../../../helpers/dateTimeHelpers';
 import { DebounceInput } from 'react-debounce-input';
 import { eventTargetValueMapper, useRoleMutation } from '../../../../hooks/authedMutation';
 import { QueryResult } from '@apollo/client';
@@ -27,7 +26,11 @@ import { LocationOption_enum } from '../../../../__generated__/globalTypes';
 import { ErrorMessageDialog } from '../../../common/dialogs/ErrorMessageDialog';
 import { QuestionConfirmationDialog } from '../../../common/dialogs/QuestionConfirmationDialog';
 import { useIsAdmin, useIsInstructor } from '../../../../hooks/authentication';
-import { INSERT_NEW_SESSION_SPEAKER, UPDATE_SESSION_START_TIME, UPDATE_SESSION_END_TIME } from '../../../../queries/course';
+import {
+  INSERT_NEW_SESSION_SPEAKER,
+  UPDATE_SESSION_START_TIME,
+  UPDATE_SESSION_END_TIME,
+} from '../../../../queries/course';
 
 const copyDateTime = (target: Date, source: Date) => {
   target = new Date(target);
@@ -66,7 +69,6 @@ export const SessionRow: FC<IProps> = ({
   const isInstructor = useIsInstructor();
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false);
-  const formatTime = useFormatTime();
 
   const handleDelete = useCallback(() => {
     if (session != null) {
@@ -256,7 +258,7 @@ export const SessionRow: FC<IProps> = ({
             </div>
           )}
         </div>
-        
+
         {session?.SessionAddresses && (
           <div className="col-span-full pl-3 pb-3 pr-3">
             {[...(session?.SessionAddresses || [])]
