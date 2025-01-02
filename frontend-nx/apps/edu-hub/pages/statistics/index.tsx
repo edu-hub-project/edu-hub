@@ -1,9 +1,9 @@
 import Head from 'next/head';
 import { FC } from 'react';
 import { useIsAdmin } from '../../hooks/authentication';
-import StatisticsContent from '../../components/pages/StatisticsContent';
+import StatisticsContent from '../../components/pages/StatisticsContent/index';
 
-const StatisticsPage: FC = () => {
+const Statistics: FC = () => {
   const isAdmin = useIsAdmin();
 
   return (
@@ -17,4 +17,4 @@ const StatisticsPage: FC = () => {
   );
 };
 
-export default StatisticsPage;
+export default Statistics;

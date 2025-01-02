@@ -29,6 +29,11 @@ const DropDownSelector: React.FC<DropDownSelectorProps> = ({
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState('');
 
+  const handleMutationValueUpdate = (newValue: string) => {
+    onValueUpdated?.(newValue);
+    return newValue;
+  };
+
   const {
     localValue,
     localOptions,
@@ -42,7 +47,14 @@ const DropDownSelector: React.FC<DropDownSelectorProps> = ({
     handleValueChange,
     handleBlur,
     debouncedUpdateValue,
-  } = useDropDownLogic(value, options, updateValueMutation, identifierVariables, onValueUpdated, refetchQueries);
+  } = useDropDownLogic(
+    value,
+    options,
+    updateValueMutation || null,
+    identifierVariables,
+    handleMutationValueUpdate,
+    refetchQueries
+  );
 
   const [createValue] = useRoleMutation(
     createOptionMutation ||

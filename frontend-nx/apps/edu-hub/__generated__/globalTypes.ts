@@ -976,12 +976,12 @@ export enum Program_select_column {
   id = "id",
   lectureEnd = "lectureEnd",
   lectureStart = "lectureStart",
-  programType = "programType",
   published = "published",
   shortTitle = "shortTitle",
   speakerQuestionnaire = "speakerQuestionnaire",
   startQuestionnaire = "startQuestionnaire",
   title = "title",
+  type = "type",
   visibility = "visibility",
   visibilityAchievementCertificate = "visibilityAchievementCertificate",
   visibilityAttendanceCertificate = "visibilityAttendanceCertificate",
@@ -1023,12 +1023,12 @@ export enum Program_update_column {
   id = "id",
   lectureEnd = "lectureEnd",
   lectureStart = "lectureStart",
-  programType = "programType",
   published = "published",
   shortTitle = "shortTitle",
   speakerQuestionnaire = "speakerQuestionnaire",
   startQuestionnaire = "startQuestionnaire",
   title = "title",
+  type = "type",
   visibility = "visibility",
   visibilityAchievementCertificate = "visibilityAchievementCertificate",
   visibilityAttendanceCertificate = "visibilityAttendanceCertificate",
@@ -5702,12 +5702,12 @@ export interface Program_bool_exp {
   id?: Int_comparison_exp | null;
   lectureEnd?: date_comparison_exp | null;
   lectureStart?: date_comparison_exp | null;
-  programType?: ProgramType_enum_comparison_exp | null;
   published?: Boolean_comparison_exp | null;
   shortTitle?: String_comparison_exp | null;
   speakerQuestionnaire?: String_comparison_exp | null;
   startQuestionnaire?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
+  type?: ProgramType_enum_comparison_exp | null;
   visibility?: Boolean_comparison_exp | null;
   visibilityAchievementCertificate?: Boolean_comparison_exp | null;
   visibilityAttendanceCertificate?: Boolean_comparison_exp | null;
@@ -5734,12 +5734,12 @@ export interface Program_insert_input {
   id?: number | null;
   lectureEnd?: any | null;
   lectureStart?: any | null;
-  programType?: ProgramType_enum | null;
   published?: boolean | null;
   shortTitle?: string | null;
   speakerQuestionnaire?: string | null;
   startQuestionnaire?: string | null;
   title?: string | null;
+  type?: ProgramType_enum | null;
   visibility?: boolean | null;
   visibilityAchievementCertificate?: boolean | null;
   visibilityAttendanceCertificate?: boolean | null;
@@ -5827,12 +5827,12 @@ export interface Program_order_by {
   id?: order_by | null;
   lectureEnd?: order_by | null;
   lectureStart?: order_by | null;
-  programType?: order_by | null;
   published?: order_by | null;
   shortTitle?: order_by | null;
   speakerQuestionnaire?: order_by | null;
   startQuestionnaire?: order_by | null;
   title?: order_by | null;
+  type?: order_by | null;
   visibility?: order_by | null;
   visibilityAchievementCertificate?: order_by | null;
   visibilityAttendanceCertificate?: order_by | null;

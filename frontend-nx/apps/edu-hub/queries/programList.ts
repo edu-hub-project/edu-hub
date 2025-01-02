@@ -12,6 +12,9 @@ export const PROGRAM_LIST = gql`
       ...AdminProgramFragment
       Courses {
         id
+        Sessions {
+          id 
+        }
       }
     }
   }
@@ -22,6 +25,14 @@ export const PROGRAMS_WITH_MINIMUM_PROPERTIES = gql`
   query Programs {
     Program(order_by: { id: desc }) {
       ...ProgramFragmentMinimumProperties
+    }
+  }
+`;
+
+export const PROGRAM_TYPES = gql`
+  query ProgramTypesList {
+    ProgramType {
+      value
     }
   }
 `;

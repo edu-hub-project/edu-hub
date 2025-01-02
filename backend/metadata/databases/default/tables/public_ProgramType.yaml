@@ -6,7 +6,7 @@ array_relationships:
   - name: Programs
     using:
       foreign_key_constraint_on:
-        column: programType
+        column: type
         table:
           name: Program
           schema: public

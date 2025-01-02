@@ -4,7 +4,7 @@ table:
 object_relationships:
   - name: ProgramType
     using:
-      foreign_key_constraint_on: programType
+      foreign_key_constraint_on: type
 array_relationships:
   - name: CertificateTemplatePrograms
     using:
