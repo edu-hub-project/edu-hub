@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { ProgramType_enum } from "./../../__generated__/globalTypes";
+
 // ====================================================
 // GraphQL fragment: ProgramFragmentMinimumProperties
 // ====================================================
@@ -46,4 +48,5 @@ export interface ProgramFragmentMinimumProperties {
    * Sets the participation certificates for all courses of htis program to be visible for the recipients.
    */
   visibilityAttendanceCertificate: boolean | null;
+  type: ProgramType_enum;
 }

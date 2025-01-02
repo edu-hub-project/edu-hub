@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CourseStatus_enum, Weekday_enum } from "./../../__generated__/globalTypes";
+import { CourseStatus_enum, Weekday_enum, ProgramType_enum } from "./../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: CourseMinimum
@@ -48,6 +48,7 @@ export interface CourseMinimum_Course_by_pk_Program {
    * Sets the participation certificates for all courses of htis program to be visible for the recipients.
    */
   visibilityAttendanceCertificate: boolean | null;
+  type: ProgramType_enum;
 }
 
 export interface CourseMinimum_Course_by_pk {

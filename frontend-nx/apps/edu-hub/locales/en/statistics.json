@@ -1,10 +1,42 @@
 {
-    "enrollment_statistics": "Application Statistics",
-    "select_programs": {
-        "label": "Programs or Semesters",
-        "placeholder": "Add Program or Semester"
+    "statistics": "Statistics",
+    "select_statistics": {
+        "label": "Select Statistic",
+        "placeholder": "Select Statistic",
+        "options": {
+            "APPLICATIONS": "Applications",
+            "COURSES": "Courses",
+            "SESSIONS": "Sessions"
+        }
     },
-    "daily_enrollments": "Daily Applications",
-    "cumulative_enrollments": "Cumulative Applications",
-    "no_data_available": "No data available"
+    "application_statistics": {
+        "label": "Application Statistics",
+        "select_programs": {
+            "label": "Programs or Semesters",
+            "placeholder": "Add Program or Semester"
+        },
+        "daily": "Daily Applications",
+        "cumulative": "Cumulative Applications",
+        "no_data_available": "No data available"
+    },
+    "course_statistics": {
+        "label": "Course Statistics",
+        "select_program_types": {
+            "label": "Program Types",
+            "placeholder": "Select Program Types"
+        },
+        "courses": "Courses",
+        "cumulative": "Total Number of Offered Courses",
+        "by_program": "Number of Courses by Program"
+    },
+    "session_statistics": {
+        "label": "Session and Event Statistics",
+        "select_program_types": {
+            "label": "Program Types",
+            "placeholder": "Select Program Types"
+        },
+        "sessions": "Sessions or Events",
+        "cumulative": "Total Number of Offered Sessions or Events",
+        "by_program": "Number of Sessions or Events by Program"
+    }
 }
