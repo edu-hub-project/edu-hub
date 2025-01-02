@@ -57,14 +57,14 @@ const StatisticsContent: FC = () => {
     <Page>
       <div className="max-w-screen-xl mx-auto mt-20 text-gray-200">
         <CommonPageHeader headline={t('statistics')} />
-        <div className="bg-white p-4 rounded-lg mb-6">
+        <div className="rounded-lg mb-6 pb-4">
           <DropDownSelector
             variant="eduhub"
             label={t('select_statistics.label')}
             value={selectedStatistic}
             options={STATISTIC_TYPES}
             onValueUpdated={(value) => setSelectedStatistic(value as StatisticType)}
-            className="text-gray-800"
+            className="text-gray-200"
           />
         </div>
         {renderContent()}

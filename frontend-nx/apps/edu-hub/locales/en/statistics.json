@@ -12,7 +12,7 @@
     "application_statistics": {
         "label": "Application Statistics",
         "select_programs": {
-            "label": "Programs or Semesters",
+            "label": "Select one or more Programs or Semesters",
             "placeholder": "Add Program or Semester"
         },
         "daily": "Daily Applications",

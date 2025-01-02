@@ -12,7 +12,7 @@
     "application_statistics": {
         "label": "Bewerbungsstatistiken",
         "select_programs": {
-            "label": "Programme oder Semester",
+            "label": "Wähle ein oder mehrere Programme oder Semester",
             "placeholder": "Programm oder Semester hinzufügen"
         },
         "daily": "Tägliche Bewerbungen",
