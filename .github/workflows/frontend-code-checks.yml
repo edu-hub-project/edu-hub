@@ -9,9 +9,8 @@ on:
       - frontend-nx/**
     branches:
       - "**"
-    branches-ignore:
-      - staging
-      - production
+      - "!staging"
+      - "!production"
   pull_request:
     paths:
       - frontend-nx/**
