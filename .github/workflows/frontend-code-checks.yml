@@ -8,7 +8,7 @@ on:
     paths:
       - frontend-nx/**
     branches:
-      - develop
+      - "**"
     branches-ignore:
       - staging
       - production
