@@ -2,6 +2,9 @@ table:
   name: Course
   schema: public
 object_relationships:
+  - name: CourseRegistrationType
+    using:
+      foreign_key_constraint_on: registrationType
   - name: CourseStatus
     using:
       foreign_key_constraint_on: status

@@ -1,6 +1,10 @@
 table:
   name: Program
   schema: public
+object_relationships:
+  - name: ProgramType
+    using:
+      foreign_key_constraint_on: programType
 array_relationships:
   - name: CertificateTemplatePrograms
     using:
