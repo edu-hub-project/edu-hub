@@ -648,6 +648,28 @@ export enum CourseLocation_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "CourseRegistrationType"
+ */
+export enum CourseRegistrationType_constraint {
+  CourseRegistrationType_pkey = "CourseRegistrationType_pkey",
+}
+
+export enum CourseRegistrationType_enum {
+  APPROVAL_WITH_INPUT = "APPROVAL_WITH_INPUT",
+  DIRECT_CONFIRMATION = "DIRECT_CONFIRMATION",
+  DIRECT_WITH_INPUT = "DIRECT_WITH_INPUT",
+  EXTERNAL_REGISTRATION = "EXTERNAL_REGISTRATION",
+}
+
+/**
+ * update columns of table "CourseRegistrationType"
+ */
+export enum CourseRegistrationType_update_column {
+  comment = "comment",
+  value = "value",
+}
+
+/**
  * unique or primary key constraints on table "CourseStatus"
  */
 export enum CourseStatus_constraint {
@@ -702,6 +724,7 @@ export enum Course_select_column {
   maxParticipants = "maxParticipants",
   programId = "programId",
   published = "published",
+  registrationType = "registrationType",
   startTime = "startTime",
   status = "status",
   tagline = "tagline",
@@ -753,6 +776,7 @@ export enum Course_update_column {
   maxParticipants = "maxParticipants",
   programId = "programId",
   published = "published",
+  registrationType = "registrationType",
   startTime = "startTime",
   status = "status",
   tagline = "tagline",
@@ -909,6 +933,27 @@ export enum Organization_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "ProgramType"
+ */
+export enum ProgramType_constraint {
+  ProgramType_pkey = "ProgramType_pkey",
+}
+
+export enum ProgramType_enum {
+  COURSES = "COURSES",
+  DEGREES = "DEGREES",
+  EVENTS = "EVENTS",
+}
+
+/**
+ * update columns of table "ProgramType"
+ */
+export enum ProgramType_update_column {
+  comment = "comment",
+  value = "value",
+}
+
+/**
  * unique or primary key constraints on table "Program"
  */
 export enum Program_constraint {
@@ -931,6 +976,7 @@ export enum Program_select_column {
   id = "id",
   lectureEnd = "lectureEnd",
   lectureStart = "lectureStart",
+  programType = "programType",
   published = "published",
   shortTitle = "shortTitle",
   speakerQuestionnaire = "speakerQuestionnaire",
@@ -977,6 +1023,7 @@ export enum Program_update_column {
   id = "id",
   lectureEnd = "lectureEnd",
   lectureStart = "lectureStart",
+  programType = "programType",
   published = "published",
   shortTitle = "shortTitle",
   speakerQuestionnaire = "speakerQuestionnaire",
@@ -4436,6 +4483,65 @@ export interface CourseLocation_variance_order_by {
 }
 
 /**
+ * Boolean expression to filter rows from the table "CourseRegistrationType". All fields are combined with a logical 'AND'.
+ */
+export interface CourseRegistrationType_bool_exp {
+  Courses?: Course_bool_exp | null;
+  Courses_aggregate?: Course_aggregate_bool_exp | null;
+  _and?: CourseRegistrationType_bool_exp[] | null;
+  _not?: CourseRegistrationType_bool_exp | null;
+  _or?: CourseRegistrationType_bool_exp[] | null;
+  comment?: String_comparison_exp | null;
+  value?: String_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to compare columns of type "CourseRegistrationType_enum". All fields are combined with logical 'AND'.
+ */
+export interface CourseRegistrationType_enum_comparison_exp {
+  _eq?: CourseRegistrationType_enum | null;
+  _in?: CourseRegistrationType_enum[] | null;
+  _is_null?: boolean | null;
+  _neq?: CourseRegistrationType_enum | null;
+  _nin?: CourseRegistrationType_enum[] | null;
+}
+
+/**
+ * input type for inserting data into table "CourseRegistrationType"
+ */
+export interface CourseRegistrationType_insert_input {
+  Courses?: Course_arr_rel_insert_input | null;
+  comment?: string | null;
+  value?: string | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "CourseRegistrationType"
+ */
+export interface CourseRegistrationType_obj_rel_insert_input {
+  data: CourseRegistrationType_insert_input;
+  on_conflict?: CourseRegistrationType_on_conflict | null;
+}
+
+/**
+ * on_conflict condition type for table "CourseRegistrationType"
+ */
+export interface CourseRegistrationType_on_conflict {
+  constraint: CourseRegistrationType_constraint;
+  update_columns: CourseRegistrationType_update_column[];
+  where?: CourseRegistrationType_bool_exp | null;
+}
+
+/**
+ * Ordering options when selecting data from "CourseRegistrationType".
+ */
+export interface CourseRegistrationType_order_by {
+  Courses_aggregate?: Course_aggregate_order_by | null;
+  comment?: order_by | null;
+  value?: order_by | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "CourseStatus". All fields are combined with a logical 'AND'.
  */
 export interface CourseStatus_bool_exp {
@@ -4572,6 +4678,7 @@ export interface Course_bool_exp {
   CourseInstructors_aggregate?: CourseInstructor_aggregate_bool_exp | null;
   CourseLocations?: CourseLocation_bool_exp | null;
   CourseLocations_aggregate?: CourseLocation_aggregate_bool_exp | null;
+  CourseRegistrationType?: CourseRegistrationType_bool_exp | null;
   CourseStatus?: CourseStatus_bool_exp | null;
   DegreeCourses?: CourseDegree_bool_exp | null;
   DegreeCourses_aggregate?: CourseDegree_aggregate_bool_exp | null;
@@ -4604,6 +4711,7 @@ export interface Course_bool_exp {
   maxParticipants?: Int_comparison_exp | null;
   programId?: Int_comparison_exp | null;
   published?: Boolean_comparison_exp | null;
+  registrationType?: CourseRegistrationType_enum_comparison_exp | null;
   startTime?: time_comparison_exp | null;
   status?: CourseStatus_enum_comparison_exp | null;
   tagline?: String_comparison_exp | null;
@@ -4622,6 +4730,7 @@ export interface Course_insert_input {
   CourseGroups?: CourseGroup_arr_rel_insert_input | null;
   CourseInstructors?: CourseInstructor_arr_rel_insert_input | null;
   CourseLocations?: CourseLocation_arr_rel_insert_input | null;
+  CourseRegistrationType?: CourseRegistrationType_obj_rel_insert_input | null;
   CourseStatus?: CourseStatus_obj_rel_insert_input | null;
   DegreeCourses?: CourseDegree_arr_rel_insert_input | null;
   Language?: Language_obj_rel_insert_input | null;
@@ -4649,6 +4758,7 @@ export interface Course_insert_input {
   maxParticipants?: number | null;
   programId?: number | null;
   published?: boolean | null;
+  registrationType?: CourseRegistrationType_enum | null;
   startTime?: any | null;
   status?: CourseStatus_enum | null;
   tagline?: string | null;
@@ -4736,6 +4846,7 @@ export interface Course_order_by {
   CourseGroups_aggregate?: CourseGroup_aggregate_order_by | null;
   CourseInstructors_aggregate?: CourseInstructor_aggregate_order_by | null;
   CourseLocations_aggregate?: CourseLocation_aggregate_order_by | null;
+  CourseRegistrationType?: CourseRegistrationType_order_by | null;
   CourseStatus?: CourseStatus_order_by | null;
   DegreeCourses_aggregate?: CourseDegree_aggregate_order_by | null;
   Language?: Language_order_by | null;
@@ -4763,6 +4874,7 @@ export interface Course_order_by {
   maxParticipants?: order_by | null;
   programId?: order_by | null;
   published?: order_by | null;
+  registrationType?: order_by | null;
   startTime?: order_by | null;
   status?: order_by | null;
   tagline?: order_by | null;
@@ -4796,6 +4908,7 @@ export interface Course_set_input {
   maxParticipants?: number | null;
   programId?: number | null;
   published?: boolean | null;
+  registrationType?: CourseRegistrationType_enum | null;
   startTime?: any | null;
   status?: CourseStatus_enum | null;
   tagline?: string | null;
@@ -5440,6 +5553,65 @@ export interface Organization_variance_order_by {
   id?: order_by | null;
 }
 
+/**
+ * Boolean expression to filter rows from the table "ProgramType". All fields are combined with a logical 'AND'.
+ */
+export interface ProgramType_bool_exp {
+  Programs?: Program_bool_exp | null;
+  Programs_aggregate?: Program_aggregate_bool_exp | null;
+  _and?: ProgramType_bool_exp[] | null;
+  _not?: ProgramType_bool_exp | null;
+  _or?: ProgramType_bool_exp[] | null;
+  comment?: String_comparison_exp | null;
+  value?: String_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to compare columns of type "ProgramType_enum". All fields are combined with logical 'AND'.
+ */
+export interface ProgramType_enum_comparison_exp {
+  _eq?: ProgramType_enum | null;
+  _in?: ProgramType_enum[] | null;
+  _is_null?: boolean | null;
+  _neq?: ProgramType_enum | null;
+  _nin?: ProgramType_enum[] | null;
+}
+
+/**
+ * input type for inserting data into table "ProgramType"
+ */
+export interface ProgramType_insert_input {
+  Programs?: Program_arr_rel_insert_input | null;
+  comment?: string | null;
+  value?: string | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "ProgramType"
+ */
+export interface ProgramType_obj_rel_insert_input {
+  data: ProgramType_insert_input;
+  on_conflict?: ProgramType_on_conflict | null;
+}
+
+/**
+ * on_conflict condition type for table "ProgramType"
+ */
+export interface ProgramType_on_conflict {
+  constraint: ProgramType_constraint;
+  update_columns: ProgramType_update_column[];
+  where?: ProgramType_bool_exp | null;
+}
+
+/**
+ * Ordering options when selecting data from "ProgramType".
+ */
+export interface ProgramType_order_by {
+  Programs_aggregate?: Program_aggregate_order_by | null;
+  comment?: order_by | null;
+  value?: order_by | null;
+}
+
 export interface Program_aggregate_bool_exp {
   bool_and?: Program_aggregate_bool_exp_bool_and | null;
   bool_or?: Program_aggregate_bool_exp_bool_or | null;
@@ -5468,11 +5640,38 @@ export interface Program_aggregate_bool_exp_count {
 }
 
 /**
+ * order by aggregate values of table "Program"
+ */
+export interface Program_aggregate_order_by {
+  avg?: Program_avg_order_by | null;
+  count?: order_by | null;
+  max?: Program_max_order_by | null;
+  min?: Program_min_order_by | null;
+  stddev?: Program_stddev_order_by | null;
+  stddev_pop?: Program_stddev_pop_order_by | null;
+  stddev_samp?: Program_stddev_samp_order_by | null;
+  sum?: Program_sum_order_by | null;
+  var_pop?: Program_var_pop_order_by | null;
+  var_samp?: Program_var_samp_order_by | null;
+  variance?: Program_variance_order_by | null;
+}
+
+/**
  * input type for inserting array relation for remote table "Program"
  */
 export interface Program_arr_rel_insert_input {
   data: Program_insert_input[];
   on_conflict?: Program_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "Program"
+ */
+export interface Program_avg_order_by {
+  achievementCertificateTemplateTextId?: order_by | null;
+  attendanceCertificateTemplateTextId?: order_by | null;
+  defaultMaxMissedSessions?: order_by | null;
+  id?: order_by | null;
 }
 
 /**
@@ -5483,6 +5682,7 @@ export interface Program_bool_exp {
   CertificateTemplatePrograms_aggregate?: CertificateTemplateProgram_aggregate_bool_exp | null;
   Courses?: Course_bool_exp | null;
   Courses_aggregate?: Course_aggregate_bool_exp | null;
+  ProgramType?: ProgramType_bool_exp | null;
   RentAScientistConfigs?: RentAScientistConfig_bool_exp | null;
   RentAScientistConfigs_aggregate?: RentAScientistConfig_aggregate_bool_exp | null;
   ScientistOffers?: ScientistOffer_bool_exp | null;
@@ -5502,6 +5702,7 @@ export interface Program_bool_exp {
   id?: Int_comparison_exp | null;
   lectureEnd?: date_comparison_exp | null;
   lectureStart?: date_comparison_exp | null;
+  programType?: ProgramType_enum_comparison_exp | null;
   published?: Boolean_comparison_exp | null;
   shortTitle?: String_comparison_exp | null;
   speakerQuestionnaire?: String_comparison_exp | null;
@@ -5518,6 +5719,7 @@ export interface Program_bool_exp {
 export interface Program_insert_input {
   CertificateTemplatePrograms?: CertificateTemplateProgram_arr_rel_insert_input | null;
   Courses?: Course_arr_rel_insert_input | null;
+  ProgramType?: ProgramType_obj_rel_insert_input | null;
   RentAScientistConfigs?: RentAScientistConfig_arr_rel_insert_input | null;
   ScientistOffers?: ScientistOffer_arr_rel_insert_input | null;
   achievementCertificateTemplateTextId?: number | null;
@@ -5532,6 +5734,7 @@ export interface Program_insert_input {
   id?: number | null;
   lectureEnd?: any | null;
   lectureStart?: any | null;
+  programType?: ProgramType_enum | null;
   published?: boolean | null;
   shortTitle?: string | null;
   speakerQuestionnaire?: string | null;
@@ -5540,6 +5743,50 @@ export interface Program_insert_input {
   visibility?: boolean | null;
   visibilityAchievementCertificate?: boolean | null;
   visibilityAttendanceCertificate?: boolean | null;
+}
+
+/**
+ * order by max() on columns of table "Program"
+ */
+export interface Program_max_order_by {
+  achievementCertificateTemplateTextId?: order_by | null;
+  achievementCertificateTemplateURL?: order_by | null;
+  achievementRecordUploadDeadline?: order_by | null;
+  applicationStart?: order_by | null;
+  attendanceCertificateTemplateTextId?: order_by | null;
+  attendanceCertificateTemplateURL?: order_by | null;
+  closingQuestionnaire?: order_by | null;
+  defaultApplicationEnd?: order_by | null;
+  defaultMaxMissedSessions?: order_by | null;
+  id?: order_by | null;
+  lectureEnd?: order_by | null;
+  lectureStart?: order_by | null;
+  shortTitle?: order_by | null;
+  speakerQuestionnaire?: order_by | null;
+  startQuestionnaire?: order_by | null;
+  title?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "Program"
+ */
+export interface Program_min_order_by {
+  achievementCertificateTemplateTextId?: order_by | null;
+  achievementCertificateTemplateURL?: order_by | null;
+  achievementRecordUploadDeadline?: order_by | null;
+  applicationStart?: order_by | null;
+  attendanceCertificateTemplateTextId?: order_by | null;
+  attendanceCertificateTemplateURL?: order_by | null;
+  closingQuestionnaire?: order_by | null;
+  defaultApplicationEnd?: order_by | null;
+  defaultMaxMissedSessions?: order_by | null;
+  id?: order_by | null;
+  lectureEnd?: order_by | null;
+  lectureStart?: order_by | null;
+  shortTitle?: order_by | null;
+  speakerQuestionnaire?: order_by | null;
+  startQuestionnaire?: order_by | null;
+  title?: order_by | null;
 }
 
 /**
@@ -5565,6 +5812,7 @@ export interface Program_on_conflict {
 export interface Program_order_by {
   CertificateTemplatePrograms_aggregate?: CertificateTemplateProgram_aggregate_order_by | null;
   Courses_aggregate?: Course_aggregate_order_by | null;
+  ProgramType?: ProgramType_order_by | null;
   RentAScientistConfigs_aggregate?: RentAScientistConfig_aggregate_order_by | null;
   ScientistOffers_aggregate?: ScientistOffer_aggregate_order_by | null;
   achievementCertificateTemplateTextId?: order_by | null;
@@ -5579,6 +5827,7 @@ export interface Program_order_by {
   id?: order_by | null;
   lectureEnd?: order_by | null;
   lectureStart?: order_by | null;
+  programType?: order_by | null;
   published?: order_by | null;
   shortTitle?: order_by | null;
   speakerQuestionnaire?: order_by | null;
@@ -5587,6 +5836,76 @@ export interface Program_order_by {
   visibility?: order_by | null;
   visibilityAchievementCertificate?: order_by | null;
   visibilityAttendanceCertificate?: order_by | null;
+}
+
+/**
+ * order by stddev() on columns of table "Program"
+ */
+export interface Program_stddev_order_by {
+  achievementCertificateTemplateTextId?: order_by | null;
+  attendanceCertificateTemplateTextId?: order_by | null;
+  defaultMaxMissedSessions?: order_by | null;
+  id?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "Program"
+ */
+export interface Program_stddev_pop_order_by {
+  achievementCertificateTemplateTextId?: order_by | null;
+  attendanceCertificateTemplateTextId?: order_by | null;
+  defaultMaxMissedSessions?: order_by | null;
+  id?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "Program"
+ */
+export interface Program_stddev_samp_order_by {
+  achievementCertificateTemplateTextId?: order_by | null;
+  attendanceCertificateTemplateTextId?: order_by | null;
+  defaultMaxMissedSessions?: order_by | null;
+  id?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "Program"
+ */
+export interface Program_sum_order_by {
+  achievementCertificateTemplateTextId?: order_by | null;
+  attendanceCertificateTemplateTextId?: order_by | null;
+  defaultMaxMissedSessions?: order_by | null;
+  id?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "Program"
+ */
+export interface Program_var_pop_order_by {
+  achievementCertificateTemplateTextId?: order_by | null;
+  attendanceCertificateTemplateTextId?: order_by | null;
+  defaultMaxMissedSessions?: order_by | null;
+  id?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "Program"
+ */
+export interface Program_var_samp_order_by {
+  achievementCertificateTemplateTextId?: order_by | null;
+  attendanceCertificateTemplateTextId?: order_by | null;
+  defaultMaxMissedSessions?: order_by | null;
+  id?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "Program"
+ */
+export interface Program_variance_order_by {
+  achievementCertificateTemplateTextId?: order_by | null;
+  attendanceCertificateTemplateTextId?: order_by | null;
+  defaultMaxMissedSessions?: order_by | null;
+  id?: order_by | null;
 }
 
 export interface RentAScientistConfig_aggregate_bool_exp {
