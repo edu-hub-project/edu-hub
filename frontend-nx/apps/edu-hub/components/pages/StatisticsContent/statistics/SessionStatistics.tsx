@@ -8,7 +8,7 @@ import Loading from '../../../common/Loading';
 import { PROGRAM_TYPES } from '../../../../queries/programList';
 import { ProgramTypesList } from '../../../../queries/__generated__/ProgramTypesList';
 import TagSelector from '../../../inputs/TagSelector';
-import { getFilteredProgramsAndDateMap, formatChartDate, getSortedPrograms } from './utils';
+import { getFilteredProgramsAndDateMap, formatChartDate } from './utils';
 
 interface ChartDataPoint {
   date: string;

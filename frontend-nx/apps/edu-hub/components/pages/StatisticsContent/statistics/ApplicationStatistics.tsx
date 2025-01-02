@@ -62,10 +62,12 @@ export const ApplicationStatistics: FC = () => {
       }
 
       // Copy all current cumulative counts to this date
-      const dateEntry = dateMap.get(date)!;
-      programCounts.forEach((count, programTitle) => {
-        dateEntry[programTitle] = count;
-      });
+      const dateEntry = dateMap.get(date);
+      if (dateEntry) {
+        programCounts.forEach((count, programTitle) => {
+          dateEntry[programTitle] = count;
+        });
+      }
     });
 
     return Array.from(dateMap.entries())
@@ -90,8 +92,10 @@ export const ApplicationStatistics: FC = () => {
             dateMap.set(date, {});
           }
 
-          const dateEntry = dateMap.get(date)!;
-          dateEntry[program.title] = (dateEntry[program.title] || 0) + 1;
+          const dateEntry = dateMap.get(date);
+          if (dateEntry) {
+            dateEntry[program.title] = (dateEntry[program.title] || 0) + 1;
+          }
         });
       });
     });

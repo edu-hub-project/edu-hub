@@ -2,8 +2,6 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRoleMutation } from '../../../hooks/authedMutation';
 import { useDebouncedCallback } from 'use-debounce';
 import useErrorHandler from '../../../hooks/useErrorHandler';
-import { Option } from './types';
-import { DocumentNode } from 'graphql';
 import { SelectChangeEvent } from '@mui/material';
 import { gql } from '@apollo/client';
 
@@ -15,27 +13,7 @@ export const useDropDownLogic = (
   onValueUpdated: (value: string) => string,
   refetchQueries: any[]
 ) => {
-  // If no mutation is provided, return direct update logic
-  if (!updateValueMutation) {
-    return {
-      localValue: value,
-      localOptions: options,
-      error: null,
-      handleError: (message: string) => {},
-      resetError: () => {},
-      showSavedNotification: false,
-      setShowSavedNotification: () => {},
-      hasBlurred: false,
-      errorMessage: '',
-      handleValueChange: (event: SelectChangeEvent<string> | React.ChangeEvent<HTMLSelectElement>) => {
-        const newValue = event.target.value;
-        onValueUpdated(newValue);
-      },
-      handleBlur: () => {},
-      debouncedUpdateValue: (newValue: string) => onValueUpdated(newValue),
-    };
-  }
-
+  // Initialize all hooks unconditionally at the top level
   const [localValue, setLocalValue] = useState(value);
   const [localOptions, setLocalOptions] = useState(options);
   const { error, handleError, resetError } = useErrorHandler();
@@ -43,19 +21,22 @@ export const useDropDownLogic = (
   const [hasBlurred, setHasBlurred] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [updateValue] = useRoleMutation(updateValueMutation||
+  const [updateValue] = useRoleMutation(
+    updateValueMutation ||
     gql`
       mutation NoOp {
         __typename
       }
-    `,{
-    onError: (error) => handleError(error.message),
-    onCompleted: (data) => {
-      if (onValueUpdated) onValueUpdated(data);
-      setShowSavedNotification(true);
-    },
-    refetchQueries,
-  });
+    `,
+    {
+      onError: (error) => handleError(error.message),
+      onCompleted: (data) => {
+        if (onValueUpdated) onValueUpdated(data);
+        setShowSavedNotification(true);
+      },
+      refetchQueries,
+    }
+  );
 
   const validateValue = useCallback((newValue: string, isMandatory = false) => {
     return isMandatory ? newValue !== '' : true;
@@ -63,7 +44,7 @@ export const useDropDownLogic = (
 
   const debouncedUpdateValue = useDebouncedCallback((newValue: string, isMandatory = false) => {
     if (validateValue(newValue, isMandatory)) {
-      if (updateValueMutation !== gql`mutation NoOp { __typename }`) {
+      if (updateValueMutation) {
         const variables = {
           ...identifierVariables,
           value: newValue,
@@ -85,7 +66,7 @@ export const useDropDownLogic = (
       setLocalValue(newValue);
       debouncedUpdateValue(newValue);
     },
-    [debouncedUpdateValue]
+    [debouncedUpdateValue, setLocalValue]
   );
 
   const handleBlur = useCallback(
@@ -116,6 +97,27 @@ export const useDropDownLogic = (
   useEffect(() => {
     setLocalOptions(options);
   }, [options]);
+
+  // Return different objects based on whether we have a mutation
+  if (!updateValueMutation) {
+    return {
+      localValue: value,
+      localOptions: options,
+      error: null,
+      handleError: handleError,
+      resetError: resetError,
+      showSavedNotification: false,
+      setShowSavedNotification: setShowSavedNotification,
+      hasBlurred: false,
+      errorMessage: '',
+      handleValueChange: (event: SelectChangeEvent<string> | React.ChangeEvent<HTMLSelectElement>) => {
+        const newValue = event.target.value;
+        onValueUpdated(newValue);
+      },
+      handleBlur: handleBlur,
+      debouncedUpdateValue: (newValue: string) => onValueUpdated(newValue),
+    };
+  }
 
   return {
     localValue,

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, ChangeEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDropDownLogic } from './hooks';
 import { DropDownSelectorProps } from './types';
 import { MaterialDropDown } from './components/MaterialDropDown';
@@ -8,7 +8,6 @@ import useTranslation from 'next-translate/useTranslation';
 import NotificationSnackbar from '../../common/dialogs/NotificationSnackbar';
 import { ErrorMessageDialog } from '../../common/dialogs/ErrorMessageDialog';
 import { gql } from '@apollo/client';
-import { SelectChangeEvent } from '@mui/material';
 
 const DropDownSelector: React.FC<DropDownSelectorProps> = ({
   variant,
@@ -31,14 +30,6 @@ const DropDownSelector: React.FC<DropDownSelectorProps> = ({
   const [inputValue, setInputValue] = useState('');
 
   const handleMutationValueUpdate = (newValue: string) => {
-    onValueUpdated?.(newValue);
-    return newValue;
-  };
-
-  const handleDirectValueUpdate = (
-    eventOrValue: SelectChangeEvent<string> | ChangeEvent<HTMLSelectElement> | string
-  ) => {
-    const newValue = typeof eventOrValue === 'string' ? eventOrValue : eventOrValue.target.value;
     onValueUpdated?.(newValue);
     return newValue;
   };
