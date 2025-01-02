@@ -56,18 +56,15 @@ export const CourseStatistics: FC = () => {
   // Cumulative chart data
   const cumulativeChartData = useMemo(() => {
     const { filteredPrograms, dateMap } = getFilteredProgramsAndDateMap(programData, selectedTypes);
-    if (filteredPrograms.length === 0) return [] as ChartDataPoint[];
+    if (!filteredPrograms?.length) return [] as ChartDataPoint[];
 
     const cumulativeMap = new Map<string, number>();
     let cumulativeTotal = 0;
 
-    const sortedPrograms = getSortedPrograms(filteredPrograms);
-
-    // Calculate cumulative totals
-    sortedPrograms.forEach((program) => {
-      if (program.lectureStart) {
+    getSortedPrograms(filteredPrograms).forEach((program) => {
+      if (program?.lectureStart) {
         const date = new Date(program.lectureStart).toISOString().slice(0, 7);
-        cumulativeTotal += program.Courses?.length || 0;
+        cumulativeTotal += program.Courses?.length ?? 0;
         cumulativeMap.set(date, cumulativeTotal);
       }
     });

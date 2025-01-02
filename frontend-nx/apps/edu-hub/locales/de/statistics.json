@@ -22,7 +22,7 @@
     "course_statistics": {
         "label": "Kursstatistiken",
         "select_program_types": {
-            "label": "Programmtypen",
+            "label": "Filtere einen oder mehrere Programmtypen",
             "placeholder": "Programmtypen auswählen"
         },
         "courses": "Kurse",
@@ -32,7 +32,7 @@
     "session_statistics": {
         "label": "Veranstaltungsstatistiken",
         "select_program_types": {
-            "label": "Programmtypen",
+            "label": "Filtere einen oder mehrere Programmtypen",
             "placeholder": "Programmtypen auswählen"
         },
         "sessions": "Veranstaltungen",

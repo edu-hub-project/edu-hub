@@ -34,18 +34,18 @@ export const SessionStatistics: FC = () => {
   // Program-based chart data
   const programBasedChartData = useMemo(() => {
     const { filteredPrograms, dateMap } = getFilteredProgramsAndDateMap(programData, selectedTypes);
-    if (filteredPrograms.length === 0) return [] as ChartDataPoint[];
+    if (!filteredPrograms?.length) return [] as ChartDataPoint[];
 
     const sortedDates = Array.from(dateMap.keys()).sort();
 
     return sortedDates.map((date) => {
       const totalSessions = filteredPrograms.reduce((sum, program) => {
-        const programStartMonth = program.lectureStart
+        const programStartMonth = program?.lectureStart
           ? new Date(program.lectureStart).toISOString().slice(0, 7)
           : null;
 
         const programSessions =
-          program.Courses?.reduce((courseSum, course) => courseSum + (course.Sessions?.length || 0), 0) || 0;
+          program.Courses?.reduce((courseSum, course) => courseSum + (course?.Sessions?.length ?? 0), 0) ?? 0;
 
         return sum + (programStartMonth === date ? programSessions : 0);
       }, 0);
