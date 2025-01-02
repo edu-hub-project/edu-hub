@@ -9,12 +9,33 @@ import { gql } from '@apollo/client';
 
 export const useDropDownLogic = (
   value: string,
-  options: Option[],
-  updateValueMutation: DocumentNode = gql`mutation NoOp { __typename }`,
-  identifierVariables: Record<string, any> = {},
-  onValueUpdated?: (data: any) => void,
-  refetchQueries: string[] = []
+  options: Array<any>,
+  updateValueMutation: any | null,
+  identifierVariables: any,
+  onValueUpdated: (value: string) => string,
+  refetchQueries: any[]
 ) => {
+  // If no mutation is provided, return direct update logic
+  if (!updateValueMutation) {
+    return {
+      localValue: value,
+      localOptions: options,
+      error: null,
+      handleError: (message: string) => {},
+      resetError: () => {},
+      showSavedNotification: false,
+      setShowSavedNotification: () => {},
+      hasBlurred: false,
+      errorMessage: '',
+      handleValueChange: (event: SelectChangeEvent<string> | React.ChangeEvent<HTMLSelectElement>) => {
+        const newValue = event.target.value;
+        onValueUpdated(newValue);
+      },
+      handleBlur: () => {},
+      debouncedUpdateValue: (newValue: string) => onValueUpdated(newValue),
+    };
+  }
+
   const [localValue, setLocalValue] = useState(value);
   const [localOptions, setLocalOptions] = useState(options);
   const { error, handleError, resetError } = useErrorHandler();
@@ -49,7 +70,7 @@ export const useDropDownLogic = (
         };
         updateValue({ variables });
       } else if (onValueUpdated) {
-        onValueUpdated({ value: newValue });  
+        onValueUpdated(newValue);
       }
       setErrorMessage('');
     } else {

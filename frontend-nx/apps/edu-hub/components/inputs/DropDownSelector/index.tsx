@@ -43,30 +43,6 @@ const DropDownSelector: React.FC<DropDownSelectorProps> = ({
     return newValue;
   };
 
-  const dropDownLogic = updateValueMutation
-    ? useDropDownLogic(
-        value,
-        options,
-        updateValueMutation,
-        identifierVariables,
-        handleMutationValueUpdate,
-        refetchQueries
-      )
-    : {
-        localValue: value,
-        localOptions: options,
-        error: null,
-        handleError: () => {},
-        resetError: () => {},
-        showSavedNotification: false,
-        setShowSavedNotification: () => {},
-        hasBlurred: false,
-        errorMessage: '',
-        handleValueChange: handleDirectValueUpdate,
-        handleBlur: () => {},
-        debouncedUpdateValue: handleDirectValueUpdate,
-      };
-
   const {
     localValue,
     localOptions,
@@ -80,7 +56,14 @@ const DropDownSelector: React.FC<DropDownSelectorProps> = ({
     handleValueChange,
     handleBlur,
     debouncedUpdateValue,
-  } = dropDownLogic;
+  } = useDropDownLogic(
+    value,
+    options,
+    updateValueMutation || null,
+    identifierVariables,
+    handleMutationValueUpdate,
+    refetchQueries
+  );
 
   const [createValue] = useRoleMutation(
     createOptionMutation ||
