@@ -1,0 +1,1 @@
+CREATE TABLE "public"."ProgramType" ("value" text NOT NULL, "comment" text NOT NULL, PRIMARY KEY ("value") , UNIQUE ("value"));COMMENT ON TABLE "public"."ProgramType" IS E'Types of programs available on the platform (e.g., for DEGREES, EVENTS, COURSES)';

@@ -976,6 +976,7 @@ export enum Program_select_column {
   id = "id",
   lectureEnd = "lectureEnd",
   lectureStart = "lectureStart",
+  programType = "programType",
   published = "published",
   shortTitle = "shortTitle",
   speakerQuestionnaire = "speakerQuestionnaire",
@@ -1023,6 +1024,7 @@ export enum Program_update_column {
   id = "id",
   lectureEnd = "lectureEnd",
   lectureStart = "lectureStart",
+  programType = "programType",
   published = "published",
   shortTitle = "shortTitle",
   speakerQuestionnaire = "speakerQuestionnaire",
@@ -5702,6 +5704,7 @@ export interface Program_bool_exp {
   id?: Int_comparison_exp | null;
   lectureEnd?: date_comparison_exp | null;
   lectureStart?: date_comparison_exp | null;
+  programType?: ProgramType_enum_comparison_exp | null;
   published?: Boolean_comparison_exp | null;
   shortTitle?: String_comparison_exp | null;
   speakerQuestionnaire?: String_comparison_exp | null;
@@ -5734,6 +5737,7 @@ export interface Program_insert_input {
   id?: number | null;
   lectureEnd?: any | null;
   lectureStart?: any | null;
+  programType?: ProgramType_enum | null;
   published?: boolean | null;
   shortTitle?: string | null;
   speakerQuestionnaire?: string | null;
@@ -5827,6 +5831,7 @@ export interface Program_order_by {
   id?: order_by | null;
   lectureEnd?: order_by | null;
   lectureStart?: order_by | null;
+  programType?: order_by | null;
   published?: order_by | null;
   shortTitle?: order_by | null;
   speakerQuestionnaire?: order_by | null;
