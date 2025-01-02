@@ -1,0 +1,1 @@
+INSERT INTO "public"."ProgramType"("value", "comment") VALUES (E'COURSES', E'Includes standard educational courses offering structured learning experiences. These include regular courses with defined schedules, learning objectives, and attendance requirements.');

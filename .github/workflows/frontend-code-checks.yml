@@ -7,20 +7,21 @@ on:
   push:
     paths:
       - frontend-nx/**
-    branches-ignore:
-      - staging
-      - production
+    branches:
+      - "**"
+      - "!staging"
+      - "!production"
   pull_request:
     paths:
       - frontend-nx/**
-    branches-ignore:
-      - staging
-      - production
+    branches:
+      - develop
+    types: [opened, synchronize, reopened]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || (github.event_name != 'push' && !contains(github.event.head_commit.message, 'Merge pull request'))
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && !contains(github.event.head_commit.message, 'Merge pull request'))
     strategy:
       matrix:
         node-version: [18.x]
