@@ -99,6 +99,7 @@ select_permissions:
         - maxParticipants
         - programId
         - published
+        - registrationType
         - startTime
         - tagline
         - title
