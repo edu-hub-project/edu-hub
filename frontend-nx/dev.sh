@@ -1,19 +1,54 @@
 #!/bin/sh
+set -e  # Exit on error
 
-# proxy access to keycloak for nextauth
-socat tcp-listen:28080,reuseaddr,fork tcp:keycloak:8080 &
-# proxy access to hasura for the updateUser callback
-socat tcp-listen:8080,reuseaddr,fork tcp:hasura:8080 &
-# proxy access to frontend for the refreshToken Api Route callback
-socat tcp-listen:5000,reuseaddr,fork tcp:frontend-nx:4200 &
-# proxy access to rent-a-scientist frontend for the refreshToken Api Route callback
-socat tcp-listen:5001,reuseaddr,fork tcp:frontend-nx:4201 &
-# proxy access to node_functions
-socat tcp-listen:4001,reuseaddr,fork tcp:node_functions:4001 &
-# proxy access to python_functions
-socat tcp-listen:42025,reuseaddr,fork tcp:python_functions:42025 &
-# make sure all libraries exist
-yarn
-# start the development servers for edu-hub and rent-a-scientist
+# Function to start socat proxy
+start_proxy() {
+    local listen_port=$1
+    local target_host=$2
+    local target_port=$3
+    socat tcp-listen:${listen_port},reuseaddr,fork tcp:${target_host}:${target_port} &
+    echo "Started proxy on port ${listen_port} -> ${target_host}:${target_port}"
+}
+
+# Function to cleanup background processes
+cleanup() {
+    echo "Cleaning up processes..."
+    kill $(jobs -p) 2>/dev/null || true
+    exit 0
+}
+
+# Set up trap for cleanup on script exit
+trap cleanup EXIT INT TERM
+
+# Start all proxy connections
+start_proxy 28080 keycloak 8080
+start_proxy 8080 hasura 8080
+start_proxy 5000 frontend-nx 4200
+start_proxy 5001 frontend-nx 4201
+start_proxy 4001 node_functions 4001
+start_proxy 42025 python_functions 42025
+
+# Wait a moment for proxies to establish
+sleep 2
+
+# Install dependencies with proper error handling
+echo "Installing dependencies..."
+yarn install --frozen-lockfile || {
+    echo "Failed to install dependencies"
+    exit 1
+}
+
+# Start development servers
+echo "Starting development servers..."
 npx nx run edu-hub:serve &
-npx nx run rent-a-scientist:serve
+EDU_HUB_PID=$!
+
+npx nx run rent-a-scientist:serve &
+RENT_SCIENTIST_PID=$!
+
+# Wait for any process to exit
+wait -n
+
+# If we get here, one of the processes failed
+echo "One of the processes exited unexpectedly"
+exit 1
