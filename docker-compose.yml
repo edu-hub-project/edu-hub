@@ -13,14 +13,15 @@ services:
     # uncomment this to disable automatic yarn dev on frontend startup
     # command: tail -F anything
     volumes:
-      - ./frontend-nx:/opt/app
+      - ./frontend-nx:/opt/app  
     depends_on:
       - hasura
       - keycloak
     environment:
       NEXT_PUBLIC_HELP_DOCS_URL: https://opencampus.gitbook.io/faq/
-      NEXT_PUBLIC_STORAGE_BUCKET_URL: http://localhost:4001/emulated-bucket
+      NEXT_PUBLIC_STORAGE_BUCKET_URL: ${GITPOD_WORKSPACE_URL:-http://localhost}:4001/emulated-bucket
       NEXT_PUBLIC_ENVIRONMENT: development
+    user: "node"
 
   node_functions:
     container_name: eduhub-node-functions
@@ -66,7 +67,7 @@ services:
       HASURA_CLOUD_FUNCTION_SECRET: test1234
       BUCKET_NAME: emulated-bucket
       LOCAL_STORAGE_PORT: 4001
-      
+      MM_URL: "https://chat.opencampus.sh"
 
   hasura:
     container_name: eduhub-hasura

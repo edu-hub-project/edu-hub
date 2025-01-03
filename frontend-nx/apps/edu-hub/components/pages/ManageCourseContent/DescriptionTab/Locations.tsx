@@ -11,7 +11,6 @@ import {
   UPDATE_COURSE_SESSION_DEFAULT_ADDRESS,
 } from '../../../../queries/course';
 import InputField from '../../../inputs/InputField';
-import { isLinkFormat } from '../../../../helpers/util';
 import DeleteButton from '../../../../components/common/DeleteButton';
 
 interface LocationsIProps {

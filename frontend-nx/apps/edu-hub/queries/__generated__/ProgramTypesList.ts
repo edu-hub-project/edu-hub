@@ -4,18 +4,17 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: EmplomentByValue
+// GraphQL query operation: ProgramTypesList
 // ====================================================
 
-export interface EmplomentByValue_Employment {
-  __typename: "Employment";
+export interface ProgramTypesList_ProgramType {
+  __typename: "ProgramType";
   value: string;
-  comment: string;
 }
 
-export interface EmplomentByValue {
+export interface ProgramTypesList {
   /**
-   * fetch data from the table: "Employment"
+   * fetch data from the table: "ProgramType"
    */
-  Employment: EmplomentByValue_Employment[];
+  ProgramType: ProgramTypesList_ProgramType[];
 }

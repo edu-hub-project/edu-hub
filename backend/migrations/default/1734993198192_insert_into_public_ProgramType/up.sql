@@ -1,0 +1,1 @@
+INSERT INTO "public"."ProgramType"("value", "comment") VALUES (E'EVENTS', E'One-time or recurring standalone events such as workshops, conferences, or special lectures. These offerings typically have simpler registration processes.');

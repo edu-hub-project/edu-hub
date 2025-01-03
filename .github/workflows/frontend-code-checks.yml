@@ -7,20 +7,21 @@ on:
   push:
     paths:
       - frontend-nx/**
-    branches-ignore:
-      - staging
-      - production
+    branches:
+      - "**"
+      - "!staging"
+      - "!production"
   pull_request:
     paths:
       - frontend-nx/**
-    branches-ignore:
-      - staging
-      - production
+    branches:
+      - develop
+    types: [opened, synchronize, reopened]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || (github.event_name != 'push' && !contains(github.event.head_commit.message, 'Merge pull request'))
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && !contains(github.event.head_commit.message, 'Merge pull request'))
     strategy:
       matrix:
         node-version: [18.x]
@@ -28,11 +29,24 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Nx Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules/.cache/nx
+            .nx/cache
+          key: ${{ runner.os }}-nx-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nx-${{ hashFiles('yarn.lock') }}-
+            ${{ runner.os }}-nx-
 
       - name: Install yarn dependencies
         working-directory: frontend-nx

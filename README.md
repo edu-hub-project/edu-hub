@@ -1,5 +1,7 @@
 # EduHub :mortar_board:
 
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/edu-hub-project/application)
+
 A comprehensive education platform focusing on course applications, event registrations, learning communities, and more.
 
 ## Introduction

@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@opencampus/shared-components": ["libs/shared-components/src/index.ts"]
+      "@opencampus/shared-components": ["libs/shared-components/src/index.ts"],
+      "@eduhub/*": ["apps/edu-hub/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

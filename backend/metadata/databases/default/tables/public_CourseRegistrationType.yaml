@@ -1,0 +1,12 @@
+table:
+  name: CourseRegistrationType
+  schema: public
+is_enum: true
+array_relationships:
+  - name: Courses
+    using:
+      foreign_key_constraint_on:
+        column: registrationType
+        table:
+          name: Course
+          schema: public

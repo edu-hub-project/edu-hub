@@ -20,7 +20,7 @@ def add_confirmed_user_to_mm(hasura_secret, payload):
         #Hasura Queries to get all necessary information
         user_details = eduhub_client.get_user_details_from_id(user_id)
         chatlink = eduhub_client.get_channellinks_from_confirmed_users(course_id)
-
+        logging.info(f"The chatlink is:{chatlink}")
         team_id = mattermost_client.get_team_id("opencampus")
         user_email = extract_email(user_details)
             

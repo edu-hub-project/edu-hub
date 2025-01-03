@@ -2,7 +2,6 @@ import { CircularProgress } from '@mui/material';
 import { Translate } from 'next-translate';
 import useTranslation from 'next-translate/useTranslation';
 import { FC, useCallback, useContext, useReducer, useState } from 'react';
-import { DebounceInput } from 'react-debounce-input';
 import { MdAddCircle } from 'react-icons/md';
 import {
   AchievementKeys,
@@ -118,8 +117,6 @@ const FormToAddEditAchievementOption: FC<IPropsAddEditAchievementTempData> = (pr
     [state, dispatch]
   );
 
-
-
   const handleSubmit = useCallback(
     async (event) => {
       event.preventDefault();
@@ -149,7 +146,7 @@ const FormToAddEditAchievementOption: FC<IPropsAddEditAchievementTempData> = (pr
           <InputField
             variant="eduhub"
             immediateUpdate={false}
-            itemId={-1}  // Dummy
+            itemId={-1} // Dummy
             label={`${tCommon('project-title')}*`}
             name="title"
             type="input"
@@ -157,7 +154,7 @@ const FormToAddEditAchievementOption: FC<IPropsAddEditAchievementTempData> = (pr
             onValueUpdated={(data) => {
               dispatch({
                 key: 'title',
-                value: data.text
+                value: data.text,
               });
             }}
             autoFocus={true}
@@ -208,22 +205,22 @@ const FormToAddEditAchievementOption: FC<IPropsAddEditAchievementTempData> = (pr
         </div>
 
         <div id="edit-description" className="pr-5">
-        <InputField
-          variant="eduhub"
-          immediateUpdate={false}
-          itemId={-1}  // Dummy
-          label={`${tCommon('project-description')}`}
-          name="description"
-          type="textarea" 
-          value={state.description ?? ''}
-          onValueUpdated={(data) => {
-            dispatch({
-              key: 'description',
-              value: data.texts
-            });
-          }}
-          maxLength={3000}
-        />
+          <InputField
+            variant="eduhub"
+            immediateUpdate={false}
+            itemId={-1} // Dummy
+            label={`${tCommon('project-description')}`}
+            name="description"
+            type="textarea"
+            value={state.description ?? ''}
+            onValueUpdated={(data) => {
+              dispatch({
+                key: 'description',
+                value: data.texts,
+              });
+            }}
+            maxLength={3000}
+          />
         </div>
 
         <div id="edit-documentations" className="flex flex-col gap-5 pr-5">
@@ -232,10 +229,12 @@ const FormToAddEditAchievementOption: FC<IPropsAddEditAchievementTempData> = (pr
               <div className="flex flex-col space-y-1">
                 <p>{`${tCommon('achievement-record-type')}*`}</p>
                 <SelectForInputField
-                  onChange={(e) => dispatch({
-                    key: AchievementKeys.RECORD_TYPE,
-                    value: e.target.value
-                  })}
+                  onChange={(e) =>
+                    dispatch({
+                      key: AchievementKeys.RECORD_TYPE,
+                      value: e.target.value,
+                    })
+                  }
                   options={context.achievementRecordTypes}
                   name={AchievementKeys.RECORD_TYPE}
                   id={AchievementKeys.RECORD_TYPE}
@@ -250,10 +249,12 @@ const FormToAddEditAchievementOption: FC<IPropsAddEditAchievementTempData> = (pr
                   <div className="flex flex-col space-y-1">
                     <p>{`${tCommon('achievement-documentation-template')}*`}</p>
                     <SelectCustom
-                      onChange={(e) => dispatch({
-                        key: 'achievementDocumentationTemplateId',
-                        value: e.target.value
-                      })}
+                      onChange={(e) =>
+                        dispatch({
+                          key: 'achievementDocumentationTemplateId',
+                          value: e.target.value,
+                        })
+                      }
                       options={[
                         !state.achievementDocumentationTemplateId && {
                           label: t('selectTemplateDefaultLabel'),
@@ -289,14 +290,11 @@ const FormToAddEditAchievementOption: FC<IPropsAddEditAchievementTempData> = (pr
 export default FormToAddEditAchievementOption;
 /* #endregion */
 
-
-
 interface IProsSelect {
   options: string[];
   onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   [key: string]: any;
 }
-
 
 interface IProsSelectCustom {
   options: {
@@ -308,13 +306,6 @@ interface IProsSelectCustom {
 }
 
 const SelectForInputField: FC<IProsSelect> = ({ options, onChange, ...custom }) => {
-  const onSelectChanged = useCallback(
-    (event) => {
-      onChange(event);
-    },
-    [onChange]
-  );
-
   return (
     <select
       className="form-select h-12
@@ -342,13 +333,6 @@ const SelectForInputField: FC<IProsSelect> = ({ options, onChange, ...custom }) 
 };
 
 const SelectCustom: FC<IProsSelectCustom> = ({ options, onChange, ...custom }) => {
-  const onSelectChanged = useCallback(
-    (event) => {
-      onChange(event);
-    },
-    [onChange]
-  );
-
   return (
     <select
       className="form-select h-12

@@ -80,6 +80,8 @@ resource "google_cloudfunctions2_function" "call_python_function" {
       LMS_USER                     = var.lms_user
       LMS_PASSWORD                 = var.lms_password
       LMS_ATTENDANCE_SURVEY_ID     = var.lms_attendance_survey_id
+      MM_URL                       = var.mm_url
+      MM_TOKEN                     = var.mm_token
     }
     max_instance_count    = 500
     available_memory      = "512M"

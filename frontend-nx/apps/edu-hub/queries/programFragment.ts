@@ -12,6 +12,7 @@ export const PROGRAM_FRAGMENT_MINIMUM_PROPERTIES = gql`
     published
     visibilityAchievementCertificate
     visibilityAttendanceCertificate
+    type
   }
 `;
 export const USER_PROGRAM_FRAGMENT = gql`

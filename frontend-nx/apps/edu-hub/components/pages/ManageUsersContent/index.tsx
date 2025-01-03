@@ -43,16 +43,7 @@ const ExpandableUserRow: FC<{ row: UsersByLastName_User }> = ({ row }) => {
 
 const ManageUsersContent: FC = () => {
   const { t } = useTranslation('manageUsers');
-  const {
-    data,
-    loading,
-    error,
-    pageIndex,
-    setPageIndex,
-    searchFilter,
-    setSearchFilter,
-    refetch: debouncedRefetch,
-  } = useTableGrid({
+  const { data, loading, error, pageIndex, setPageIndex, searchFilter, setSearchFilter } = useTableGrid({
     queryHook: useAdminQuery,
     query: USERS_BY_LAST_NAME,
     pageSize: 15,
@@ -95,7 +86,7 @@ const ManageUsersContent: FC = () => {
         cell: ({ getValue }) => <div>{getValue<ReactNode>()}</div>,
       },
     ],
-    []
+    [t]
   );
 
   const generateDeletionConfirmation = useCallback(

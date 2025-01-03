@@ -20,6 +20,6 @@ export interface UpdateCourseTitle {
 }
 
 export interface UpdateCourseTitleVariables {
-  courseId: number;
-  courseTitle: string;
+  itemId: number;
+  text: string;
 }

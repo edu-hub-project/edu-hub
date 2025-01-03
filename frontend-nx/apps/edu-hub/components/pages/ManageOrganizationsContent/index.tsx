@@ -270,7 +270,12 @@ const ManageOrganizationsContent: FC = () => {
 
         debouncedRefetch();
       } catch (error) {
-        setError(t('error.merge_failed'));
+        console.error('Error merging organizations:', error);
+        if (error instanceof ApolloError) {
+          setError(t('error.merge_failed') + ': ' + error.message);
+        } else {
+          setError(t('error.merge_failed'));
+        }
       }
       setSelectedRowsForBulkAction([]);
     },
@@ -295,7 +300,12 @@ const ManageOrganizationsContent: FC = () => {
       await Promise.all(selectedRowsForBulkAction.map((org) => deleteOrganization({ variables: { id: org.id } })));
       debouncedRefetch();
     } catch (error) {
-      setError(t('error.bulk_delete_failed'));
+      console.error('Error deleting organizations:', error);
+      if (error instanceof ApolloError) {
+        setError(t('error.bulk_delete_failed') + ': ' + error.message);
+      } else {
+        setError(t('error.bulk_delete_failed'));
+      }
     }
     setSelectedRowsForBulkAction([]);
   }, [selectedRowsForBulkAction, deleteOrganization, debouncedRefetch, t]);

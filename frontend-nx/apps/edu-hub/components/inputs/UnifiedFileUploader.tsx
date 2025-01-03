@@ -38,12 +38,10 @@ const UnifiedFileUploader: React.FC<UnifiedFileUploaderProps> = ({
   element = 'profilePicture',
   label,
   identifierVariables,
-  currentFile,
   updateFileMutation,
   onFileUpdated,
   refetchQueries = [],
   helpText,
-  errorText = 'Invalid file',
   translationNamespace,
   acceptedFileTypes = '*',
   maxFileSize = 5 * 1024 * 1024, // 5MB default
@@ -115,7 +113,8 @@ const UnifiedFileUploader: React.FC<UnifiedFileUploaderProps> = ({
               });
             }
           } catch (error) {
-            handleError(t('file_uploader.error_uploading_profile_picture'));
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            handleError(`${t('file_uploader.error_uploading_profile_picture')}: ${errorMessage}`);
           }
         } else {
           updateFile({ variables: { ...identifierVariables, file: selectedFile } });

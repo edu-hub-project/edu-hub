@@ -61,7 +61,7 @@ resource "google_cloud_run_service_iam_binding" "cloud-run-iam" {
 # Define the Google Cloud Run service for Keycloak
 module "keycloak_service" {
   source  = "GoogleCloudPlatform/cloud-run/google"
-  version = "~> 0.8"
+  version = "~> 0.15.4"
 
   # Required variables
   service_name = local.keycloak_service_name

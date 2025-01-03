@@ -3,7 +3,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { DocumentNode } from '@apollo/client';
 import { BaseRow, BulkAction } from './types';
 
-interface UseTableGridProps<T, V> {
+interface UseTableGridProps<V> {
   queryHook: any; // useRoleQuery or useAdminQuery
   query: DocumentNode;
   queryVariables?: V;
@@ -11,13 +11,13 @@ interface UseTableGridProps<T, V> {
   refetchFilter?: (searchFilter: string) => Record<string, any>;
 }
 
-export function useTableGrid<T extends { id: number }, V>({
+export function useTableGrid<V>({
   queryHook,
   query,
   queryVariables = {} as V,
   pageSize = 15,
   refetchFilter,
-}: UseTableGridProps<T, V>) {
+}: UseTableGridProps<V>) {
   const [searchFilter, setSearchFilter] = useState('');
   const [pageIndex, setPageIndex] = useState(0);
 
@@ -40,7 +40,7 @@ export function useTableGrid<T extends { id: number }, V>({
       filter: refetchFilter ? refetchFilter(searchFilter) : {},
       ...queryVariables,
     });
-  }, [pageIndex, debouncedRefetch, searchFilter, queryVariables]);
+  }, [pageIndex, debouncedRefetch, searchFilter, queryVariables, pageSize, refetchFilter]);
 
   const handleSetSearchFilter = useCallback((value: string) => {
     setSearchFilter(value);
