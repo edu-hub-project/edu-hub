@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { ProgramType_enum } from "./../../__generated__/globalTypes";
+
 // ====================================================
 // GraphQL fragment: ProgramFragment
 // ====================================================
@@ -46,6 +48,7 @@ export interface ProgramFragment {
    * Sets the participation certificates for all courses of htis program to be visible for the recipients.
    */
   visibilityAttendanceCertificate: boolean | null;
+  type: ProgramType_enum;
   /**
    * The day the application for all courses of the program start.
    */

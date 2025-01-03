@@ -1,10 +1,42 @@
 {
-    "enrollment_statistics": "Teilnahmestatistiken",
-    "select_programs": {
-        "label": "Programme oder Semester",
-        "placeholder": "Programm oder Semester hinzufügen"
+    "statistics": "Statistiken",
+    "select_statistics": {
+        "label": "Statistik auswählen",
+        "placeholder": "Statistik auswählen",
+        "options": {
+            "APPLICATIONS": "Bewerbungen",
+            "COURSES": "Kurse",
+            "SESSIONS": "Sessions"
+        }
     },
-    "daily_enrollments": "Tägliche Bewerbungen",
-    "cumulative_enrollments": "Kumulierte Bewerbungen",
-    "no_data_available": "Keine Daten verfügbar"
+    "application_statistics": {
+        "label": "Bewerbungsstatistiken",
+        "select_programs": {
+            "label": "Wähle ein oder mehrere Programme oder Semester",
+            "placeholder": "Programm oder Semester hinzufügen"
+        },
+        "daily": "Tägliche Bewerbungen",
+        "cumulative": "Kumulierte Bewerbungen",
+        "no_data_available": "Keine Daten verfügbar"
+    },
+    "course_statistics": {
+        "label": "Kursstatistiken",
+        "select_program_types": {
+            "label": "Filtere einen oder mehrere Programmtypen",
+            "placeholder": "Programmtypen auswählen"
+        },
+        "courses": "Kurse",
+        "cumulative": "Gesamtzahl der angebotenen Kurse",
+        "by_program": "Anzahl der Kurse nach Programm"
+    },
+    "session_statistics": {
+        "label": "Veranstaltungsstatistiken",
+        "select_program_types": {
+            "label": "Filtere einen oder mehrere Programmtypen",
+            "placeholder": "Programmtypen auswählen"
+        },
+        "sessions": "Veranstaltungen",
+        "cumulative": "Gesamtzahl der angebotenen Veranstaltungen",
+        "by_program": "Anzahl der Veranstaltungen nach Programm"
+    }
 }

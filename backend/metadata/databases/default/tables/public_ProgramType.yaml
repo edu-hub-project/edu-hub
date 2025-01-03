@@ -1,0 +1,12 @@
+table:
+  name: ProgramType
+  schema: public
+is_enum: true
+array_relationships:
+  - name: Programs
+    using:
+      foreign_key_constraint_on:
+        column: type
+        table:
+          name: Program
+          schema: public

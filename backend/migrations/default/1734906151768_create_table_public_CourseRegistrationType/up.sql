@@ -1,0 +1,1 @@
+CREATE TABLE "public"."CourseRegistrationType" ("value" text NOT NULL, "comment" text NOT NULL, PRIMARY KEY ("value") , UNIQUE ("value"));COMMENT ON TABLE "public"."CourseRegistrationType" IS E'Defines how users can register for a course';

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CourseEnrollmentStatus_enum, Weekday_enum, LocationOption_enum } from "./../../__generated__/globalTypes";
+import { CourseEnrollmentStatus_enum, Weekday_enum, LocationOption_enum, ProgramType_enum } from "./../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: MyEnrollmentsForCourseQuery
@@ -200,6 +200,7 @@ export interface MyEnrollmentsForCourseQuery_CourseEnrollment_Course_Program {
    * Sets the participation certificates for all courses of htis program to be visible for the recipients.
    */
   visibilityAttendanceCertificate: boolean | null;
+  type: ProgramType_enum;
 }
 
 export interface MyEnrollmentsForCourseQuery_CourseEnrollment_Course_CourseGroups_CourseGroupOption {

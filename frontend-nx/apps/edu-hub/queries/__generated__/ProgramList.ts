@@ -3,13 +3,24 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { ProgramType_enum } from "./../../__generated__/globalTypes";
+
 // ====================================================
 // GraphQL query operation: ProgramList
 // ====================================================
 
+export interface ProgramList_Program_Courses_Sessions {
+  __typename: "Session";
+  id: number;
+}
+
 export interface ProgramList_Program_Courses {
   __typename: "Course";
   id: number;
+  /**
+   * An array relationship
+   */
+  Sessions: ProgramList_Program_Courses_Sessions[];
 }
 
 export interface ProgramList_Program {
@@ -51,6 +62,7 @@ export interface ProgramList_Program {
    * Sets the participation certificates for all courses of htis program to be visible for the recipients.
    */
   visibilityAttendanceCertificate: boolean | null;
+  type: ProgramType_enum;
   /**
    * The day the application for all courses of the program start.
    */

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { AchievementOption_bool_exp, AchievementOption_order_by, AchievementRecordType_enum } from "./../../__generated__/globalTypes";
+import { AchievementOption_bool_exp, AchievementOption_order_by, AchievementRecordType_enum, ProgramType_enum } from "./../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: AchievementOptionList
@@ -54,6 +54,7 @@ export interface AchievementOptionList_AchievementOption_AchievementOptionCourse
    * Sets the participation certificates for all courses of htis program to be visible for the recipients.
    */
   visibilityAttendanceCertificate: boolean | null;
+  type: ProgramType_enum;
 }
 
 export interface AchievementOptionList_AchievementOption_AchievementOptionCourses_Course {
