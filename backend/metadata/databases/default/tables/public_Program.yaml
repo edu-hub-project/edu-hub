@@ -69,6 +69,7 @@ select_permissions:
         - published
         - shortTitle
         - title
+        - type
         - visibility
         - visibilityAchievementCertificate
         - visibilityAttendanceCertificate

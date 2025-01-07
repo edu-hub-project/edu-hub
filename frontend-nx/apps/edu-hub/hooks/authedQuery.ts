@@ -1,22 +1,24 @@
 import { useQuery, useLazyQuery } from '@apollo/client';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
+import useTranslation from 'next-translate/useTranslation';
 
 import { useCurrentRole } from './authentication';
 
 import { AuthRoles } from '../types/enums';
 
-const errorHandler = (error) => {
-  console.log('error handler error: ', error);
-  if (error === 'Error: Could not verify JWT: JWTExpired') {
-    // const firstError = error.response.errors[0];
-    // const errorCode = firstError.extensions.code;
-    // console.log("first error, error code:", errorCode)
-    // Do something with the error code...
-    console.log('redirect login erreicht');
-    // router.push('/login'); // Redirect to login page
-  } else {
-    // Handle other types of errors...
-  }
+const useErrorHandler = () => {
+  const { t } = useTranslation();
+
+  return (error) => {
+    console.log('error handler error: ', error);
+    if (error.message.includes('JWTExpired') || error.message.includes('JWSInvalidSignature')) {
+      alert(t("authed_query.session_expired_or_invalid"));
+      signOut();
+    } else {
+      alert(t("authed_query.authentication_error") + ": " + error);
+      signOut();
+    }
+  };
 };
 
 export const useRoleQuery: typeof useQuery = (query, passedOptions) => {
@@ -43,6 +45,8 @@ export const useRoleQuery: typeof useQuery = (query, passedOptions) => {
       }
     : passedOptions;
 
+  const errorHandler = useErrorHandler();
+      
   return useQuery(query, { ...options, onError: errorHandler });
 };
 
@@ -70,6 +74,8 @@ export const useLazyRoleQuery: typeof useLazyQuery = (query, passedOptions) => {
       }
     : passedOptions;
 
+  const errorHandler = useErrorHandler();
+
   return useLazyQuery(query, { ...options, onError: errorHandler });
 };
 
@@ -91,13 +97,7 @@ export const useAdminQuery: typeof useQuery = (query, passedOptions) => {
       }
     : passedOptions;
 
-  // const errorHandler = (error) => {
-  //   console.log("error code: ", error?.response?.errors?.[0]?.extensions?.code)
-  //   if (error?.response?.errors?.[0]?.extensions?.code === 'invalid-jwt') {
-  //     console.log("redirect login erreicht")
-  //     router.push('/login'); // Redirect to login page
-  //   }
-  // };
+  const errorHandler = useErrorHandler();
 
   return useQuery(query, { ...options, onError: errorHandler });
 };
@@ -120,6 +120,8 @@ export const useInstructorQuery: typeof useQuery = (query, passedOptions) => {
       }
     : passedOptions;
 
+  const errorHandler = useErrorHandler();
+
   return useQuery(query, { ...options, onError: errorHandler });
 };
 
@@ -141,13 +143,7 @@ export const useAuthedQuery: typeof useQuery = (query, passedOptions) => {
       }
     : passedOptions;
 
-  // const errorHandler = (error) => {
-  //   console.log("error code: ", error?.response?.errors?.[0]?.extensions?.code)
-  //   if (error?.response?.errors?.[0]?.extensions?.code === 'invalid-jwt') {
-  //     console.log("redirect login erreicht")
-  //     router.push('/login'); // Redirect to login page
-  //   }
-  // };
+  const errorHandler = useErrorHandler();
 
   return useQuery(query, { ...options, onError: errorHandler });
 };

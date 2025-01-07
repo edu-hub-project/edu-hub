@@ -1,72 +1,71 @@
-const nodemailer = require("nodemailer");
+const formData = require('form-data');
+const Mailgun = require('mailgun.js');
 
 /**
- * Responds to any HTTP request.
+ * Responds to any HTTP request to send emails via Mailgun.
  *
  * @param {!express:Request} req HTTP request context.
  * @param {!express:Response} res HTTP response context.
  */
 exports.sendMail = async (req, res) => {
-  if (process.env.HASURA_CLOUD_FUNCTION_SECRET == req.headers.secret) {
-    const subject = req.body.event.data.new.subject;
-    const text = req.body.event.data.new.content;
-    const to = req.body.event.data.new.to;
-    const replyTo = req.body.event.data.new.replyTo;
-    const from = process.env.HASURA_MAIL_USER;
-    const from_pw = process.env.HASURA_MAIL_PW;
-    const cc = req.body.event.data.new.cc;
-    const bcc = req.body.event.data.new.bcc;
+  if (process.env.HASURA_CLOUD_FUNCTION_SECRET !== req.headers.secret) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
-    const emulated = process.env.EMULATE_EMAIL;
+  const { subject, content, to, replyTo, cc, bcc } = req.body.event.data.new;
+  const mailTag = req.headers.mailTag || 'eduhub'; // default if not provided
 
-    if (emulated == "1") {
-      console.log(`
-        Mail was requested to be sent:
-        From: ${from}
-        To: ${to}
-        CC: ${cc}
-        BCC: ${bcc}
-        replyTo: ${replyTo}
-        Subject: ${subject}
-        text: ${text}
-      `);
+  // Base message configuration
+  const msg = {
+    from: `noreply@${process.env.MAILGUN_DOMAIN}`,
+    to,
+    subject: process.env.NODE_ENV === 'staging' ? '[STAGING] ' + subject : subject,
+    text: content,
+    html: content,
+    'o:tag': [mailTag],
+    'o:tracking': true
+  };
 
-      return res.json({
-        message: "!!!!! E-Mail Emulated !!!!!",
-      });
-    } else {
-      let transporter = nodemailer.createTransport({
-        host: "sslout.df.eu",
-        port: 465,
-        secure: true, // true for 465, false for other ports
-        auth: {
-          user: from,
-          pass: from_pw,
-        },
-      });
+  if (replyTo) msg['h:Reply-To'] = replyTo;
+  if (cc) msg.cc = cc;
+  if (bcc) msg.bcc = bcc;
 
-      let info = await transporter.sendMail({
-        from: from,
-        to: to,
-        cc: cc,
-        bcc: "sent-mail@edu.opencampus.sh," + bcc,
-        replyTo: replyTo,
-        subject: subject,
-        text: text,
-        html: text,
-        dsn: {
-          id: to,
-          return: "headers",
-          notify: ["failure", "delay", "success"],
-          recipient: "sent-mail@edu.opencampus.sh",
-        },
-      });
+  try {
+    switch (process.env.NODE_ENV) {
+      case 'development':
+        // Development mode: Log all email attempts
+        console.log('Development email:', {
+          to: msg.to,
+          from: msg.from,
+          subject: msg.subject,
+          text: msg.text,
+          cc: msg.cc,
+          bcc: msg.bcc,
+          replyTo: msg['h:Reply-To']
+        });
+        break;
+      case 'staging':
+      case 'production':
+      // Staging: Using a test domain with restricted recipients
+      // Production: Using regular Mailgun domain
+      const productionMailgun = new Mailgun(formData);
+        await productionMailgun.client({
+          username: 'api',
+          key: process.env.MAILGUN_API_KEY
+        }).messages.create(process.env.MAILGUN_DOMAIN, msg);
+        break;
 
-      console.log("Message sent: " + to + " id:" + info.messageId);
-
-      return res.json({
-        message: info.messageId,
-      });
+      default:
+        throw new Error('Invalid environment');
     }
+
+    return res.json({ success: true });
+
+  } catch (error) {
+    console.error('Email error:', error);
+    return res.status(500).json({
+      error: 'Failed to send email',
+      details: error.message
+    });
   }
 };
