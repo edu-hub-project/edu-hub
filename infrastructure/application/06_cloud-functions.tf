@@ -184,7 +184,9 @@ resource "google_cloudfunctions2_function" "send_mail" {
       HASURA_CLOUD_FUNCTION_SECRET = var.hasura_cloud_function_secret
       HASURA_MAIL_PW               = var.hasura_mail_pw
       HASURA_MAIL_USER             = var.hasura_mail_user
-      EMULATE_EMAIL                = var.emulate_email
+      MAILGUN_API_KEY              = var.mailgun_api_key
+      MAILGUN_DOMAIN               = var.mailgun_domain
+      NODE_ENV                     = var.environment
     }
     max_instance_count = 100
     available_memory   = "256M"

@@ -219,8 +219,12 @@ variable "environment" {
   type        = string
 }
 
-variable "emulate_email" {
-  description = "is true in staging so no mails are send out"
+variable "mailgun_api_key" {
+  description = "API key for the Mailgun API"
+  type        = string
+}
+variable "mailgun_domain" {
+  description = "Domain for the Mailgun API"
   type        = string
 }
 
