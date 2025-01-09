@@ -118,7 +118,7 @@ resource "google_cloudfunctions2_function" "call_node_function" {
     entry_point = "callNodeFunction"
     environment_variables = {
       # Causes a re-deploy of the function when the source changes
-      "SOURCE_SHA" = data.google_storage_bucket_object.call_python_function.md5hash
+      "SOURCE_SHA" = data.google_storage_bucket_object.call_node_function.md5hash
     }
     source {
       storage_source {
@@ -171,6 +171,11 @@ resource "google_cloudfunctions2_function" "send_mail" {
   build_config {
     runtime     = "nodejs20"
     entry_point = "sendMail"
+    environment_variables = {
+      # Causes a re-deploy of the function when the source changes
+      "SOURCE_SHA" = data.google_storage_bucket_object.send_mail.md5hash
+    }
+
     source {
       storage_source {
         bucket = var.project_id
@@ -184,7 +189,9 @@ resource "google_cloudfunctions2_function" "send_mail" {
       HASURA_CLOUD_FUNCTION_SECRET = var.hasura_cloud_function_secret
       HASURA_MAIL_PW               = var.hasura_mail_pw
       HASURA_MAIL_USER             = var.hasura_mail_user
-      EMULATE_EMAIL                = var.emulate_email
+      MAILGUN_API_KEY              = var.mailgun_api_key
+      MAILGUN_DOMAIN               = var.mailgun_domain
+      NODE_ENV                     = var.environment
     }
     max_instance_count = 100
     available_memory   = "256M"
@@ -219,6 +226,10 @@ resource "google_cloudfunctions2_function" "add_keycloak_role" {
   build_config {
     runtime     = "nodejs20"
     entry_point = "addKeycloakRole"
+    environment_variables = {
+      # Causes a re-deploy of the function when the source changes
+      "SOURCE_SHA" = data.google_storage_bucket_object.add_keycloak_role.md5hash
+    }
     source {
       storage_source {
         bucket = var.project_id
@@ -266,6 +277,10 @@ resource "google_cloudfunctions2_function" "update_from_keycloak" {
   build_config {
     runtime     = "nodejs20"
     entry_point = "updateFromKeycloak"
+    environment_variables = {
+      # Causes a re-deploy of the function when the source changes
+      "SOURCE_SHA" = data.google_storage_bucket_object.update_from_keycloak.md5hash
+    }
     source {
       storage_source {
         bucket = var.project_id
@@ -316,6 +331,10 @@ resource "google_cloudfunctions2_function" "send_questionaires" {
   build_config {
     runtime     = "nodejs20"
     entry_point = "sendQuestionaires"
+    environment_variables = {
+      # Causes a re-deploy of the function when the source changes
+      "SOURCE_SHA" = data.google_storage_bucket_object.send_questionaires.md5hash
+    }
     source {
       storage_source {
         bucket = var.project_id
