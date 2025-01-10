@@ -6,7 +6,7 @@ pyyaml
 Authlib
 flask>=1.0,<3.0  # Specifying Flask version to be compatible with Functions Framework
 python-Levenshtein
-fuzzywuzzy
+thefuzz
 typing
 authlib
 datetime
