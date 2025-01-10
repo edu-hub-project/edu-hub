@@ -34,6 +34,14 @@ export const PROGRAM_STATISTICS = gql`
             userId
           }
         }
+        CourseEnrollments {
+          id
+          status
+          attendanceCertificateURL
+          achievementCertificateURL
+          created_at
+          updated_at
+        }
       }
     }
   }

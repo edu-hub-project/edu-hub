@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ProgramType_enum, AttendanceStatus_enum } from "./../../__generated__/globalTypes";
+import { ProgramType_enum, AttendanceStatus_enum, CourseEnrollmentStatus_enum } from "./../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: ProgramStatistics
@@ -35,6 +35,25 @@ export interface ProgramStatistics_Program_Courses_Sessions {
   Attendances: ProgramStatistics_Program_Courses_Sessions_Attendances[];
 }
 
+export interface ProgramStatistics_Program_Courses_CourseEnrollments {
+  __typename: "CourseEnrollment";
+  id: number;
+  /**
+   * The users current enrollment status to this course
+   */
+  status: CourseEnrollmentStatus_enum;
+  /**
+   * URL to the file containing the user's attendance certificate (if he obtained one)
+   */
+  attendanceCertificateURL: string | null;
+  /**
+   * URL to the file containing the user's achievement certificate (if he obtained one)
+   */
+  achievementCertificateURL: string | null;
+  created_at: any | null;
+  updated_at: any | null;
+}
+
 export interface ProgramStatistics_Program_Courses {
   __typename: "Course";
   id: number;
@@ -46,6 +65,10 @@ export interface ProgramStatistics_Program_Courses {
    * An array relationship
    */
   Sessions: ProgramStatistics_Program_Courses_Sessions[];
+  /**
+   * An array relationship
+   */
+  CourseEnrollments: ProgramStatistics_Program_Courses_CourseEnrollments[];
 }
 
 export interface ProgramStatistics_Program {
