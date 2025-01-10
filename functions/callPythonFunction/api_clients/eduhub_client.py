@@ -134,11 +134,12 @@ class EduHubClient:
                             lastName
                             email
                             matriculationNumber
-                            otherUniversity
-                            university
-                            employment
+                            occupation
+                            Organization {
+                                name
+                            }
                         }
-                    }
+                   }
                     ects
                     title
                 }
@@ -150,9 +151,16 @@ class EduHubClient:
         for item in result_list:
             for enrollment in item["CourseEnrollments"]:
                 unnested_enrollment = enrollment.copy()
+                # Extract and remove User data
                 user_info = unnested_enrollment.pop("User")
+                # Add all user info, handling Organization specially
                 for key, value in user_info.items():
-                    unnested_enrollment[f"User_{key}"] = value
+                    if key == "Organization":
+                        # Handle case where Organization might be None
+                        unnested_enrollment[f"User_{key}"] = value["name"] if value is not None else None
+                    else:
+                        unnested_enrollment[f"User_{key}"] = value
+                # Add course info
                 unnested_enrollment["Course_ects"] = item["ects"]
                 unnested_enrollment["Course_title"] = item["title"]
                 unnested_list.append(unnested_enrollment)

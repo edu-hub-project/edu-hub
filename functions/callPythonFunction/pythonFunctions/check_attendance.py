@@ -1,7 +1,7 @@
 import os
 import logging
 import pandas as pd
-from fuzzywuzzy import fuzz
+from thefuzz import fuzz
 from api_clients import EduHubClient, ZoomClient, LimeSurveyClient
 from utils import is_admin
 
