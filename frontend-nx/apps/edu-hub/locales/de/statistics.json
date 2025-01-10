@@ -6,8 +6,14 @@
         "options": {
             "APPLICATIONS": "Bewerbungen",
             "COURSES": "Kurse",
-            "SESSIONS": "Sessions"
+            "SESSIONS": "Sessions",
+            "ATTENDANCES": "Anwesenheiten",
+            "CERTIFICATES": "Zertifikate"
         }
+    },
+    "select_program_types": {
+        "label": "Filtere einen oder mehrere Programmtypen",
+        "placeholder": "Programmtypen auswählen"
     },
     "application_statistics": {
         "label": "Bewerbungsstatistiken",
@@ -21,22 +27,28 @@
     },
     "course_statistics": {
         "label": "Kursstatistiken",
-        "select_program_types": {
-            "label": "Filtere einen oder mehrere Programmtypen",
-            "placeholder": "Programmtypen auswählen"
-        },
         "courses": "Kurse",
-        "cumulative": "Gesamtzahl der angebotenen Kurse",
+        "cumulative": "Gesamtzahl der veröffentlichten Kurse",
         "by_program": "Anzahl der Kurse nach Programm"
     },
     "session_statistics": {
         "label": "Veranstaltungsstatistiken",
-        "select_program_types": {
-            "label": "Filtere einen oder mehrere Programmtypen",
-            "placeholder": "Programmtypen auswählen"
-        },
         "sessions": "Veranstaltungen",
         "cumulative": "Gesamtzahl der angebotenen Veranstaltungen",
         "by_program": "Anzahl der Veranstaltungen nach Programm"
+    },
+    "attendance_statistics": {
+        "label": "Anwesenheitsstatistiken",
+        "attendances": "Anwesenheiten",
+        "cumulative": "Gesamtzahl der Anwesenheiten",
+        "by_program": "Anzahl der Anwesenheiten nach Programm"
+    },
+    "certificate_statistics": {
+        "label": "Zertifikatstatistiken",
+        "certificates": "Zertifikate",
+        "cumulative": "Gesamtzahl der Zertifikate",
+        "by_program": "Anzahl der Zertifikate nach Programm",
+        "attendance_certificates": "Anwesenheitszertifikate",
+        "achievement_certificates": "Leistungszertifikate"
     }
 }

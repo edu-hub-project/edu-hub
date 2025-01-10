@@ -5,6 +5,8 @@ import CommonPageHeader from '../../common/CommonPageHeader';
 import { ApplicationStatistics } from './statistics/ApplicationStatistics';
 import { CourseStatistics } from './statistics/CourseStatistics';
 import { SessionStatistics } from './statistics/SessionStatistics';
+import { AttendanceStatistics } from './statistics/AttendanceStatistics';
+import { CertificateStatistics } from './statistics/CertificateStatistics';
 import DropDownSelector from '../../inputs/DropDownSelector';
 
 class ErrorBoundary extends React.Component<{ children: ReactNode }, { hasError: boolean }> {
@@ -30,7 +32,7 @@ class ErrorBoundary extends React.Component<{ children: ReactNode }, { hasError:
   }
 }
 
-type StatisticType = 'APPLICATIONS' | 'COURSES' | 'SESSIONS';
+type StatisticType = 'APPLICATIONS' | 'COURSES' | 'SESSIONS' | 'ATTENDANCES' | 'CERTIFICATES';
 
 const StatisticsContent: FC = () => {
   const { t } = useTranslation('statistics');
@@ -40,6 +42,8 @@ const StatisticsContent: FC = () => {
     { value: 'APPLICATIONS', label: t('select_statistics.options.APPLICATIONS') },
     { value: 'COURSES', label: t('select_statistics.options.COURSES') },
     { value: 'SESSIONS', label: t('select_statistics.options.SESSIONS') },
+    { value: 'ATTENDANCES', label: t('select_statistics.options.ATTENDANCES') },
+    { value: 'CERTIFICATES', label: t('select_statistics.options.CERTIFICATES') },
   ];
 
   const renderContent = () => {
@@ -50,6 +54,10 @@ const StatisticsContent: FC = () => {
         return <CourseStatistics />;
       case 'SESSIONS':
         return <SessionStatistics />;
+      case 'ATTENDANCES':
+        return <AttendanceStatistics />;
+      case 'CERTIFICATES':
+        return <CertificateStatistics />;
     }
   };
 

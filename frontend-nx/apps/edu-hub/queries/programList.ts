@@ -12,13 +12,42 @@ export const PROGRAM_LIST = gql`
       ...AdminProgramFragment
       Courses {
         id
+      }
+    }
+  }
+`;
+
+export const PROGRAM_STATISTICS = gql`
+  ${ADMIN_PROGRAM_FRAGMENT}
+  query ProgramStatistics {
+    Program {
+      ...AdminProgramFragment
+      Courses {
+        id
+        title
+        published
         Sessions {
-          id 
+          id
+          startDateTime
+          Attendances {
+            id
+            status
+            userId
+          }
+        }
+        CourseEnrollments {
+          id
+          status
+          attendanceCertificateURL
+          achievementCertificateURL
+          created_at
+          updated_at
         }
       }
     }
   }
 `;
+
 
 export const PROGRAMS_WITH_MINIMUM_PROPERTIES = gql`
   ${PROGRAM_FRAGMENT_MINIMUM_PROPERTIES}
