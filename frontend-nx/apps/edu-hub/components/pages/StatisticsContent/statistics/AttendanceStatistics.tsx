@@ -4,7 +4,7 @@ import { TimeSeriesLineChart } from '../../../common/charts/TimeSeriesLineChart'
 import { useRoleQuery } from '../../../../hooks/authedQuery';
 import { PROGRAM_STATISTICS } from '../../../../queries/programList';
 import { PROGRAM_TYPES } from '../../../../queries/programList';
-import { ProgramList } from '../../../../queries/__generated__/ProgramList';
+import { ProgramStatistics } from '../../../../queries/__generated__/ProgramStatistics';
 import { ProgramTypesList } from '../../../../queries/__generated__/ProgramTypesList';
 import Loading from '../../../common/Loading';
 import TagSelector from '../../../inputs/TagSelector';
@@ -21,7 +21,7 @@ export const AttendanceStatistics: FC = () => {
   const [selectedTypes, setSelectedTypes] = useState<{ id: number; name: string }[]>([]);
 
   const { data: typeData } = useRoleQuery<ProgramTypesList>(PROGRAM_TYPES);
-  const { data: programData, loading, error } = useRoleQuery<ProgramList>(PROGRAM_STATISTICS);
+  const { data: programData, loading, error } = useRoleQuery<ProgramStatistics>(PROGRAM_STATISTICS);
 
   const typeOptions = useMemo(
     () =>

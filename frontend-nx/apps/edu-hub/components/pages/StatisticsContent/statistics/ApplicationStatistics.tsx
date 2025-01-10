@@ -6,7 +6,7 @@ import { MultiProgramEnrollments } from '../../../../queries/__generated__/Multi
 import { TimeSeriesLineChart } from '../../../common/charts/TimeSeriesLineChart';
 import TagSelector from '../../../inputs/TagSelector';
 import { PROGRAM_STATISTICS } from '../../../../queries/programList';
-import { ProgramList } from '../../../../queries/__generated__/ProgramList';
+import { ProgramStatistics } from '../../../../queries/__generated__/ProgramStatistics';
 import Loading from '../../../common/Loading';
 
 export const ApplicationStatistics: FC = () => {
@@ -14,7 +14,7 @@ export const ApplicationStatistics: FC = () => {
   const [selectedPrograms, setSelectedPrograms] = useState<{ id: number; name: string }[]>([]);
 
   // Query for program list (for selector)
-  const { data: programListData } = useRoleQuery<ProgramList>(PROGRAM_STATISTICS);
+  const { data: programListData } = useRoleQuery<ProgramStatistics>(PROGRAM_STATISTICS);
 
   // Query for enrollment data
   const { data, loading, error } = useRoleQuery<MultiProgramEnrollments>(MULTI_PROGRAM_ENROLLMENTS, {
