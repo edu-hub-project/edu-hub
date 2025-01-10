@@ -62,6 +62,10 @@ export interface ProgramStatistics_Program_Courses {
    */
   title: string;
   /**
+   * Decides whether the course is published for all users or not.
+   */
+  published: boolean;
+  /**
    * An array relationship
    */
   Sessions: ProgramStatistics_Program_Courses_Sessions[];

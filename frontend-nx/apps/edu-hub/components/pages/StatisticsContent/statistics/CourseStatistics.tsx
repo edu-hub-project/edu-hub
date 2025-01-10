@@ -43,7 +43,9 @@ export const CourseStatistics: FC = () => {
         const programStartMonth = program.lectureStart
           ? new Date(program.lectureStart).toISOString().slice(0, 7)
           : null;
-        return sum + (programStartMonth === date ? program.Courses?.length || 0 : 0);
+        return (
+          sum + (programStartMonth === date ? program.Courses?.filter((course) => course.published)?.length || 0 : 0)
+        );
       }, 0);
 
       return {
@@ -64,7 +66,7 @@ export const CourseStatistics: FC = () => {
     getSortedPrograms(filteredPrograms).forEach((program) => {
       if (program?.lectureStart) {
         const date = new Date(program.lectureStart).toISOString().slice(0, 7);
-        cumulativeTotal += program.Courses?.length ?? 0;
+        cumulativeTotal += program.Courses?.filter((course) => course.published)?.length ?? 0;
         cumulativeMap.set(date, cumulativeTotal);
       }
     });

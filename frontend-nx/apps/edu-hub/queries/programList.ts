@@ -25,6 +25,7 @@ export const PROGRAM_STATISTICS = gql`
       Courses {
         id
         title
+        published
         Sessions {
           id
           startDateTime
