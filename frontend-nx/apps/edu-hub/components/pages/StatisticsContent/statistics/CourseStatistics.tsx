@@ -94,8 +94,8 @@ export const CourseStatistics: FC = () => {
       <div className="bg-white p-4 rounded-lg">
         <TagSelector
           variant="material"
-          label={t('course_statistics.select_program_types.label')}
-          placeholder={t('course_statistics.select_program_types.placeholder')}
+          label={t('select_program_types.label')}
+          placeholder={t('select_program_types.placeholder')}
           itemId={0}
           values={selectedTypes}
           options={typeOptions}

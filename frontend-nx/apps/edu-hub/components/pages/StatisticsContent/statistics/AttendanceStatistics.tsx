@@ -3,19 +3,20 @@ import useTranslation from 'next-translate/useTranslation';
 import { TimeSeriesLineChart } from '../../../common/charts/TimeSeriesLineChart';
 import { useRoleQuery } from '../../../../hooks/authedQuery';
 import { PROGRAM_LIST } from '../../../../queries/programList';
-import { ProgramList } from '../../../../queries/__generated__/ProgramList';
-import Loading from '../../../common/Loading';
 import { PROGRAM_TYPES } from '../../../../queries/programList';
+import { ProgramList } from '../../../../queries/__generated__/ProgramList';
 import { ProgramTypesList } from '../../../../queries/__generated__/ProgramTypesList';
+import Loading from '../../../common/Loading';
 import TagSelector from '../../../inputs/TagSelector';
 import { getFilteredProgramsAndDateMap, formatChartDate } from './utils';
+import { AttendanceStatus_enum } from '../../../../__generated__/globalTypes';
 
 interface ChartDataPoint {
   date: string;
   [key: string]: any;
 }
 
-export const SessionStatistics: FC = () => {
+export const AttendanceStatistics: FC = () => {
   const { t } = useTranslation('statistics');
   const [selectedTypes, setSelectedTypes] = useState<{ id: number; name: string }[]>([]);
 
@@ -31,6 +32,34 @@ export const SessionStatistics: FC = () => {
     [typeData]
   );
 
+  // Calculate attendances for a program's sessions
+  const calculateAttendances = (program: any) => {
+    return (
+      program.Courses?.reduce((courseSum: number, course: any) => {
+        return (
+          courseSum +
+          (course.Sessions?.reduce((sessionSum: number, session: any) => {
+            // Group attendances by userId and get the most recent one for each user
+            const latestAttendances = session.Attendances?.reduce((acc: any, attendance: any) => {
+              const existingAttendance = acc[attendance.userId];
+              if (!existingAttendance || existingAttendance.id < attendance.id) {
+                acc[attendance.userId] = attendance;
+              }
+              return acc;
+            }, {});
+
+            // Count only ATTENDED status from the latest attendances
+            const attendedCount = Object.values(latestAttendances || {}).filter(
+              (attendance: any) => attendance.status === AttendanceStatus_enum.ATTENDED
+            ).length;
+
+            return sessionSum + attendedCount;
+          }, 0) || 0)
+        );
+      }, 0) || 0
+    );
+  };
+
   // Program-based chart data
   const programBasedChartData = useMemo(() => {
     const { filteredPrograms, dateMap } = getFilteredProgramsAndDateMap(programData, selectedTypes);
@@ -39,20 +68,17 @@ export const SessionStatistics: FC = () => {
     const sortedDates = Array.from(dateMap.keys()).sort();
 
     return sortedDates.map((date) => {
-      const totalSessions = filteredPrograms.reduce((sum, program) => {
+      const totalAttendances = filteredPrograms.reduce((sum, program) => {
         const programStartMonth = program?.lectureStart
           ? new Date(program.lectureStart).toISOString().slice(0, 7)
           : null;
 
-        const programSessions =
-          program.Courses?.reduce((courseSum, course) => courseSum + (course?.Sessions?.length ?? 0), 0) ?? 0;
-
-        return sum + (programStartMonth === date ? programSessions : 0);
+        return sum + (programStartMonth === date ? calculateAttendances(program) : 0);
       }, 0);
 
       return {
         date: formatChartDate(date, dateMap),
-        sessions: totalSessions,
+        attendances: totalAttendances,
       };
     });
   }, [programData, selectedTypes]);
@@ -66,23 +92,21 @@ export const SessionStatistics: FC = () => {
     let cumulativeTotal = 0;
 
     return sortedDates.map((date) => {
-      const totalSessions = filteredPrograms.reduce((sum, program) => {
+      const totalAttendances = filteredPrograms.reduce((sum, program) => {
         const programStartMonth = program.lectureStart
           ? new Date(program.lectureStart).toISOString().slice(0, 7)
           : null;
 
         if (programStartMonth && programStartMonth <= date) {
-          return (
-            sum + (program.Courses?.reduce((courseSum, course) => courseSum + (course.Sessions?.length || 0), 0) || 0)
-          );
+          return sum + calculateAttendances(program);
         }
         return sum;
       }, 0);
 
-      cumulativeTotal = totalSessions;
+      cumulativeTotal = totalAttendances;
       return {
         date: formatChartDate(date, dateMap),
-        sessions: cumulativeTotal,
+        attendances: cumulativeTotal,
       };
     });
   }, [programData, selectedTypes]);
@@ -90,8 +114,8 @@ export const SessionStatistics: FC = () => {
   const series = useMemo(() => {
     return [
       {
-        key: 'sessions',
-        label: t('session_statistics.sessions'),
+        key: 'attendances',
+        label: t('attendance_statistics.attendances'),
       },
     ];
   }, [t]);
@@ -116,9 +140,13 @@ export const SessionStatistics: FC = () => {
       </div>
 
       <div className="space-y-8">
-        <TimeSeriesLineChart data={cumulativeChartData} series={series} title={t('session_statistics.cumulative')} />
+        <TimeSeriesLineChart data={cumulativeChartData} series={series} title={t('attendance_statistics.cumulative')} />
 
-        <TimeSeriesLineChart data={programBasedChartData} series={series} title={t('session_statistics.by_program')} />
+        <TimeSeriesLineChart
+          data={programBasedChartData}
+          series={series}
+          title={t('attendance_statistics.by_program')}
+        />
       </div>
     </div>
   );

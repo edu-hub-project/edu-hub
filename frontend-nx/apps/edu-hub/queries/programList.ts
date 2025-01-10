@@ -12,8 +12,15 @@ export const PROGRAM_LIST = gql`
       ...AdminProgramFragment
       Courses {
         id
+        title
         Sessions {
-          id 
+          id
+          startDateTime
+          Attendances {
+            id
+            status
+            userId
+          }
         }
       }
     }

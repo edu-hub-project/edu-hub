@@ -3,20 +3,45 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ProgramType_enum } from "./../../__generated__/globalTypes";
+import { ProgramType_enum, AttendanceStatus_enum } from "./../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: ProgramList
 // ====================================================
 
+export interface ProgramList_Program_Courses_Sessions_Attendances {
+  __typename: "Attendance";
+  id: number;
+  /**
+   * The attendance status: MISSED for a user registered for the session but not recorded (or recognized), otherwise ATTENDED
+   */
+  status: AttendanceStatus_enum;
+  /**
+   * The ID of the user for which the attendance was recorded (only provided if the recorded name was in accordance with the name of a user registered for the session)
+   */
+  userId: any | null;
+}
+
 export interface ProgramList_Program_Courses_Sessions {
   __typename: "Session";
   id: number;
+  /**
+   * The day and time of the start of the session
+   */
+  startDateTime: any;
+  /**
+   * An array relationship
+   */
+  Attendances: ProgramList_Program_Courses_Sessions_Attendances[];
 }
 
 export interface ProgramList_Program_Courses {
   __typename: "Course";
   id: number;
+  /**
+   * The title of the course (only editable by an admin user)
+   */
+  title: string;
   /**
    * An array relationship
    */

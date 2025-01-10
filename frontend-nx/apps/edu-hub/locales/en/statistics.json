@@ -6,8 +6,13 @@
         "options": {
             "APPLICATIONS": "Applications",
             "COURSES": "Courses",
-            "SESSIONS": "Sessions"
+            "SESSIONS": "Sessions",
+            "ATTENDANCES": "Attendances"
         }
+    },
+    "select_program_types": {
+        "label": "Filter one or more Program Types",
+        "placeholder": "Select Program Types"
     },
     "application_statistics": {
         "label": "Application Statistics",
@@ -21,22 +26,20 @@
     },
     "course_statistics": {
         "label": "Course Statistics",
-        "select_program_types": {
-            "label": "Filter one or more Program Types",
-            "placeholder": "Select Program Types"
-        },
         "courses": "Courses",
         "cumulative": "Total Number of Offered Courses",
         "by_program": "Number of Courses by Program"
     },
     "session_statistics": {
         "label": "Session and Event Statistics",
-        "select_program_types": {
-            "label": "Filter one or more Program Types",
-            "placeholder": "Select Program Types"
-        },
         "sessions": "Sessions or Events",
         "cumulative": "Total Number of Offered Sessions or Events",
         "by_program": "Number of Sessions or Events by Program"
+    },
+    "attendance_statistics": {
+        "label": "Attendance Statistics",
+        "attendances": "Attendances",
+        "cumulative": "Total Number of Offered Attendances",
+        "by_program": "Number of Attendances by Program"
     }
 }
