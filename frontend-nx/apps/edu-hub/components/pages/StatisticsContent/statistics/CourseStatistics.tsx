@@ -2,7 +2,7 @@ import React, { FC, useMemo, useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import { TimeSeriesLineChart } from '../../../common/charts/TimeSeriesLineChart';
 import { useRoleQuery } from '../../../../hooks/authedQuery';
-import { PROGRAM_LIST } from '../../../../queries/programList';
+import { PROGRAM_STATISTICS } from '../../../../queries/programList';
 import { ProgramList } from '../../../../queries/__generated__/ProgramList';
 import Loading from '../../../common/Loading';
 import { PROGRAM_TYPES } from '../../../../queries/programList';
@@ -20,7 +20,7 @@ export const CourseStatistics: FC = () => {
   const [selectedTypes, setSelectedTypes] = useState<{ id: number; name: string }[]>([]);
 
   const { data: typeData } = useRoleQuery<ProgramTypesList>(PROGRAM_TYPES);
-  const { data: programData, loading, error } = useRoleQuery<ProgramList>(PROGRAM_LIST);
+  const { data: programData, loading, error } = useRoleQuery<ProgramList>(PROGRAM_STATISTICS);
 
   const typeOptions = useMemo(
     () =>

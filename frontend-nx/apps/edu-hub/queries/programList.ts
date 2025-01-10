@@ -12,6 +12,18 @@ export const PROGRAM_LIST = gql`
       ...AdminProgramFragment
       Courses {
         id
+      }
+    }
+  }
+`;
+
+export const PROGRAM_STATISTICS = gql`
+  ${ADMIN_PROGRAM_FRAGMENT}
+  query ProgramStatistics {
+    Program {
+      ...AdminProgramFragment
+      Courses {
+        id
         title
         Sessions {
           id
@@ -26,6 +38,7 @@ export const PROGRAM_LIST = gql`
     }
   }
 `;
+
 
 export const PROGRAMS_WITH_MINIMUM_PROPERTIES = gql`
   ${PROGRAM_FRAGMENT_MINIMUM_PROPERTIES}
