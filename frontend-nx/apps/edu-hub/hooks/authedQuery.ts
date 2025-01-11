@@ -16,7 +16,6 @@ const useErrorHandler = () => {
       signOut();
     } else {
       alert(t("authed_query.authentication_error") + ": " + error);
-      signOut();
     }
   };
 };
