@@ -21,12 +21,15 @@ export interface ExtendedDegreeParticipantsEnrollment
   attendedEvents?: number;
 }
 
-export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = () => {
+export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = ({ course }) => {
   const { t, lang } = useTranslation('manageCourse');
 
   const { data, loading, error, pageIndex, setPageIndex, searchFilter, setSearchFilter } = useTableGrid({
     queryHook: useRoleQuery,
     query: DEGREE_PARTICIPANTS_WITH_DEGREE_ENROLLMENTS,
+    queryVariables: {
+      degreeCourseId: course?.id,
+    },
     pageSize: 15,
     refetchFilter: (searchFilter) => ({
       User: {
