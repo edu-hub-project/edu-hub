@@ -36,7 +36,7 @@ tables=$(docker exec -e PGPASSWORD=$PG_PASSWORD $CONTAINER_NAME psql -U postgres
         'AppSettings', \
         'CourseGroupOption', \
         'CourseRegistrationType', \
-        'ProgramType',\
+        'ProgramType'\
     );" | grep -v '^\s*$')
 
 echo "Found tables (excluding enum tables):"
