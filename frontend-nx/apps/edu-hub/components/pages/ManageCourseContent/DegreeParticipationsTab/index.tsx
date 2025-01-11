@@ -27,10 +27,10 @@ export const DegreeParticipationsTab: FC<DegreeParticipationsTabIProps> = ({ cou
   const { data, loading, error, pageIndex, setPageIndex, searchFilter, setSearchFilter } = useTableGrid({
     queryHook: useRoleQuery,
     query: DEGREE_PARTICIPANTS_WITH_DEGREE_ENROLLMENTS,
-    pageSize: 15,
     queryVariables: {
       degreeCourseId: course?.id,
     },
+    pageSize: 15,
     refetchFilter: (searchFilter) => ({
       User: {
         _or: [{ firstName: { _ilike: `%${searchFilter}%` } }, { lastName: { _ilike: `%${searchFilter}%` } }],
