@@ -1,12 +1,12 @@
-import { ProgramList } from '../../../../queries/__generated__/ProgramList';
+import { ProgramStatistics } from '../../../../queries/__generated__/ProgramStatistics';
 
 interface FilteredProgramsResult {
-  filteredPrograms: ProgramList['Program'];
+  filteredPrograms: ProgramStatistics['Program'];
   dateMap: Map<string, string[]>;
 }
 
 export const getFilteredProgramsAndDateMap = (
-  programData: ProgramList | undefined,
+  programData: ProgramStatistics | undefined,
   selectedTypes: { id: number; name: string }[]
 ): FilteredProgramsResult => {
   if (!programData?.Program) return { filteredPrograms: [], dateMap: new Map<string, string[]>() };
@@ -33,7 +33,7 @@ export const formatChartDate = (date: string, dateMap: Map<string, string[]>) =>
   return `${programs.join(', ')}\n(${date})`;
 };
 
-export const getSortedPrograms = (programs: ProgramList['Program']) => {
+export const getSortedPrograms = (programs: ProgramStatistics['Program']) => {
   return [...programs].sort((a, b) => {
     const dateA = a.lectureStart ? new Date(a.lectureStart).getTime() : 0;
     const dateB = b.lectureStart ? new Date(b.lectureStart).getTime() : 0;

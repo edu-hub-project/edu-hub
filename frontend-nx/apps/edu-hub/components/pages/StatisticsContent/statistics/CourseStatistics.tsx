@@ -2,8 +2,8 @@ import React, { FC, useMemo, useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import { TimeSeriesLineChart } from '../../../common/charts/TimeSeriesLineChart';
 import { useRoleQuery } from '../../../../hooks/authedQuery';
-import { PROGRAM_LIST } from '../../../../queries/programList';
-import { ProgramList } from '../../../../queries/__generated__/ProgramList';
+import { PROGRAM_STATISTICS } from '../../../../queries/programList';
+import { ProgramStatistics } from '../../../../queries/__generated__/ProgramStatistics';
 import Loading from '../../../common/Loading';
 import { PROGRAM_TYPES } from '../../../../queries/programList';
 import { ProgramTypesList } from '../../../../queries/__generated__/ProgramTypesList';
@@ -20,7 +20,7 @@ export const CourseStatistics: FC = () => {
   const [selectedTypes, setSelectedTypes] = useState<{ id: number; name: string }[]>([]);
 
   const { data: typeData } = useRoleQuery<ProgramTypesList>(PROGRAM_TYPES);
-  const { data: programData, loading, error } = useRoleQuery<ProgramList>(PROGRAM_LIST);
+  const { data: programData, loading, error } = useRoleQuery<ProgramStatistics>(PROGRAM_STATISTICS);
 
   const typeOptions = useMemo(
     () =>
@@ -43,7 +43,9 @@ export const CourseStatistics: FC = () => {
         const programStartMonth = program.lectureStart
           ? new Date(program.lectureStart).toISOString().slice(0, 7)
           : null;
-        return sum + (programStartMonth === date ? program.Courses?.length || 0 : 0);
+        return (
+          sum + (programStartMonth === date ? program.Courses?.filter((course) => course.published)?.length || 0 : 0)
+        );
       }, 0);
 
       return {
@@ -64,7 +66,7 @@ export const CourseStatistics: FC = () => {
     getSortedPrograms(filteredPrograms).forEach((program) => {
       if (program?.lectureStart) {
         const date = new Date(program.lectureStart).toISOString().slice(0, 7);
-        cumulativeTotal += program.Courses?.length ?? 0;
+        cumulativeTotal += program.Courses?.filter((course) => course.published)?.length ?? 0;
         cumulativeMap.set(date, cumulativeTotal);
       }
     });
@@ -94,8 +96,8 @@ export const CourseStatistics: FC = () => {
       <div className="bg-white p-4 rounded-lg">
         <TagSelector
           variant="material"
-          label={t('course_statistics.select_program_types.label')}
-          placeholder={t('course_statistics.select_program_types.placeholder')}
+          label={t('select_program_types.label')}
+          placeholder={t('select_program_types.placeholder')}
           itemId={0}
           values={selectedTypes}
           options={typeOptions}
