@@ -22,7 +22,7 @@ EduHub aims to centralize educational offerings. It enables users to apply and g
 
 ## :busts_in_silhouette: Contributing
 
-We welcome contributions from everyone. Please check out the technical details for the development [here](DEVELOPMENT_GUIDE.md).
+We welcome contributions from everyone. Please check out the technical details for the development [here](./docs/DEVELOPMENT_GUIDE.md).
 
 ## :computer: Tech Stack
 

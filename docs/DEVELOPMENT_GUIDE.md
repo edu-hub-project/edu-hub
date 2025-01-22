@@ -1,21 +1,21 @@
 # Development Guide
 
-## Prerequisites
+## 🏗️ Project Structure
+[Your existing project structure content]
 
-- Docker (See `bin/docker_install.sh` for installation)
-- Docker Compose (v1.29.2+)
-- Optional: `hasura-cli` for database migrations
+## 🚀 Serverless Functions
+For developing serverless functions, please refer to:
+- [Serverless Functions Guide](./docs/SERVERLESS_FUNCTIONS.md) - Complete guide for creating and maintaining serverless functions
+- [Function Templates](./docs/templates/FUNCTION_TEMPLATES.md) - Ready-to-use templates for new functions
 
-## :whale: Docker Commands
+## Ports
 
-- `docker compose up -d` - Start dev environment
-- `docker compose stop` - Stop environment, keep data
-- `docker compose start` Start environment after stop
-- `docker compose down -v` Bring down environment and delete all containers and volumes
-- `docker ps -a` - Get container names
-- `docker exec -it container_name /bin/sh` - Run a shell inside a given container
-- `docker compose logs -f` - Show all logs
-- `docker logs container_name -f` - Show logs of a given container
+- `4001` - File uploads
+- `8080` - Hasura API
+- `5000` - Edu frontend
+- `5001` - Rent-a-scientist frontend
+- `28080` - Keycloak admin interface, login as **admin** with password **admin**
+- `42000` to `420025` - serverless functions (currently most functions have their own port)
 
 ## 🌱 Seeds
 
@@ -94,15 +94,6 @@ The new initial state will be applied to fresh database installations
 See [this document](./frontend-nx/apps/edu-hub/README.md) for a detailed explanation of the structure of the React app and how to use components.
 
 
-## Ports
-
-- `4001` - File uploads
-- `8080` - Hasura API
-- `5000` - Edu frontend
-- `5001` - Rent-a-scientist frontend
-- `28080` - Keycloak admin interface, login as **admin** with password **admin**
-- `42000` to `420025` - serverless functions (currently most functions have their own port)
-
 ## Technical details
 
 - To access the Hasura admin frontend, change to the `backend` folder and execute `hasura console`. Changes in the database schema will be saved as migrations and can be committed correspondingly.
@@ -112,9 +103,7 @@ See [this document](./frontend-nx/apps/edu-hub/README.md) for a detailed explana
 - When adding new frontend apps [this bug workaround](https://github.com/nrwl/nx/issues/9017#issuecomment-1140066503) has to be used!
 - Recommended: [Manage docker as non-root user](https://docs.docker.com/engine/install/linux-postinstall/)
 
-## Updating the Setup
-
-- For Keycloak settings:
+## Updating Keycloak Settings
 To persist changes you made to the keycloak configuration export the edu-hub realm as described in [this documentation](https://www.keycloak.org/server/importExport).
   1. `docker exec -ti edu-hub_keycloak_1 /bin/sh`
   #This command opens a shell in the edu-hub_keycloak_1 container
@@ -128,3 +117,4 @@ To persist changes you made to the keycloak configuration export the edu-hub rea
 ## Updating frontend-nx packages
 - use `yarn upgrade-interactive` script to check for package updates
 - if package version are explicitly locked in, please check for potential issues or comments while upgrading
+

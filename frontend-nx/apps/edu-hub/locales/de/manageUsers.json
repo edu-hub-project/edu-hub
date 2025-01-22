@@ -21,5 +21,6 @@
     "motivation_letter_anonymization": "Anonymisierung der Motivationsbriefe",
     "profile_picture_removal": "Entfernung des Profilbilds",
     "certificate_anonymization": "Anonymisierung der Zertifikate"
-  }
+  },
+  "manage_admins": "Admin-Benutzer verwalten"
 }

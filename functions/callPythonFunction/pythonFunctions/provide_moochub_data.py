@@ -1,12 +1,7 @@
 import logging
 from api_clients import EduHubClient
-import sys
 
-# set working directory to "functions/callPythonFunction"
-# sys.path.append("functions/callPythonFunction")
-
-
-def provide_moochub_data(hasura_secret, arguments):
+def provide_moochub_data(arguments):
     """Function to provide course data for the MOOCHub API
     Args:
         hasura_secret (str): Secret to authenticate the user
@@ -16,9 +11,6 @@ def provide_moochub_data(hasura_secret, arguments):
     """
 
     logging.info("########## Load Participation Data Function ##########")
-
-    # no admin check necessary
-    # function is callable by everyone
 
     eduhub_client = EduHubClient()
     logging.debug(f"eduhub_client.url:  {eduhub_client.url}")

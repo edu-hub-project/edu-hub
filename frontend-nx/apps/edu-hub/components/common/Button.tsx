@@ -1,7 +1,6 @@
 import { AnchorHTMLAttributes, ButtonHTMLAttributes, FC, ReactNode, MouseEventHandler } from 'react';
 import Link, { LinkProps } from 'next/link';
 
-
 interface BaseButtonProps {
   className?: string;
   filled?: boolean;
@@ -40,22 +39,14 @@ export const Button: FC<ButtonProps> = ({
   ...rest
 }) => {
   // Basis-Styling
-  const baseStyles = 
-    "rounded-full py-2 px-4 border-2 border-black hover:border-indigo-300 select-none";
-  
-  // Bedingte Styling-Klassen
-  const colorStyles = filled
-    ? inverted
-      ? 'text-edu-black bg-white'
-      : 'bg-edu-black text-white'
-    : 'text-edu-black';
+  const baseStyles = 'rounded-full py-2 px-4 border-2 border-black hover:border-indigo-300 select-none';
 
+  // Bedingte Styling-Klassen
+  const colorStyles = filled ? (inverted ? 'text-edu-black bg-white' : 'bg-edu-black text-white') : 'text-edu-black';
 
   const disabledStyles = 'disabled:bg-gray-400 disabled:text-zinc-500';
 
-
   const combinedClassName = `${baseStyles} ${colorStyles} ${disabledStyles} ${className || ''}`;
-
 
   const content = buttonText || children;
 
@@ -81,8 +72,12 @@ export const Button: FC<ButtonProps> = ({
 
   if (as === 'link') {
     return (
-      <Link className={combinedClassName} {...(rest as LinkProps)}>
-        <a onClick={handleClick as MouseEventHandler<HTMLAnchorElement>}>{content}</a>
+      <Link
+        className={combinedClassName}
+        onClick={handleClick as MouseEventHandler<HTMLAnchorElement>}
+        {...(rest as LinkProps)}
+      >
+        {content}
       </Link>
     );
   }

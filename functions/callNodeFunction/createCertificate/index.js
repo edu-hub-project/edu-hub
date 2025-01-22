@@ -1,7 +1,7 @@
 import { fetchEnrollments } from "./certificateUtils.js";
 import { generateAchievementCertificate } from "./generateAchievementCertificate.js";
 import { generateAttendanceCertificate } from "./generateAttendanceCertificate.js";
-import logger from "../index.js";
+import { logger } from "../index.js";
 
 /**
  * Generates certificates for a given set of user IDs and course ID.

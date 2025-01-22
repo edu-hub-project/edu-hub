@@ -3,7 +3,10 @@ import { gql } from '@apollo/client';
 export const LOAD_PARTICIPATION_DATA = gql`
   query loadParticipationData($programId: Int!) {
     loadParticipationData(programId: $programId) {
+      success
       link
+      error
+      messageKey
     }
   }
 `;
@@ -146,7 +149,32 @@ export const CREATE_CERTIFICATES = gql`
       courseId: $courseId
       certificateType: $certificateType
     ) {
-      result
+      success
+      count
+      certificateType
+      error
+      messageKey
     }
   }
-  `;
+`;
+
+export const ADMIN_USERS = gql`
+  query AdminUsers {
+    getAdminUsers {
+      success
+      adminUserIds
+      messageKey
+      error
+    }
+  }
+`;
+
+export const UPDATE_USER_ADMIN_STATUS = gql`
+  mutation UpdateUserAdminStatus($userId: String!, $isAdmin: Boolean!) {
+    updateUserAdminStatus(userId: $userId, isAdmin: $isAdmin) {
+      success
+      error
+      messageKey
+    }
+  }
+`;
