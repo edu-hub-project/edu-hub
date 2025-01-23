@@ -1,7 +1,6 @@
 import { FC, ReactNode, useMemo, useCallback } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import { ColumnDef } from '@tanstack/react-table';
-import { HiArrowRight } from 'react-icons/hi';
 
 import TableGrid from '../../common/TableGrid';
 import Loading from '../../common/Loading';

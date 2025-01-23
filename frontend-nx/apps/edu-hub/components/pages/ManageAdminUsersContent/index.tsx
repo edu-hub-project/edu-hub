@@ -19,8 +19,8 @@ import {
 import { UPDATE_USER_ADMIN_STATUS, ADMIN_USERS } from '../../../queries/actions';
 import { PageBlock } from '../../common/PageBlock';
 import CommonPageHeader from '../../common/CommonPageHeader';
-import { useIsAdmin } from '@eduhub/hooks/authentication';
-import { OrganizationAdminList_OrganizationAdmin } from '@eduhub/queries/__generated__/OrganizationAdminList';
+import { useIsAdmin } from '../../../hooks/authentication';
+import { OrganizationAdminList_OrganizationAdmin } from '../../../queries/__generated__/OrganizationAdminList';
 
 const ExpandableUserRow: FC<{
   row: OrganizationAdminList_OrganizationAdmin;
