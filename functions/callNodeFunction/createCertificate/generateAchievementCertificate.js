@@ -1,6 +1,6 @@
 import got from "got";
 import { request, gql } from "graphql-request";
-import logger from "../index.js";
+import { logger } from "../index.js";
 import {
   getStorageBucketURL,
   saveCertificateToBucket,

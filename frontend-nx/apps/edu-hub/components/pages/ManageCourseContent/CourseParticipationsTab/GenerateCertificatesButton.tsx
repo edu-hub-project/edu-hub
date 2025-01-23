@@ -31,14 +31,14 @@ export const GenerateCertificatesButton: React.FC<Props> = ({
       userEnrollmentsLength: userEnrollments.length,
       userEnrollments,
       courseId: course.id,
-      certificateType
+      certificateType,
     });
   }, [userEnrollments, course, certificateType]);
 
   const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  
+
   // Log input parameters
   const logInputs = () => {
     console.log('=== Certificate Generation Input ===');
@@ -48,15 +48,18 @@ export const GenerateCertificatesButton: React.FC<Props> = ({
       title: course.title,
       // Add other relevant course fields
     });
-    console.log('User Enrollments:', userEnrollments.map(enrollment => ({
-      userId: enrollment.userId,
-      enrollmentId: enrollment.id,
-      // Add other relevant enrollment fields
-    })));
+    console.log(
+      'User Enrollments:',
+      userEnrollments.map((enrollment) => ({
+        userId: enrollment.userId,
+        enrollmentId: enrollment.id,
+        // Add other relevant enrollment fields
+      }))
+    );
   };
 
   const userIds = userEnrollments.map((enrollment) => enrollment.userId);
-  
+
   const [createCertificates, { loading, error }] = useRoleMutation(CREATE_CERTIFICATES, {
     variables: {
       courseId: course.id,
@@ -68,48 +71,42 @@ export const GenerateCertificatesButton: React.FC<Props> = ({
   const handleClick = async () => {
     setErrorMessage(null);
     setSuccessMessage(null);
-    
-    // Log inputs before processing
+
     logInputs();
-    
+
     try {
       console.log('=== Starting Certificate Generation ===');
-      console.log('Mutation Variables:', {
-        courseId: course.id,
-        userIds,
-        certificateType,
-      });
-
       const response = await createCertificates();
-      
-      console.log('=== Certificate Generation Response ===');
-      console.log('Full Response:', response);
-      
-      const certResult = response.data.createCertificates.result;
-      console.log('Certificates Generated:', certResult);
+      console.log('=== Certificate Generation Response ===', response);
+
+      const result = response.data.createCertificates;
+
+      if (!result.success) {
+        throw new Error(result.error || t(`errors:${result.messageKey}`));
+      }
+
+      const certCount = result.count;
+      console.log('Certificates Generated:', certCount);
 
       const successTranslationKey =
-        certResult <= 1
-          ? `course-page:${certResult === 0 ? 'no-' : '1-'}certificate-generated`
+        certCount <= 1
+          ? `course-page:${certCount === 0 ? 'no-' : '1-'}certificate-generated`
           : 'course-page:certificates-generated';
-      
-      const translatedMessage = t(successTranslationKey, { number: certResult });
+
+      const translatedMessage = t(successTranslationKey, { number: certCount });
       console.log('Success Message:', translatedMessage);
-      
+
       setSuccessMessage(translatedMessage);
       refetch(true);
       refetchCourse();
-      
     } catch (err) {
-      console.error('=== Certificate Generation Error ===');
-      console.error(`Error creating ${certificateType} certificate:`, {
+      console.error('=== Certificate Generation Error ===', {
         message: err.message,
         stack: err.stack,
-        // Log additional error details if available
         graphQLErrors: err.graphQLErrors,
         networkError: err.networkError,
       });
-      
+
       setErrorMessage(err.message);
       refetchCourse();
     }

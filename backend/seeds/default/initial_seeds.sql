@@ -699,7 +699,6 @@ INSERT INTO public."AchievementRecord" (id, "coverImageUrl", description, rating
 INSERT INTO public."AchievementRecord" (id, "coverImageUrl", description, rating, score, "achievementOptionId", "documentationUrl", "csvResults", "evaluationScriptUrl", created_at, updated_at, "uploadUserId", "courseId") VALUES (2, NULL, 'Fusce quis convallis elit, id dictum lacus.', 'UNRATED', NULL, 2, 'achievementrecordid_1/documentation/test_doc.odt', NULL, NULL, '2022-12-19 13:40:34.079378+00', '2022-12-19 13:55:01.645233+00', 'b5df4676-3d75-4413-bfac-9cc4e2f61cd9', 1);
 INSERT INTO public."AchievementRecord" (id, "coverImageUrl", description, rating, score, "achievementOptionId", "documentationUrl", "csvResults", "evaluationScriptUrl", created_at, updated_at, "uploadUserId", "courseId") VALUES (3, NULL, 'Fusce quis convallis elit, id dictum lacus.', 'UNRATED', NULL, 3, NULL, NULL, NULL, '2022-12-19 13:40:34.079378+00', '2022-12-19 13:55:01.645233+00', '152f12c3-f7d2-4b73-8d29-603c164b0139', 4);
 INSERT INTO public."AchievementRecord" (id, "coverImageUrl", description, rating, score, "achievementOptionId", "documentationUrl", "csvResults", "evaluationScriptUrl", created_at, updated_at, "uploadUserId", "courseId") VALUES (4, NULL, 'Fusce quis convallis elit, id dictum lacus.', 'UNRATED', NULL, 4, 'achievementrecordid_4/documentation/test_doc.odt', NULL, NULL, '2022-12-19 13:40:34.079378+00', '2022-12-19 13:55:01.645233+00', 'b5df4676-3d75-4413-bfac-9cc4e2f61cd9', 4);
-INSERT INTO public."Admin" (id, "userId", created_at, updated_at) VALUES (1, '8914bee9-0549-44af-bcae-cafeec5ba92e', '2024-11-25 15:32:49.796675+00', '2024-11-25 15:32:49.796675+00');
 INSERT INTO public."Session" (id, title, description, "startDateTime", "endDateTime", "courseId", created_at, updated_at, "attendanceData", questionaire_sent) VALUES (24, 'Session7 for Present Course 1', 'The seventh session for "Present Course 1"', '2024-11-02 18:00:00+00', '2024-11-02 20:00:00+00', 4, '2022-12-19 13:21:41.873742+00', '2024-11-25 15:34:57.743238+00', 'true', true);
 INSERT INTO public."Session" (id, title, description, "startDateTime", "endDateTime", "courseId", created_at, updated_at, "attendanceData", questionaire_sent) VALUES (29, '', '', '2024-12-02 15:38:22.45+00', '2024-12-02 15:38:22.45+00', 1, '2024-11-25 15:38:22.482944+00', '2024-11-25 15:38:22.482944+00', NULL, false);
 INSERT INTO public."Session" (id, title, description, "startDateTime", "endDateTime", "courseId", created_at, updated_at, "attendanceData", questionaire_sent) VALUES (30, '', '', '2024-12-09 15:38:22.45+00', '2024-12-09 15:38:22.45+00', 1, '2024-11-25 15:38:22.73501+00', '2024-11-25 15:38:22.73501+00', NULL, false);
@@ -1230,6 +1229,9 @@ INSERT INTO public."MailLog" (id, subject, content, "to", "from", cc, bcc, creat
                     <p>Dein opencampus.sh Team</p>
                   </body>
                 </html>', 'julia.hoffmann@example.com', 'noreply@edu.opencampus.sh', NULL, NULL, '2024-12-30 12:00:02.93538+00', '2024-12-30 12:00:02.93538+00', NULL, NULL);
+INSERT INTO public."OrganizationAdmin" (id, "userId", "organizationId", "canManageCourses", "canManageEvents", "canManageSettings", updated_at, created_at) VALUES (1, '11111111-1111-1111-1111-111111111111', 42, true, false, false, '2025-01-22 14:13:53.101281+00', '2025-01-22 14:13:53.101281+00');
+INSERT INTO public."OrganizationAdmin" (id, "userId", "organizationId", "canManageCourses", "canManageEvents", "canManageSettings", updated_at, created_at) VALUES (2, '11111111-1111-1111-1111-111111111111', 67, false, true, false, '2025-01-22 14:16:03.261301+00', '2025-01-22 14:16:03.261301+00');
+INSERT INTO public."OrganizationAdmin" (id, "userId", "organizationId", "canManageCourses", "canManageEvents", "canManageSettings", updated_at, created_at) VALUES (3, '33333333-3333-3333-3333-333333333333', 67, false, true, true, '2025-01-22 14:16:21.054925+00', '2025-01-22 14:16:21.054925+00');
 INSERT INTO public."SessionAddress" (id, created_at, updated_at, "sessionId", address, "courseLocationId") VALUES (1, '2024-11-25 15:38:22.482944+00', '2024-11-25 15:38:22.482944+00', 29, '', 1);
 INSERT INTO public."SessionAddress" (id, created_at, updated_at, "sessionId", address, "courseLocationId") VALUES (2, '2024-11-25 15:38:22.482944+00', '2024-11-25 15:38:22.482944+00', 29, '', 2);
 INSERT INTO public."SessionAddress" (id, created_at, updated_at, "sessionId", address, "courseLocationId") VALUES (3, '2024-11-25 15:38:22.73501+00', '2024-11-25 15:38:22.73501+00', 30, '', 1);
@@ -1248,7 +1250,6 @@ SELECT pg_catalog.setval('public."AchievementOptionMentor_id_seq"', 1, false);
 SELECT pg_catalog.setval('public."AchievementOption_id_seq"', 5, true);
 SELECT pg_catalog.setval('public."AchievementRecordAuthor_id_seq"', 1, false);
 SELECT pg_catalog.setval('public."AchievementRecord_id_seq"', 5, true);
-SELECT pg_catalog.setval('public."Admin_Id_seq"', 1, true);
 SELECT pg_catalog.setval('public."Attendence_Id_seq"', 17, true);
 SELECT pg_catalog.setval('public."CourseAddress_id_seq"', 9, true);
 SELECT pg_catalog.setval('public."CourseDegree_id_seq"', 6, true);
@@ -1260,6 +1261,7 @@ SELECT pg_catalog.setval('public."Enrollment_Id_seq"', 1, false);
 SELECT pg_catalog.setval('public."Instructor_Id_seq"', 1, true);
 SELECT pg_catalog.setval('public."MailTemplate_Id_seq"', 1, false);
 SELECT pg_catalog.setval('public."Mail_Id_seq"', 27, true);
+SELECT pg_catalog.setval('public."OrganizationAdmin_id_seq"', 3, true);
 SELECT pg_catalog.setval('public."Organization_id_seq"', 500, true);
 SELECT pg_catalog.setval('public."Semester_Id_seq"', 7, true);
 SELECT pg_catalog.setval('public."SessionAddress_id_seq"', 12, true);

@@ -21,5 +21,6 @@
     "motivation_letter_anonymization": "Motivation letter anonymization",
     "profile_picture_removal": "Profile picture removal",
     "certificate_anonymization": "Certificate anonymization"
-  }
+  },
+  "manage_admins": "Manage admins"
 }

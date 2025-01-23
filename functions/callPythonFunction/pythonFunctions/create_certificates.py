@@ -1,9 +1,7 @@
 from urllib.request import urlopen
 import logging
-import os
 import requests
 from api_clients import EduHubClient, StorageClient
-import io 
 import requests
 from io import BytesIO
 from jinja2 import Environment, DictLoader
@@ -293,22 +291,47 @@ class CertificateCreator:
 
 
 
-def create_certificates(hasura_secret, arguments):
-    """
-    Wrapper function to create certificates.
-
+def create_certificates(arguments):
+    """Creates certificates for specified users in a course.
+    
     Args:
-        hasura_secret (str): The Hasura admin secret.
-        arguments (dict): A dictionary containing input data for certificate creation.
-
-    This function initializes the CertificateCreator with the given arguments and
-    calls the create_certificates method to generate the certificates.
+        hasura_secret (str): Secret for authentication with Hasura
+        arguments (dict): Contains:
+            - input.userIds (list): List of user IDs to generate certificates for
+            - input.courseId (int): Course ID
+            - input.certificateType (str): Type of certificate ('achievement' or 'attendance')
+            
+    Returns:
+        dict: Response containing:
+            - success (bool): Whether the operation was successful
+            - count (int): Number of certificates generated
+            - certificateType (str): Type of certificates generated
+            - error (str, optional): Error message if operation failed
+            - messageKey (str, optional): Translation key for the error message
     """
     try:
         certificate_creator = CertificateCreator(arguments)
         successful_count = certificate_creator.create_certificates()
-        logging.info("Certificates creation process completed.")
-        return {"result": successful_count}
+        
+        logging.info(f"Successfully generated {successful_count} certificates")
+        return {
+            "success": True,
+            "count": successful_count,
+            "certificateType": arguments["input"]["certificateType"],
+            "messageKey": "CERTIFICATES_GENERATED_SUCCESS"
+        }
+        
+    except ValueError as e:
+        logging.error(f"Invalid input for certificate generation: {str(e)}")
+        return {
+            "success": False,
+            "error": str(e),
+            "messageKey": "INVALID_INPUT"
+        }
     except Exception as e:
-        logging.error("Error in creating certificates: %s", str(e))
-        return {"result": 0}
+        logging.error(f"Error creating certificates: {str(e)}")
+        return {
+            "success": False,
+            "error": str(e),
+            "messageKey": "CERTIFICATE_GENERATION_FAILED"
+        }

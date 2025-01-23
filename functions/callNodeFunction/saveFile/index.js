@@ -1,7 +1,7 @@
 import { Storage } from "@google-cloud/storage";
 import { buildCloudStorage } from "../lib/cloud-storage.js";
 import { replacePlaceholders } from "../lib/utils.js";
-import logger from "../index.js";
+import { logger } from "../index.js";
 
 const BYTES_PER_MB = 1024 * 1024;
 const DEFAULT_MAX_FILE_SIZE_MB = 20;

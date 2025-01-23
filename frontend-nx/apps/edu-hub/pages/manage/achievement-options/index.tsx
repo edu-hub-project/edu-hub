@@ -5,7 +5,7 @@ import { FC, useEffect, useState } from 'react';
 import ManageAchievementOptionsContent from '../../../components/pages/ManageAchievementOptionsContent';
 import CommonPageHeader from '../../../components/common/CommonPageHeader';
 import { Page } from '../../../components/layout/Page';
-import { DefaultAchievementOptions, QUERY_LIMIT } from '../../../helpers/achievement';
+import { DefaultAchievementOptions } from '../../../helpers/achievement';
 import { useAdminQuery } from '../../../hooks/authedQuery';
 import { useIsAdmin, useIsInstructor, useIsLoggedIn } from '../../../hooks/authentication';
 import { useKeycloakUserProfile, useUserId } from '../../../hooks/user';
@@ -19,7 +19,6 @@ const AchievementOptions: FC = () => {
   const isLoggedIn = useIsLoggedIn();
   const isInstructor = useIsInstructor();
   const { t } = useTranslation('achievements-page');
-  const router = useRouter();
   const userId = useUserId();
   const profile = useKeycloakUserProfile();
 

@@ -258,33 +258,6 @@ export enum AchievementRecord_update_column {
 }
 
 /**
- * unique or primary key constraints on table "Admin"
- */
-export enum Admin_constraint {
-  Admin_pkey = "Admin_pkey",
-}
-
-/**
- * select columns of table "Admin"
- */
-export enum Admin_select_column {
-  created_at = "created_at",
-  id = "id",
-  updated_at = "updated_at",
-  userId = "userId",
-}
-
-/**
- * update columns of table "Admin"
- */
-export enum Admin_update_column {
-  created_at = "created_at",
-  id = "id",
-  updated_at = "updated_at",
-  userId = "userId",
-}
-
-/**
  * unique or primary key constraints on table "AttendanceSource"
  */
 export enum AttendanceSource_constraint {
@@ -870,6 +843,60 @@ export enum MotivationRating_enum {
 export enum MotivationRating_update_column {
   comment = "comment",
   value = "value",
+}
+
+/**
+ * unique or primary key constraints on table "OrganizationAdmin"
+ */
+export enum OrganizationAdmin_constraint {
+  OrganizationAdmin_pkey = "OrganizationAdmin_pkey",
+  OrganizationAdmin_userId_organizationId_key = "OrganizationAdmin_userId_organizationId_key",
+}
+
+/**
+ * select columns of table "OrganizationAdmin"
+ */
+export enum OrganizationAdmin_select_column {
+  canManageCourses = "canManageCourses",
+  canManageEvents = "canManageEvents",
+  canManageSettings = "canManageSettings",
+  created_at = "created_at",
+  id = "id",
+  organizationId = "organizationId",
+  updated_at = "updated_at",
+  userId = "userId",
+}
+
+/**
+ * select "OrganizationAdmin_aggregate_bool_exp_bool_and_arguments_columns" columns of table "OrganizationAdmin"
+ */
+export enum OrganizationAdmin_select_column_OrganizationAdmin_aggregate_bool_exp_bool_and_arguments_columns {
+  canManageCourses = "canManageCourses",
+  canManageEvents = "canManageEvents",
+  canManageSettings = "canManageSettings",
+}
+
+/**
+ * select "OrganizationAdmin_aggregate_bool_exp_bool_or_arguments_columns" columns of table "OrganizationAdmin"
+ */
+export enum OrganizationAdmin_select_column_OrganizationAdmin_aggregate_bool_exp_bool_or_arguments_columns {
+  canManageCourses = "canManageCourses",
+  canManageEvents = "canManageEvents",
+  canManageSettings = "canManageSettings",
+}
+
+/**
+ * update columns of table "OrganizationAdmin"
+ */
+export enum OrganizationAdmin_update_column {
+  canManageCourses = "canManageCourses",
+  canManageEvents = "canManageEvents",
+  canManageSettings = "canManageSettings",
+  created_at = "created_at",
+  id = "id",
+  organizationId = "organizationId",
+  updated_at = "updated_at",
+  userId = "userId",
 }
 
 /**
@@ -2766,152 +2793,6 @@ export interface AchievementRecord_variance_order_by {
   courseId?: order_by | null;
   id?: order_by | null;
   score?: order_by | null;
-}
-
-export interface Admin_aggregate_bool_exp {
-  count?: Admin_aggregate_bool_exp_count | null;
-}
-
-export interface Admin_aggregate_bool_exp_count {
-  arguments?: Admin_select_column[] | null;
-  distinct?: boolean | null;
-  filter?: Admin_bool_exp | null;
-  predicate: Int_comparison_exp;
-}
-
-/**
- * order by aggregate values of table "Admin"
- */
-export interface Admin_aggregate_order_by {
-  avg?: Admin_avg_order_by | null;
-  count?: order_by | null;
-  max?: Admin_max_order_by | null;
-  min?: Admin_min_order_by | null;
-  stddev?: Admin_stddev_order_by | null;
-  stddev_pop?: Admin_stddev_pop_order_by | null;
-  stddev_samp?: Admin_stddev_samp_order_by | null;
-  sum?: Admin_sum_order_by | null;
-  var_pop?: Admin_var_pop_order_by | null;
-  var_samp?: Admin_var_samp_order_by | null;
-  variance?: Admin_variance_order_by | null;
-}
-
-/**
- * input type for inserting array relation for remote table "Admin"
- */
-export interface Admin_arr_rel_insert_input {
-  data: Admin_insert_input[];
-  on_conflict?: Admin_on_conflict | null;
-}
-
-/**
- * order by avg() on columns of table "Admin"
- */
-export interface Admin_avg_order_by {
-  id?: order_by | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "Admin". All fields are combined with a logical 'AND'.
- */
-export interface Admin_bool_exp {
-  User?: User_bool_exp | null;
-  _and?: Admin_bool_exp[] | null;
-  _not?: Admin_bool_exp | null;
-  _or?: Admin_bool_exp[] | null;
-  created_at?: timestamptz_comparison_exp | null;
-  id?: Int_comparison_exp | null;
-  updated_at?: timestamptz_comparison_exp | null;
-  userId?: uuid_comparison_exp | null;
-}
-
-/**
- * input type for inserting data into table "Admin"
- */
-export interface Admin_insert_input {
-  User?: User_obj_rel_insert_input | null;
-  created_at?: any | null;
-  id?: number | null;
-  updated_at?: any | null;
-  userId?: any | null;
-}
-
-/**
- * order by max() on columns of table "Admin"
- */
-export interface Admin_max_order_by {
-  created_at?: order_by | null;
-  id?: order_by | null;
-  updated_at?: order_by | null;
-  userId?: order_by | null;
-}
-
-/**
- * order by min() on columns of table "Admin"
- */
-export interface Admin_min_order_by {
-  created_at?: order_by | null;
-  id?: order_by | null;
-  updated_at?: order_by | null;
-  userId?: order_by | null;
-}
-
-/**
- * on_conflict condition type for table "Admin"
- */
-export interface Admin_on_conflict {
-  constraint: Admin_constraint;
-  update_columns: Admin_update_column[];
-  where?: Admin_bool_exp | null;
-}
-
-/**
- * order by stddev() on columns of table "Admin"
- */
-export interface Admin_stddev_order_by {
-  id?: order_by | null;
-}
-
-/**
- * order by stddev_pop() on columns of table "Admin"
- */
-export interface Admin_stddev_pop_order_by {
-  id?: order_by | null;
-}
-
-/**
- * order by stddev_samp() on columns of table "Admin"
- */
-export interface Admin_stddev_samp_order_by {
-  id?: order_by | null;
-}
-
-/**
- * order by sum() on columns of table "Admin"
- */
-export interface Admin_sum_order_by {
-  id?: order_by | null;
-}
-
-/**
- * order by var_pop() on columns of table "Admin"
- */
-export interface Admin_var_pop_order_by {
-  id?: order_by | null;
-}
-
-/**
- * order by var_samp() on columns of table "Admin"
- */
-export interface Admin_var_samp_order_by {
-  id?: order_by | null;
-}
-
-/**
- * order by variance() on columns of table "Admin"
- */
-export interface Admin_variance_order_by {
-  id?: order_by | null;
 }
 
 /**
@@ -5315,6 +5196,204 @@ export interface MotivationRating_on_conflict {
   where?: MotivationRating_bool_exp | null;
 }
 
+export interface OrganizationAdmin_aggregate_bool_exp {
+  bool_and?: OrganizationAdmin_aggregate_bool_exp_bool_and | null;
+  bool_or?: OrganizationAdmin_aggregate_bool_exp_bool_or | null;
+  count?: OrganizationAdmin_aggregate_bool_exp_count | null;
+}
+
+export interface OrganizationAdmin_aggregate_bool_exp_bool_and {
+  arguments: OrganizationAdmin_select_column_OrganizationAdmin_aggregate_bool_exp_bool_and_arguments_columns;
+  distinct?: boolean | null;
+  filter?: OrganizationAdmin_bool_exp | null;
+  predicate: Boolean_comparison_exp;
+}
+
+export interface OrganizationAdmin_aggregate_bool_exp_bool_or {
+  arguments: OrganizationAdmin_select_column_OrganizationAdmin_aggregate_bool_exp_bool_or_arguments_columns;
+  distinct?: boolean | null;
+  filter?: OrganizationAdmin_bool_exp | null;
+  predicate: Boolean_comparison_exp;
+}
+
+export interface OrganizationAdmin_aggregate_bool_exp_count {
+  arguments?: OrganizationAdmin_select_column[] | null;
+  distinct?: boolean | null;
+  filter?: OrganizationAdmin_bool_exp | null;
+  predicate: Int_comparison_exp;
+}
+
+/**
+ * order by aggregate values of table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_aggregate_order_by {
+  avg?: OrganizationAdmin_avg_order_by | null;
+  count?: order_by | null;
+  max?: OrganizationAdmin_max_order_by | null;
+  min?: OrganizationAdmin_min_order_by | null;
+  stddev?: OrganizationAdmin_stddev_order_by | null;
+  stddev_pop?: OrganizationAdmin_stddev_pop_order_by | null;
+  stddev_samp?: OrganizationAdmin_stddev_samp_order_by | null;
+  sum?: OrganizationAdmin_sum_order_by | null;
+  var_pop?: OrganizationAdmin_var_pop_order_by | null;
+  var_samp?: OrganizationAdmin_var_samp_order_by | null;
+  variance?: OrganizationAdmin_variance_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_arr_rel_insert_input {
+  data: OrganizationAdmin_insert_input[];
+  on_conflict?: OrganizationAdmin_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_avg_order_by {
+  id?: order_by | null;
+  organizationId?: order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "OrganizationAdmin". All fields are combined with a logical 'AND'.
+ */
+export interface OrganizationAdmin_bool_exp {
+  Organization?: Organization_bool_exp | null;
+  User?: User_bool_exp | null;
+  _and?: OrganizationAdmin_bool_exp[] | null;
+  _not?: OrganizationAdmin_bool_exp | null;
+  _or?: OrganizationAdmin_bool_exp[] | null;
+  canManageCourses?: Boolean_comparison_exp | null;
+  canManageEvents?: Boolean_comparison_exp | null;
+  canManageSettings?: Boolean_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: Int_comparison_exp | null;
+  organizationId?: Int_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+  userId?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_insert_input {
+  Organization?: Organization_obj_rel_insert_input | null;
+  User?: User_obj_rel_insert_input | null;
+  canManageCourses?: boolean | null;
+  canManageEvents?: boolean | null;
+  canManageSettings?: boolean | null;
+  created_at?: any | null;
+  id?: number | null;
+  organizationId?: number | null;
+  updated_at?: any | null;
+  userId?: any | null;
+}
+
+/**
+ * order by max() on columns of table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_max_order_by {
+  created_at?: order_by | null;
+  id?: order_by | null;
+  organizationId?: order_by | null;
+  updated_at?: order_by | null;
+  userId?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_min_order_by {
+  created_at?: order_by | null;
+  id?: order_by | null;
+  organizationId?: order_by | null;
+  updated_at?: order_by | null;
+  userId?: order_by | null;
+}
+
+/**
+ * on_conflict condition type for table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_on_conflict {
+  constraint: OrganizationAdmin_constraint;
+  update_columns: OrganizationAdmin_update_column[];
+  where?: OrganizationAdmin_bool_exp | null;
+}
+
+/**
+ * Ordering options when selecting data from "OrganizationAdmin".
+ */
+export interface OrganizationAdmin_order_by {
+  Organization?: Organization_order_by | null;
+  User?: User_order_by | null;
+  canManageCourses?: order_by | null;
+  canManageEvents?: order_by | null;
+  canManageSettings?: order_by | null;
+  created_at?: order_by | null;
+  id?: order_by | null;
+  organizationId?: order_by | null;
+  updated_at?: order_by | null;
+  userId?: order_by | null;
+}
+
+/**
+ * order by stddev() on columns of table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_stddev_order_by {
+  id?: order_by | null;
+  organizationId?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_stddev_pop_order_by {
+  id?: order_by | null;
+  organizationId?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_stddev_samp_order_by {
+  id?: order_by | null;
+  organizationId?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_sum_order_by {
+  id?: order_by | null;
+  organizationId?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_var_pop_order_by {
+  id?: order_by | null;
+  organizationId?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_var_samp_order_by {
+  id?: order_by | null;
+  organizationId?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "OrganizationAdmin"
+ */
+export interface OrganizationAdmin_variance_order_by {
+  id?: order_by | null;
+  organizationId?: order_by | null;
+}
+
 /**
  * Boolean expression to filter rows from the table "OrganizationType". All fields are combined with a logical 'AND'.
  */
@@ -5421,6 +5500,8 @@ export interface Organization_avg_order_by {
  * Boolean expression to filter rows from the table "Organization". All fields are combined with a logical 'AND'.
  */
 export interface Organization_bool_exp {
+  OrganizationAdmins?: OrganizationAdmin_bool_exp | null;
+  OrganizationAdmins_aggregate?: OrganizationAdmin_aggregate_bool_exp | null;
   OrganizationType?: OrganizationType_bool_exp | null;
   Users?: User_bool_exp | null;
   Users_aggregate?: User_aggregate_bool_exp | null;
@@ -5440,6 +5521,7 @@ export interface Organization_bool_exp {
  * input type for inserting data into table "Organization"
  */
 export interface Organization_insert_input {
+  OrganizationAdmins?: OrganizationAdmin_arr_rel_insert_input | null;
   OrganizationType?: OrganizationType_obj_rel_insert_input | null;
   Users?: User_arr_rel_insert_input | null;
   aliases?: any | null;
@@ -5494,6 +5576,7 @@ export interface Organization_on_conflict {
  * Ordering options when selecting data from "Organization".
  */
 export interface Organization_order_by {
+  OrganizationAdmins_aggregate?: OrganizationAdmin_aggregate_order_by | null;
   OrganizationType?: OrganizationType_order_by | null;
   Users_aggregate?: User_aggregate_order_by | null;
   aliases?: order_by | null;
@@ -7196,8 +7279,6 @@ export interface User_bool_exp {
   AchievementOptionMentors_aggregate?: AchievementOptionMentor_aggregate_bool_exp | null;
   AchievementRecordAuthors?: AchievementRecordAuthor_bool_exp | null;
   AchievementRecordAuthors_aggregate?: AchievementRecordAuthor_aggregate_bool_exp | null;
-  Admins?: Admin_bool_exp | null;
-  Admins_aggregate?: Admin_aggregate_bool_exp | null;
   Attendances?: Attendance_bool_exp | null;
   Attendances_aggregate?: Attendance_aggregate_bool_exp | null;
   CourseEnrollments?: CourseEnrollment_bool_exp | null;
@@ -7205,6 +7286,8 @@ export interface User_bool_exp {
   Experts?: Expert_bool_exp | null;
   Experts_aggregate?: Expert_aggregate_bool_exp | null;
   Organization?: Organization_bool_exp | null;
+  OrganizationAdmins?: OrganizationAdmin_bool_exp | null;
+  OrganizationAdmins_aggregate?: OrganizationAdmin_aggregate_bool_exp | null;
   UserOccupation?: UserOccupation_bool_exp | null;
   UserStatus?: UserStatus_bool_exp | null;
   _and?: User_bool_exp[] | null;
@@ -7233,11 +7316,11 @@ export interface User_bool_exp {
 export interface User_insert_input {
   AchievementOptionMentors?: AchievementOptionMentor_arr_rel_insert_input | null;
   AchievementRecordAuthors?: AchievementRecordAuthor_arr_rel_insert_input | null;
-  Admins?: Admin_arr_rel_insert_input | null;
   Attendances?: Attendance_arr_rel_insert_input | null;
   CourseEnrollments?: CourseEnrollment_arr_rel_insert_input | null;
   Experts?: Expert_arr_rel_insert_input | null;
   Organization?: Organization_obj_rel_insert_input | null;
+  OrganizationAdmins?: OrganizationAdmin_arr_rel_insert_input | null;
   UserOccupation?: UserOccupation_obj_rel_insert_input | null;
   UserStatus?: UserStatus_obj_rel_insert_input | null;
   anonymousId?: string | null;
@@ -7316,11 +7399,11 @@ export interface User_on_conflict {
 export interface User_order_by {
   AchievementOptionMentors_aggregate?: AchievementOptionMentor_aggregate_order_by | null;
   AchievementRecordAuthors_aggregate?: AchievementRecordAuthor_aggregate_order_by | null;
-  Admins_aggregate?: Admin_aggregate_order_by | null;
   Attendances_aggregate?: Attendance_aggregate_order_by | null;
   CourseEnrollments_aggregate?: CourseEnrollment_aggregate_order_by | null;
   Experts_aggregate?: Expert_aggregate_order_by | null;
   Organization?: Organization_order_by | null;
+  OrganizationAdmins_aggregate?: OrganizationAdmin_aggregate_order_by | null;
   UserOccupation?: UserOccupation_order_by | null;
   UserStatus?: UserStatus_order_by | null;
   anonymousId?: order_by | null;
