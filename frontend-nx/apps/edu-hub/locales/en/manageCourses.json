@@ -13,5 +13,10 @@
     "label": "External registration link",
     "help_text": "If the course or event should not be administered via EduHub, enter a link to the external registration here.",
     "error_text": "Incorrect link format!"
+  }, 
+  "max_missed_sessions":{
+    "label": "Maximum permitted missed sessions",
+    "help_text": "By default, the value is set to 2, but all values greater than or equal to 0 are permitted.",
+    "error_text": "Incorrect missed session Format!"
   }
 }

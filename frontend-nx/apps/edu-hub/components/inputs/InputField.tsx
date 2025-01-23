@@ -224,6 +224,14 @@ const InputField: React.FC<InputFieldProps> = ({
         if (onValueUpdated) onValueUpdated(data);
         setShowSavedNotification(true);
       },
+      variables: {
+        itemId,
+        // If type is number, convert the text to number
+        ...(type === 'number' 
+          ? { text: parseInt(localText, 10) }
+          : { text: localText }
+        )
+      },
       refetchQueries,
     }
   );
