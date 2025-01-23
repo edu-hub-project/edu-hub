@@ -1,7 +1,8 @@
 import { request, gql } from "graphql-request";
-import logger from "../index.js";
+import { logger } from "../index.js";
 import { Storage } from "@google-cloud/storage";
 import { buildCloudStorage } from "../lib/cloud-storage.js";
+import { getKeycloakToken } from "../lib/utils.js";
 import path from "path";
 import axios from "axios";
 import fs from 'fs';
@@ -95,29 +96,6 @@ const removeProfileImage = async (storage, imagePath, bucketName) => {
       await storage.deleteFile(resizedFilename, bucketName);
       logger.debug(`Attempted to remove resized image at ${resizedFilename}`);
     }
-  }
-};
-
-const getKeycloakToken = async () => {
-  try {
-    const response = await axios.post(
-      `${process.env.KEYCLOAK_URL}/realms/master/protocol/openid-connect/token`,
-      new URLSearchParams({
-        grant_type: 'password',
-        client_id: 'admin-cli',
-        username: process.env.KEYCLOAK_USER || 'keycloak',
-        password: process.env.KEYCLOAK_PW,
-      }),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }
-    );
-    return response.data.access_token;
-  } catch (error) {
-    logger.error('Error getting Keycloak token', error);
-    throw error;
   }
 };
 

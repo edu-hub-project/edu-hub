@@ -534,3 +534,14 @@ export const UPDATE_COURSE_EXTERNAL_REGISTRATION_LINK = gql`
   }
 `;
 
+export const UPDATE_COURSE_MAX_MISSED_SESSION = gql`
+  mutation UpdateCourseMaxMissedSessions($itemId: Int!, $text: Int!) {
+    update_Course_by_pk(
+      pk_columns: { id: $itemId }
+      _set: { maxMissedSessions: $text }
+    ) {
+      id
+      maxMissedSessions
+    }
+  }
+`;

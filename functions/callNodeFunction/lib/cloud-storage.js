@@ -1,5 +1,5 @@
 import fs from "fs";
-import logger from "../index.js";
+import { logger } from "../index.js";
 import path from "path";
 import url from "url";
 

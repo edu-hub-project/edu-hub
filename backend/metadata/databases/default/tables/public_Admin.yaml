@@ -1,10 +1,6 @@
 table:
   name: Admin
   schema: public
-object_relationships:
-  - name: User
-    using:
-      foreign_key_constraint_on: userId
 event_triggers:
   - name: add_keycloak_admin_role
     definition:

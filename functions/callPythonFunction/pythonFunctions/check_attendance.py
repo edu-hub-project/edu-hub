@@ -3,131 +3,150 @@ import logging
 import pandas as pd
 from thefuzz import fuzz
 from api_clients import EduHubClient, ZoomClient, LimeSurveyClient
-from utils import is_admin
 
 
-def check_attendance(hasura_secret, arguments):
+def check_attendance(arguments):
     """For all sessions for which the attendance hasn't been checked yet
     (no attendance data stored in the session table), gets the participations
     from Zoom and Limesurvey and adds the individual attendances to the
     attandance table (for each registered and correctly identified person)
     and the Session table (a JSON including all recorded participants of the
     session).
+    
     Args:
         hasura_secret (str): Secret to authenticate the user
         arguments (dict): Payload potentially containing function parameters (in this case none)
+        
     Returns:
-        Ids of the sessions for which the attendances were checked
+        dict: Response containing:
+            - success (bool): Whether the operation was successful
+            - data (list, optional): List of processed sessions
+            - error (str, optional): Error message if operation failed
     """
     logging.info("########## Check Attendance Function ##########")
-
     logging.debug("arguments:", arguments)
 
-    eduhub_client = EduHubClient()
-    logging.debug(f"eduhub_client.url:  {eduhub_client.url}")
-    sessions = eduhub_client.get_finished_sessions_without_attendance_check()
+    try:
+        eduhub_client = EduHubClient()
+        logging.debug(f"eduhub_client.url:  {eduhub_client.url}")
+        sessions = eduhub_client.get_finished_sessions_without_attendance_check()
 
-    # test if session is null
-    if len(sessions) == 0:
-        logging.info("No finished sessions without attendance check found")
-        return "No finished sessions without attendance check found"
-    else:
+        # test if session is null
+        if len(sessions) == 0:
+            logging.info("No finished sessions without attendance check found")
+            return {
+                "success": True,
+                "data": [],
+                "message": "No finished sessions without attendance check found"
+            }
+
         logging.info(
             "########## Finished Sessions without Attendance Check:\n%s", sessions
         )
 
-    with pd.option_context(
-        "display.max_rows", None, "display.max_columns", None, "display.width", None
-    ):
-        logging.debug("########## Full DataFrame:\n%s", sessions)
+        with pd.option_context(
+            "display.max_rows", None, "display.max_columns", None, "display.width", None
+        ):
+            logging.debug("########## Full DataFrame:\n%s", sessions)
 
-    zoom_client = ZoomClient()
+        zoom_client = ZoomClient()
 
-    # iterate over all elements in the sessions dictionary
-    for session in sessions:
-        logging.info(
-            f"########## Checking session {session['title']} from {session['startDateTime']} to {session['endDateTime']}"
-        )
+        # iterate over all elements in the sessions dictionary
+        for session in sessions:
+            logging.info(
+                f"########## Checking session {session['title']} from {session['startDateTime']} to {session['endDateTime']}"
+            )
 
-        attendance_data = pd.DataFrame()
+            attendance_data = pd.DataFrame()
 
-        # iterate over all location options in the session and get the corresponding attendance data
-        for location in session["Course"]["CourseLocations"]:
-            logging.info("### Getting attendances for %s", location["locationOption"])
+            # iterate over all location options in the session and get the corresponding attendance data
+            for location in session["Course"]["CourseLocations"]:
+                logging.info("### Getting attendances for %s", location["locationOption"])
 
-            # Checking zoom attendance
-            if location["locationOption"] == "ONLINE":
+                # Checking zoom attendance
+                if location["locationOption"] == "ONLINE":
+                    try:
+                        zoom_attendance = zoom_client.get_session_attendance(
+                            location["defaultSessionAddress"]
+                        )
+                        logging.debug(
+                            f"############# Zoom Attendance Data\n{zoom_attendance}"
+                        )
+                        zoom_attendance["source"] = "ZOOM"
+                        attendance_data = pd.concat([attendance_data, zoom_attendance])
+                    except Exception as e:
+                        logging.error(f"Error while getting Zoom attendance: {e}")
+
+                # Checking offline attendance
+                elif location["locationOption"] == "KIEL":
+                    logging.info("Getting offline attendances from LimeSurvey")
+                    offline_attendance = get_offline_session_attendance(session, location)
+                    offline_attendance["source"] = "LIMESURVEY"
+                    logging.debug(
+                        f"############# Offline Attendance Data\n{offline_attendance}"
+                    )
+                    attendance_data = pd.concat([attendance_data, offline_attendance])
+
+            logging.debug(f"############# Attendance Data\n{attendance_data}")
+
+            # attendance_data['sessionId'] = session['id']
+            # reset the index for later argmax search in `prepare_participant_attendance_data()`
+            attendance_data.reset_index(drop=True, inplace=True)
+            logging.debug(f"############# Attendance Data\n{attendance_data}")
+
+            # Get course participants
+            course_participants = eduhub_client.get_course_participants_from_session_id(
+                session["id"]
+            )
+            logging.info(
+                "########## Checking attendances for the %s confirmed participants in the session's course",
+                len(course_participants),
+            )
+            # Matching each course participant with the names in the attendance data
+            # and storing the partipant's attendance in the Attendance table
+            pd.options.mode.chained_assignment = None  # default='warn'
+
+            for p in range(len(course_participants)):
                 try:
-                    zoom_attendance = zoom_client.get_session_attendance(
-                        location["defaultSessionAddress"]
+                    logging.debug(
+                        f"############# Preparation of attendance data for participant {course_participants.iloc[p, :]['firstName']} {course_participants.iloc[p, :]['lastName']}"
+                    )
+                    course_participant_attendance = prepare_participant_attendance_data(
+                        course_participants.iloc[p, :], attendance_data, session["id"]
                     )
                     logging.debug(
-                        f"############# Zoom Attendance Data\n{zoom_attendance}"
+                        f"############# Course Participant Attendance\n{course_participant_attendance}"
                     )
-                    zoom_attendance["source"] = "ZOOM"
-                    attendance_data = pd.concat([attendance_data, zoom_attendance])
+                    eduhub_client.insert_attendance(course_participant_attendance)
+                    logging.info(
+                        "### %s: %s [%s: %s to %s; recorded name: %s]",
+                        course_participants.iloc[p, :]["email"],
+                        course_participant_attendance["status"][0],
+                        course_participant_attendance["source"][0],
+                        course_participant_attendance["joinDateTime"][0],
+                        course_participant_attendance["leaveDateTime"][0],
+                        course_participant_attendance["recordedName"][0],
+                    )
                 except Exception as e:
-                    logging.error(f"Error while getting Zoom attendance: {e}")
+                    logging.error(
+                        f"Error while preparing attendance data for participant {course_participants.iloc[p, :]['firstName']} {course_participants.iloc[p, :]['lastName']}: {e}"
+                    )
+            # Storing JSON of complete attendance_data in Session table
+            eduhub_client.update_session_attendanceData(attendance_data, session["id"])
+            logging.info("Attendance data updated for session %s", session["title"])
 
-            # Checking offline attendance
-            elif location["locationOption"] == "KIEL":
-                logging.info("Getting offline attendances from LimeSurvey")
-                offline_attendance = get_offline_session_attendance(session, location)
-                offline_attendance["source"] = "LIMESURVEY"
-                logging.debug(
-                    f"############# Offline Attendance Data\n{offline_attendance}"
-                )
-                attendance_data = pd.concat([attendance_data, offline_attendance])
+        return {
+            "success": True,
+            "data": sessions,
+            "message": f"Successfully processed {len(sessions)} sessions"
+        }
 
-        logging.debug(f"############# Attendance Data\n{attendance_data}")
-
-        # attendance_data['sessionId'] = session['id']
-        # reset the index for later argmax search in `prepare_participant_attendance_data()`
-        attendance_data.reset_index(drop=True, inplace=True)
-        logging.debug(f"############# Attendance Data\n{attendance_data}")
-
-        # Get course participants
-        course_participants = eduhub_client.get_course_participants_from_session_id(
-            session["id"]
-        )
-        logging.info(
-            "########## Checking attendances for the %s confirmed participants in the session's course",
-            len(course_participants),
-        )
-        # Matching each course participant with the names in the attendance data
-        # and storing the partipant's attendance in the Attendance table
-        pd.options.mode.chained_assignment = None  # default='warn'
-
-        for p in range(len(course_participants)):
-            try:
-                logging.debug(
-                    f"############# Preparation of attendance data for participant {course_participants.iloc[p, :]['firstName']} {course_participants.iloc[p, :]['lastName']}"
-                )
-                course_participant_attendance = prepare_participant_attendance_data(
-                    course_participants.iloc[p, :], attendance_data, session["id"]
-                )
-                logging.debug(
-                    f"############# Course Participant Attendance\n{course_participant_attendance}"
-                )
-                eduhub_client.insert_attendance(course_participant_attendance)
-                logging.info(
-                    "### %s: %s [%s: %s to %s; recorded name: %s]",
-                    course_participants.iloc[p, :]["email"],
-                    course_participant_attendance["status"][0],
-                    course_participant_attendance["source"][0],
-                    course_participant_attendance["joinDateTime"][0],
-                    course_participant_attendance["leaveDateTime"][0],
-                    course_participant_attendance["recordedName"][0],
-                )
-            except Exception as e:
-                logging.error(
-                    f"Error while preparing attendance data for participant {course_participants.iloc[p, :]['firstName']} {course_participants.iloc[p, :]['lastName']}: {e}"
-                )
-        # Storing JSON of complete attendance_data in Session table
-        eduhub_client.update_session_attendanceData(attendance_data, session["id"])
-        logging.info("Attendance data updated for session %s", session["title"])
-
-    return sessions
+    except Exception as e:
+        logging.error(f"Error checking attendance: {str(e)}")
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
 
 #############################################################################################

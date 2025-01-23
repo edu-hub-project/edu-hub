@@ -29,10 +29,23 @@ actions:
       handler: '{{CLOUD_FUNCTION_LINK_CALL_PYTHON_FUNCTION}}'
       headers:
         - name: Hasura-Secret
-          value: HASURA_CLOUD_FUNCTION_SECRET
+          value_from_env: HASURA_CLOUD_FUNCTION_SECRET
+        - name: Bucket
+          value_from_env: HASURA_BUCKET
         - name: Function-Name
           value: create_certificates
     comment: createCertificates
+  - name: getAdminUsers
+    definition:
+      kind: ""
+      handler: '{{CLOUD_FUNCTION_LINK_CALL_NODE_FUNCTION}}'
+      headers:
+        - name: secret
+          value_from_env: HASURA_CLOUD_FUNCTION_SECRET
+        - name: bucket
+          value_from_env: HASURA_BUCKET
+        - name: name
+          value: getAdminUsers
   - name: getMoocHubData
     definition:
       kind: ""
@@ -191,6 +204,17 @@ actions:
       - role: instructor_access
       - role: user_access
       - role: anonymous
+  - name: updateUserAdminStatus
+    definition:
+      kind: synchronous
+      handler: '{{CLOUD_FUNCTION_LINK_CALL_NODE_FUNCTION}}'
+      headers:
+        - name: secret
+          value_from_env: HASURA_CLOUD_FUNCTION_SECRET
+        - name: bucket
+          value_from_env: HASURA_BUCKET
+        - name: name
+          value: setUserAdmin
 custom_types:
   enums: []
   input_objects: []
@@ -210,4 +234,11 @@ custom_types:
     - name: DeleteUserResult
     - name: AnonymizeUserResult
     - name: AnonymizationSteps
+    - name: SetUserAdminOutput
+    - name: AdminUsersOutput
+    - name: ActionOutput
+    - name: CreateCertificatesResult
+    - name: LoadParticipationDataResult
+    - name: UpdateAdminStatusResult
+    - name: GetAdminUsersResult
   scalars: []

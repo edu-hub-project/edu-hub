@@ -8,15 +8,19 @@
 // ====================================================
 
 export interface createCertificates_createCertificates {
-  __typename: "result";
-  result: string;
+  __typename: "CreateCertificatesResult";
+  success: boolean;
+  count: number | null;
+  certificateType: string | null;
+  error: string | null;
+  messageKey: string;
 }
 
 export interface createCertificates {
   /**
    * createCertificates
    */
-  createCertificates: createCertificates_createCertificates | null;
+  createCertificates: createCertificates_createCertificates;
 }
 
 export interface createCertificatesVariables {
