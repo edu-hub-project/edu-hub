@@ -8,15 +8,18 @@
 // ====================================================
 
 export interface loadParticipationData_loadParticipationData {
-  __typename: "loadFileOutput";
-  link: string;
+  __typename: "LoadParticipationDataResult";
+  success: boolean;
+  link: string | null;
+  error: string | null;
+  messageKey: string;
 }
 
 export interface loadParticipationData {
   /**
    * loadParticipationData
    */
-  loadParticipationData: loadParticipationData_loadParticipationData | null;
+  loadParticipationData: loadParticipationData_loadParticipationData;
 }
 
 export interface loadParticipationDataVariables {

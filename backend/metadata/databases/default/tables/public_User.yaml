@@ -26,13 +26,6 @@ array_relationships:
         table:
           name: AchievementRecordAuthor
           schema: public
-  - name: Admins
-    using:
-      foreign_key_constraint_on:
-        column: userId
-        table:
-          name: Admin
-          schema: public
   - name: Attendances
     using:
       foreign_key_constraint_on:
@@ -53,6 +46,13 @@ array_relationships:
         column: userId
         table:
           name: Expert
+          schema: public
+  - name: OrganizationAdmins
+    using:
+      foreign_key_constraint_on:
+        column: userId
+        table:
+          name: OrganizationAdmin
           schema: public
 select_permissions:
   - role: admin-ras

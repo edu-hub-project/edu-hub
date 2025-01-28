@@ -1,52 +1,68 @@
 import logging
 from datetime import datetime
-from utils import is_admin
 
 # os.chdir("/home/steffen/00_code/eduhub/functions/callPythonFunction/")
 from api_clients import EduHubClient, StorageClient
 
 
-def load_participation_data(hasura_secret, arguments):
-    """Function to load participation data from the csv file and update the attendance data in the database
+def load_participation_data(arguments):
+    """Function to load participation data and generate a CSV file with attendance information.
+    
     Args:
-        hasura_secret (str): Secret to authenticate the user
-        arguments (dict): Payload containing the function parameters
+        hasura_secret (str): Secret for authentication with Hasura
+        arguments (dict): Contains input parameters, specifically:
+            - programId (int): ID of the program to generate data for
+            
     Returns:
-        string: Returns a link to the file including the participation data
+        dict: Response containing:
+            - success (bool): Whether the operation was successful
+            - link (str, optional): URL to download the generated CSV
+            - error (str, optional): Error message if operation failed
     """
     logging.info("########## Load Participation Data Function ##########")
+    logging.debug(f"arguments: {arguments}")
 
-    if not is_admin(hasura_secret, arguments):
-        return "error: user is not admin!"
+    try:
+        # Get the parameters from the payload
+        program_id = arguments["input"]["programId"]
+        logging.info(f"Loading participation data for program {program_id}")
 
-    # Instantiate the EduHubClient
-    eduhub_client = EduHubClient()
-    logging.debug(f"eduhub_client.url:  {eduhub_client.url}")
+        # Instantiate the EduHubClient
+        eduhub_client = EduHubClient()
+        logging.debug(f"eduhub_client.url: {eduhub_client.url}")
 
-    # Get the parameters from the payload
-    logging.debug(f"arguments:  {arguments}")
-    program_id = arguments["input"]["programId"]
+        # Get the program details
+        participant_data = eduhub_client.get_participants_from_program(program_id)
+        logging.debug("CSV with participation data for program %s retrieved", program_id)
 
-    # Get the program details
-    participant_data = eduhub_client.get_participants_from_program(program_id)
-    logging.debug("CSV with participation data for program %s retrieved", program_id)
+        # Instantiate the StorageClient
+        storage_client = StorageClient()
+        logging.debug(f"storage_client.bucket_name: {storage_client.bucket_name}")
 
-    # Instantiate the StorageClient
-    storage_client = StorageClient()
-    logging.debug(f"storage_client.bucket_name:  {storage_client.bucket_name}")
+        # Upload the CSV to Google Cloud Storage
+        url = storage_client.upload_csv_from_dataframe(
+            "temp", 
+            generate_filename(program_id), 
+            participant_data
+        )
 
-    # Upload the CSV to Google Cloud Storage
-    url = storage_client.upload_csv_from_dataframe(
-        "temp", generate_filename(program_id), participant_data
-    )
+        logging.info(
+            "CSV with participation data for program %s saved under %s",
+            program_id,
+            url,
+        )
+        
+        return {
+            "success": True,
+            "link": url
+        }
 
-    logging.info(
-        "CSV with participation data for program %s saved under %s",
-        program_id,
-        url,
-    )
-
-    return {"link": url}
+    except Exception as e:
+        logging.error(f"Error loading participation data: {str(e)}")
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
 
 #############################################################################################

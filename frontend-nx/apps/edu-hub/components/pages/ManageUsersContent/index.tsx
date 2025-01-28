@@ -11,6 +11,7 @@ import { USERS_BY_LAST_NAME, DELETE_USER } from '../../../queries/user';
 import { UsersByLastName_User } from '../../../queries/__generated__/UsersByLastName';
 import { PageBlock } from '../../common/PageBlock';
 import CommonPageHeader from '../../common/CommonPageHeader';
+import NavigationButton from '../../common/NavigationButton';
 
 const ExpandableUserRow: FC<{ row: UsersByLastName_User }> = ({ row }) => {
   const { t } = useTranslation('manageUsers');
@@ -91,7 +92,7 @@ const ManageUsersContent: FC = () => {
 
   const generateDeletionConfirmation = useCallback(
     (row: UsersByLastName_User) => {
-      return t('manageUsers:deletion_confirmation_question', { firstName: row.firstName, lastName: row.lastName });
+      return t('deletion_confirmation_question', { firstName: row.firstName, lastName: row.lastName });
     },
     [t]
   );
@@ -102,7 +103,12 @@ const ManageUsersContent: FC = () => {
         {loading && <Loading />}
         {!loading && !error && (
           <div>
-            <CommonPageHeader headline={t('headline')} />
+            <div className="flex justify-between items-center">
+              <CommonPageHeader headline={t('headline')} />
+              <NavigationButton href="/manage/admin-users" filled inverted>
+                {t('manageUsers:manage_admins')}
+              </NavigationButton>
+            </div>
             <TableGrid
               columns={columns}
               data={data?.User || []}

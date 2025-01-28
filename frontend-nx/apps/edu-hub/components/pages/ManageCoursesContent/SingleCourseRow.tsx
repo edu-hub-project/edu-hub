@@ -56,6 +56,7 @@ import {
   UPDATE_COURSE_ECTS,
   UPDATE_COURSE_EXTERNAL_REGISTRATION_LINK,
   UPDATE_COURSE_TITLE,
+  UPDATE_COURSE_MAX_MISSED_SESSION
 } from '../../../queries/course';
 import useErrorHandler from '../../../hooks/useErrorHandler';
 import { ErrorMessageDialog } from '../../common/dialogs/ErrorMessageDialog';
@@ -494,7 +495,7 @@ const SingleCourseRow: FC<IPropsCourseOneRow> = ({
                     <div className="col-span-3">{t('course-page:performance-certificate')}</div>
                     <InputField
                       variant="material"
-                      type={t('manageCourses:ects.type')}
+                      type="ects"
                       label={t('manageCourses:ects.label')}
                       placeholder={t('manageCourses:ects.label')}
                       itemId={course.id}
@@ -527,6 +528,31 @@ const SingleCourseRow: FC<IPropsCourseOneRow> = ({
                       insertValueMutation={INSERT_COURSE_DEGREE_TAG}
                       deleteValueMutation={DELETE_COURSE_DEGREE_TAG}
                       refetchQueries={['AdminCourseList']}
+                    />
+                    <InputField
+                      variant="material"
+                      type="number"
+                      label={t('manageCourses:max_missed_sessions.label')}
+                      placeholder={t('manageCourses:max_missed_sessions.label')}
+                      itemId={course.id}
+                      value={String(course.maxMissedSessions ?? 2)}
+                      updateValueMutation={UPDATE_COURSE_MAX_MISSED_SESSION}
+                      refetchQueries={['AdminCourseList']}
+                      helpText={t('manageCourses:maxMissedSessions.help_text')}
+                      min={0}
+                    />
+                    <TagSelector
+                      variant="material"
+                      className="col-span-10 flex mt-3"
+                      label={t('course-page:courseGroups')}
+                      placeholder={t('course-page:courseGroups')}
+                      itemId={course.id}
+                      values={currentCourseGroups}
+                      options={courseGroupOptions}
+                      insertValueMutation={INSERT_COURSE_GROUP_TAG}
+                      deleteValueMutation={DELETE_COURSE_GROUP_TAG}
+                      refetchQueries={['AdminCourseList']}
+                      optionsTranslationPrefix="start-page:"
                     />
                     <InputField
                       variant="material"

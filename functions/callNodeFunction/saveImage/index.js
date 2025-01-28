@@ -1,7 +1,7 @@
 import { Storage } from "@google-cloud/storage";
 import { buildCloudStorage } from "../lib/cloud-storage.js";
 import { replacePlaceholders } from "../lib/utils.js";
-import logger from "../index.js";
+import { logger } from "../index.js";
 import sharp from "sharp";
 import path from "path";
 

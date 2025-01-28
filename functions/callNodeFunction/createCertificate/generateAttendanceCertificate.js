@@ -1,5 +1,5 @@
 import got from "got";
-import logger from "../index.js";
+import { logger } from "../index.js";
 import {
   getStorageBucketURL,
   saveCertificateToBucket,

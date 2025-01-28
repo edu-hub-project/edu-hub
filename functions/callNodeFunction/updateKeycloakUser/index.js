@@ -1,5 +1,4 @@
-import { request, gql } from "graphql-request";
-import logger from "../index.js";
+import { logger } from "../index.js";
 import axios from "axios";
 
 const getKeycloakToken = async () => {

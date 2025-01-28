@@ -2,7 +2,6 @@ import { CircularProgress, IconButton } from '@mui/material';
 import { Button } from '@mui/material';
 import { MdAddCircle } from 'react-icons/md';
 import { IUserProfile } from '../../../hooks/user';
-import { AdminCourseList_Course } from '../../../queries/__generated__/AdminCourseList';
 import useTranslation from 'next-translate/useTranslation';
 import { FC, useCallback, useContext, useEffect, useState } from 'react';
 import { MdDelete, MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
@@ -30,7 +29,6 @@ const ManageAchievementOptionsContent: FC<{
   userId: string | undefined;
   userProfile: IUserProfile | undefined;
   achievementRecordTypes: string[];
-  course: AdminCourseList_Course;
 }> = (props) => {
   const defaultProgram = -1; // All tab
   const [currentProgramId, setCurrentProgramId] = useState(defaultProgram);
@@ -60,17 +58,13 @@ const ManageAchievementOptionsContent: FC<{
     achievementsRequest.refetch();
   }, [achievementsRequest]);
 
-  // const aOptions = [...(achievementsRequest.data?.AchievementOption || [])];
-
   useEffect(() => {
-    const aOptions = [...(achievementsRequest.data?.AchievementOption || [])];
-    setAchievements(aOptions);
+    setAchievements(achievementsRequest.data?.AchievementOption || []);
   }, [achievementsRequest.data?.AchievementOption]);
 
   const provider: IPropsDashBoard = {
     achievementRecordTypes: props.achievementRecordTypes,
     refetchAchievementOptions: refetch,
-    course: props.course,
     programID: defaultProgram,
     setProgramID: setCurrentProgramId,
     userProfile: props.userProfile,
@@ -98,11 +92,10 @@ const ManageAchievementOptionsContent: FC<{
 
 export default ManageAchievementOptionsContent;
 
-// Start Content
-
 interface IPropsContent {
   options: AchievementOptionList_AchievementOption[];
 }
+
 const DashboardContent: FC<IPropsContent> = ({ options }) => {
   const context = useContext(AchievementContext);
   const [programs, setPrograms] = useState([] as Programs_Program[]);
@@ -177,7 +170,7 @@ const DashboardContent: FC<IPropsContent> = ({ options }) => {
 
         {context.achievementRecordTypes.length > 0 && (
           <div className="flex justify-end">
-             <AddButton onClick={addNewAchievement} title={context.t('add-new')}/>
+            <AddButton onClick={addNewAchievement} title={context.t('add-new')} />
           </div>
         )}
       </div>
@@ -185,10 +178,10 @@ const DashboardContent: FC<IPropsContent> = ({ options }) => {
   );
 };
 
-// Start AchievementRow
 interface IPropsForARow {
   item: AchievementOptionList_AchievementOption;
 }
+
 const AchievementRow: FC<IPropsForARow> = (props) => {
   const [showDetails, setShowDetails] = useState(false);
   const context = useContext(AchievementContext);

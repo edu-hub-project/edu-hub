@@ -1,14 +1,27 @@
 import { Storage } from "@google-cloud/storage";
 import { buildCloudStorage } from "../lib/cloud-storage.js";
-import logger from "../index.js";
+import { logger } from "../index.js";
 
 /**
- * Responds to any HTTP request.
+ * Gets a signed URL for accessing a file in cloud storage.
  *
- * @param {!express:Request} req HTTP request context.
- * @param {!express:Response} res HTTP response context.
+ * @param {Object} req Request object containing:
+ *   - input.path (string): Path to the file in storage
+ *   - session_variables['x-hasura-role'] (string): User role
+ *   - session_variables['x-hasura-user-id'] (string): User UUID
+ * @returns {Object} Response containing:
+ *   - success (boolean): Whether the operation was successful
+ *   - messageKey (string): Translation key for messages
+ *   - error (string, optional): Error message if operation failed
+ *   - link (string, optional): The generated signed URL if successful
  */
-const getSignedUrl = async (req, res) => {
+const getSignedUrl = async (req) => {
+  logger.info("########## Get Signed URL ##########");
+  logger.debug("Request parameters", { 
+    path: req.body.input.path,
+    role: req.body.session_variables['x-hasura-role'],
+    userId: req.body.session_variables['x-hasura-user-id']
+  });
 
   const storage = buildCloudStorage(Storage);
   const path = req.body.input.path;
@@ -23,21 +36,35 @@ const getSignedUrl = async (req, res) => {
        (userUUID && path.startsWith(userUUID + "/")) || // included for legacy names
        (userUUID && path.startsWith("/user-" + userUUID + "/"))) { // included for legacy names
       const link = await storage.loadFromBucket(path, req.headers.bucket);
-      logger.info("File loaded successfully", { path, userRole, userUUID, link });
-      return res.json({ link });
+      logger.info("File access granted", { path, userRole, userUUID });
+      return {
+        success: true,
+        messageKey: "FILE_ACCESS_GRANTED",
+        link
+      };
     } else {
       // Access denied for other cases
       logger.warn("Access denied for file loading", { path, userRole, userUUID });
-      return res.status(403).json({
-        message: "You do not have permission to access this file.",
-      });
+      return {
+        success: false,
+        messageKey: "FILE_ACCESS_DENIED",
+        error: "You do not have permission to access this file."
+      };
     }
   } catch (error) {
     // Handle errors, such as issues with loading the file
-    logger.error("Error loading file", { error: error.message, path, userRole, userUUID, stack: error.stack });
-    return res.status(500).json({
-      error: "An error occurred while retrieving the file.",
+    logger.error("Error loading file", { 
+      error: error.message, 
+      path, 
+      userRole, 
+      userUUID, 
+      stack: error.stack 
     });
+    return {
+      success: false,
+      messageKey: "FILE_LOAD_ERROR",
+      error: "An error occurred while retrieving the file."
+    };
   }
 };
 

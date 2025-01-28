@@ -1,7 +1,14 @@
 import logging
 import os
-import re
-from flask import Flask, request, jsonify
+from flask import request, jsonify
+from typing import Dict, Any, Callable
+
+# Import functions explicitly
+from pythonFunctions.add_confirmed_user_to_mm import add_confirmed_user_to_mm
+from pythonFunctions.check_attendance import check_attendance
+from pythonFunctions.create_certificates import create_certificates
+from pythonFunctions.load_participation_data import load_participation_data
+from pythonFunctions.provide_moochub_data import provide_moochub_data
 
 # Initialize the logger level
 if os.environ.get("ENVIRONMENT") == "production":
@@ -9,40 +16,63 @@ if os.environ.get("ENVIRONMENT") == "production":
 else:
     logging.basicConfig(level=logging.DEBUG)
 
+# Create an explicit function map
+PYTHON_FUNCTIONS: Dict[str, Callable] = {
+    "add_confirmed_user_to_mm": add_confirmed_user_to_mm,
+    "check_attendance": check_attendance,
+    "create_certificates": create_certificates,
+    "load_participation_data": load_participation_data,
+    "provide_moochub_data": provide_moochub_data,
+}
 
-# Execution of all Python files in the folder `pythonFunctions` to make these available
-# to the function `call_python_function()`
-files = os.listdir("./pythonFunctions")
-python_files = [file for file in files if re.search(r".py$", file)]
-for file in python_files:
-    exec(open("./pythonFunctions/" + file).read())
-
-
-# Generic function to call the requested Python function
 def call_python_function(request):
     """Call the Python function indicated in the request and return the result.
     Args:
         request (flask.Request): HTTP request object.
-        It must contain a field "name", with the name of a Python function given otherwise the request will not be handled.
     Returns:
-        the report for the participants from the Zoom API,
-        containing name and information about the participants.
+        dict: A standardized response containing success status and result/error
     """
+    try:
+        arguments = request.get_json()
+        logging.info("########## Calling Python Function ##########")
+        logging.debug(f"Request: {arguments}")
 
-    arguments = request.get_json()
-    logging.debug(f"Request: {arguments}")
+        function_name = request.headers.get("Function-Name")
+        hasura_secret = request.headers.get("Hasura-Secret")
+        
+        if not hasura_secret == os.environ.get("HASURA_CLOUD_FUNCTION_SECRET"):
+            return jsonify({
+                "success": False,
+                "error": "Invalid secret provided",
+                "messageKey": "INVALID_SECRET"
+            }), 200
 
-    # Get the value of the "name" key from the headers (the name of the function to be called)
-    function_name = request.headers.get("Function-Name")
-    hasura_secret = request.headers.get("Hasura-Secret")
+        if function_name not in PYTHON_FUNCTIONS:
+            return jsonify({
+                "success": False,
+                "error": "Function not found",
+                "messageKey": "FUNCTION_NOT_FOUND"
+            }), 200
 
-    # Checking if an existing function name is provided and calling function
-    if globals().get(function_name) is None:
-        return "error: function with the given name does not exist!"
-    else:
-        python_function = globals()[function_name]
-        logging.info(f"Calling python function: {function_name}...")
-        return python_function(hasura_secret, arguments)
+        result = PYTHON_FUNCTIONS[function_name](arguments)
+        
+        # If result is already a dict with success/error info, return it directly
+        if isinstance(result, dict) and ("success" in result or "error" in result):
+            return jsonify(result), 200
+            
+        # Otherwise, wrap the result in a success response
+        return jsonify({
+            "success": True,
+            "result": result
+        }), 200
+
+    except Exception as error:
+        logging.error(f"Error in {function_name}: {str(error)}")
+        return jsonify({
+            "success": False,
+            "error": str(error),
+            "messageKey": "INTERNAL_SERVER_ERROR",
+        }), 200
 
 
 # Test request for the server
