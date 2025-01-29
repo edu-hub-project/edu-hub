@@ -20,6 +20,6 @@ export interface UpdateProgramShortTitle {
 }
 
 export interface UpdateProgramShortTitleVariables {
-  programId: number;
-  shortTitle: string;
+  itemId: number;
+  text: string;
 }

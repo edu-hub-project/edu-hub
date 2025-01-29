@@ -15,8 +15,13 @@ import { useLazyRoleQuery } from '../../../hooks/authedQuery';
 import { SAVE_ACHIEVEMENT_CERTIFICATE_TEMPLATE, SAVE_ATTENDANCE_CERTIFICATE_TEMPLATE } from '../../../queries/actions';
 import { LOAD_PARTICIPATION_DATA } from '../../../queries/actions';
 import {
+  UPDATE_PROGRAM_SHORT_TITLE,
+  UPDATE_PROGRAM_TITLE,
   UPDATE_ACHIEVEMENT_CERTIFICATE_TEMPLATE,
   UPDATE_ATTENDANCE_CERTIFICATE_TEMPLATE,
+  UPDATE_START_QUESTIONAIRE,
+  UPDATE_SPEAKER_QUESTIONAIRE,
+  UPDATE_ClOSING_QUESTIONAIRE,
 } from '../../../queries/updateProgram';
 import { ProgramList_Program } from '../../../queries/__generated__/ProgramList';
 import {
@@ -49,16 +54,11 @@ interface ProgramsRowProps {
   canDelete: boolean;
   qResult: QueryResult<any>;
   onSetPublished: (p: ProgramList_Program, isPublished: boolean) => any;
-  onSetTitle: (p: ProgramList_Program, title: string) => any;
-  onSetShortTitle: (p: ProgramList_Program, shortTitle: string) => any;
   onSetApplicationStart: (p: ProgramList_Program, start: Date | null) => any;
   onSetApplicationEnd: (p: ProgramList_Program, end: Date | null) => any;
   onSetLectureStart: (p: ProgramList_Program, start: Date | null) => any;
   onSetLectureEnd: (p: ProgramList_Program, end: Date | null) => any;
   onSetUploadData: (p: ProgramList_Program, d: Date | null) => any;
-  onSetStartQuestionnaire: (p: ProgramList_Program, link: string) => any;
-  onSetSpeakerQuestionnaire: (p: ProgramList_Program, link: string) => any;
-  onSetClosingQuestionnaire: (p: ProgramList_Program, link: string) => any;
   onSetVisibilityAttendanceCertificate: (p: ProgramList_Program, isVisible: boolean) => any;
   onSetVisibilityAchievementCertificate: (p: ProgramList_Program, isVisible: boolean) => any;
   onDelete: (p: ProgramList_Program) => any;
@@ -76,13 +76,8 @@ export const ProgramsRow: FC<ProgramsRowProps> = ({
   onSetApplicationStart,
   onSetLectureEnd,
   onSetLectureStart,
-  onSetShortTitle,
-  onSetTitle,
   onSetUploadData,
   onSetPublished,
-  onSetStartQuestionnaire,
-  onSetSpeakerQuestionnaire,
-  onSetClosingQuestionnaire,
   onSetVisibilityAttendanceCertificate,
   onSetVisibilityAchievementCertificate,
 }) => {
@@ -97,41 +92,6 @@ export const ProgramsRow: FC<ProgramsRowProps> = ({
   const handleTogglePublished = useCallback(() => {
     onSetPublished(program, !program.published);
   }, [program, onSetPublished]);
-
-  const handleSetStartQuestionnaire = useCallback(
-    (value: string) => {
-      onSetStartQuestionnaire(program, value);
-    },
-    [program, onSetStartQuestionnaire]
-  );
-
-  const handleSetSpeakerQuestionnaire = useCallback(
-    (value: string) => {
-      onSetSpeakerQuestionnaire(program, value);
-    },
-    [program, onSetSpeakerQuestionnaire]
-  );
-
-  const handleSetClosingQuestionnaire = useCallback(
-    (value: string) => {
-      onSetClosingQuestionnaire(program, value);
-    },
-    [program, onSetClosingQuestionnaire]
-  );
-
-  const handleSetTitle = useCallback(
-    (value: string) => {
-      onSetTitle(program, value);
-    },
-    [program, onSetTitle]
-  );
-
-  const handleSetShortTitle = useCallback(
-    (value: string) => {
-      onSetShortTitle(program, value);
-    },
-    [program, onSetShortTitle]
-  );
 
   const handleSetApplicationStart = useCallback(
     (start: Date | null) => {
@@ -297,24 +257,24 @@ export const ProgramsRow: FC<ProgramsRowProps> = ({
         </div>
 
         <div className="col-span-2">
-        <InputField 
-          variant="material"
-          type="input"
-          placeholder={t('title.placeholder')}
-          itemId={program.id}
-          value={program.title}
-          onValueUpdated={handleSetTitle}
-        />
+          <InputField
+            variant="material"
+            type="input"
+            placeholder={t('title.placeholder')}
+            itemId={program.id}
+            value={program.title}
+            updateValueMutation={UPDATE_PROGRAM_TITLE}
+          />
         </div>
 
         <div>
           <InputField
-            variant="material" 
+            variant="material"
             type="input"
             placeholder={t('short_title.placeholder')}
             itemId={program.id}
             value={program.shortTitle ?? ''}
-            onValueUpdated={handleSetShortTitle}
+            updateValueMutation={UPDATE_PROGRAM_SHORT_TITLE}
           />
         </div>
 
@@ -402,7 +362,7 @@ export const ProgramsRow: FC<ProgramsRowProps> = ({
                 placeholder={t('start_evaluation.placeholder')}
                 itemId={program.id}
                 value={program.startQuestionnaire || ''}
-                onValueUpdated={handleSetStartQuestionnaire}
+                updateValueMutation={UPDATE_START_QUESTIONAIRE}
               />
             </div>
             <div className="p-3">
@@ -414,7 +374,7 @@ export const ProgramsRow: FC<ProgramsRowProps> = ({
                 placeholder={t('speaker_evaluation.placeholder')}
                 itemId={program.id}
                 value={program.speakerQuestionnaire || ''}
-                onValueUpdated={handleSetSpeakerQuestionnaire}
+                updateValueMutation={UPDATE_SPEAKER_QUESTIONAIRE}
               />
             </div>
             <div className="p-3">
@@ -426,7 +386,7 @@ export const ProgramsRow: FC<ProgramsRowProps> = ({
                 placeholder={t('final_evaluation.placeholder')}
                 itemId={program.id}
                 value={program.closingQuestionnaire || ''}
-                onValueUpdated={handleSetClosingQuestionnaire}
+                updateValueMutation={UPDATE_ClOSING_QUESTIONAIRE}
               />
             </div>
 

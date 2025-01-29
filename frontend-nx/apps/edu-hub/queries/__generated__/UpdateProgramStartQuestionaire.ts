@@ -20,6 +20,6 @@ export interface UpdateProgramStartQuestionaire {
 }
 
 export interface UpdateProgramStartQuestionaireVariables {
-  programId: number;
-  questionaire: string;
+  itemId: number;
+  text: string;
 }
