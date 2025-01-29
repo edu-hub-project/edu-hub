@@ -20,6 +20,6 @@ export interface UpdateProgramClosingQuestionaire {
 }
 
 export interface UpdateProgramClosingQuestionaireVariables {
-  programId: number;
-  questionaire: string;
+  itemId: number;
+  text: string;
 }

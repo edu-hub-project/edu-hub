@@ -16,19 +16,14 @@ import {
 import {
   DELETE_PROGRAM,
   INSERT_PROGRAM,
-  UPDATE_ClOSING_QUESTIONAIRE,
   UPDATE_PROGRAM_ACHIEVEMENT_CERT_VISIBLE,
   UPDATE_PROGRAM_APPLICATION_END,
   UPDATE_PROGRAM_APPLICATION_START,
   UPDATE_PROGRAM_LECTURE_END,
   UPDATE_PROGRAM_LECTURE_START,
   UPDATE_PROGRAM_PARTICIPATION_CERT_VISIBLE,
-  UPDATE_PROGRAM_SHORT_TITLE,
-  UPDATE_PROGRAM_TITLE,
   UPDATE_PROGRAM_UPLOAD_DEADLINE,
   UPDATE_PROGRAM_PUBLISHED,
-  UPDATE_SPEAKER_QUESTIONAIRE,
-  UPDATE_START_QUESTIONAIRE,
 } from '../../../queries/updateProgram';
 import { UpdateProgramTitle, UpdateProgramTitleVariables } from '../../../queries/__generated__/UpdateProgramTitle';
 import {
@@ -142,36 +137,6 @@ export const ManageProgramsContent: FC = () => {
     [qResult, updatePublished]
   );
 
-  const [updateTitle] = useAdminMutation<UpdateProgramTitle, UpdateProgramTitleVariables>(UPDATE_PROGRAM_TITLE);
-  const handleProgramTitle = useCallback(
-    async (p: ProgramList_Program, title: string) => {
-      await updateTitle({
-        variables: {
-          programId: p.id,
-          title,
-        },
-      });
-      qResult.refetch();
-    },
-    [qResult, updateTitle]
-  );
-
-  const [updateShortTitle] = useAdminMutation<UpdateProgramShortTitle, UpdateProgramShortTitleVariables>(
-    UPDATE_PROGRAM_SHORT_TITLE
-  );
-  const handleProgramShortTitle = useCallback(
-    async (p: ProgramList_Program, shortTitle: string) => {
-      await updateShortTitle({
-        variables: {
-          programId: p.id,
-          shortTitle,
-        },
-      });
-      qResult.refetch();
-    },
-    [qResult, updateShortTitle]
-  );
-
   const [updateApplicationStart] = useAdminMutation<
     UpdateProgramApplicationStart,
     UpdateProgramApplicationStartVariables
@@ -263,59 +228,6 @@ export const ManageProgramsContent: FC = () => {
       }
     },
     [qResult, updateUploadDeadline]
-  );
-
-  const [updateStartQuestionaire] = useAdminMutation<
-    UpdateProgramStartQuestionaire,
-    UpdateProgramStartQuestionaireVariables
-  >(UPDATE_START_QUESTIONAIRE);
-
-  const handleStartQuestionaire = useCallback(
-    async (p: ProgramList_Program, link: string) => {
-      await updateStartQuestionaire({
-        variables: {
-          programId: p.id,
-          questionaire: link,
-        },
-      });
-      qResult.refetch();
-    },
-    [qResult, updateStartQuestionaire]
-  );
-
-  const [updateSpeakerQuestionaire] = useAdminMutation<
-    UpdateProgramSpeakerQuestionaire,
-    UpdateProgramStartQuestionaireVariables
-  >(UPDATE_SPEAKER_QUESTIONAIRE);
-
-  const handleSpeakerQuestionaire = useCallback(
-    async (p: ProgramList_Program, link: string) => {
-      await updateSpeakerQuestionaire({
-        variables: {
-          programId: p.id,
-          questionaire: link,
-        },
-      });
-      qResult.refetch();
-    },
-    [qResult, updateSpeakerQuestionaire]
-  );
-
-  const [updateClosingQuestionaire] = useAdminMutation<
-    UpdateProgramClosingQuestionaire,
-    UpdateProgramClosingQuestionaireVariables
-  >(UPDATE_ClOSING_QUESTIONAIRE);
-  const handleClosingQuestionaire = useCallback(
-    async (p: ProgramList_Program, link: string) => {
-      await updateClosingQuestionaire({
-        variables: {
-          programId: p.id,
-          questionaire: link,
-        },
-      });
-      qResult.refetch();
-    },
-    [qResult, updateClosingQuestionaire]
   );
 
   const [updateProgramAchievementCertVisible] = useAdminMutation<
@@ -447,8 +359,6 @@ export const ManageProgramsContent: FC = () => {
                 canDelete={v.Courses.length === 0}
                 openProgramId={openProgram}
                 onSetPublished={handleTogglePublished}
-                onSetTitle={handleProgramTitle}
-                onSetShortTitle={handleProgramShortTitle}
                 onSetApplicationStart={handleApplicationStart}
                 onSetApplicationEnd={handleApplicationEnd}
                 onSetLectureStart={handleLectureStart}
@@ -456,9 +366,6 @@ export const ManageProgramsContent: FC = () => {
                 onSetUploadData={handleUploadDeadline}
                 onDelete={handleDelete}
                 onOpenProgram={handleOpenProgram}
-                onSetStartQuestionnaire={handleStartQuestionaire}
-                onSetClosingQuestionnaire={handleClosingQuestionaire}
-                onSetSpeakerQuestionnaire={handleSpeakerQuestionaire}
                 onSetVisibilityAttendanceCertificate={handleProgramAttendanceCertificateVisible}
                 onSetVisibilityAchievementCertificate={handleProgramAchievementCertVisible}
               />

@@ -56,10 +56,10 @@ export const UPDATE_PROGRAM_PUBLISHED = gql`
 
 
 export const UPDATE_PROGRAM_TITLE = gql`
-  mutation UpdateProgramTitle($programId: Int!, $title: String!) {
+  mutation UpdateProgramTitle($itemId: Int!, $text: String!) {
     update_Program_by_pk(
-      pk_columns: { id: $programId }
-      _set: { title: $title }
+      pk_columns: { id: $itemId }
+      _set: { title: $text }
     ) {
       id
     }
@@ -67,10 +67,10 @@ export const UPDATE_PROGRAM_TITLE = gql`
 `;
 
 export const UPDATE_PROGRAM_SHORT_TITLE = gql`
-  mutation UpdateProgramShortTitle($programId: Int!, $shortTitle: String!) {
+  mutation UpdateProgramShortTitle($itemId: Int!, $text: String!) {
     update_Program_by_pk(
-      pk_columns: { id: $programId }
-      _set: { shortTitle: $shortTitle }
+      pk_columns: { id: $itemId }
+      _set: { shortTitle: $text }
     ) {
       id
     }
@@ -168,12 +168,12 @@ export const UPDATE_PROGRAM_UPLOAD_DEADLINE = gql`
 
 export const UPDATE_START_QUESTIONAIRE = gql`
   mutation UpdateProgramStartQuestionaire(
-    $programId: Int!
-    $questionaire: String!
+    $itemId: Int!
+    $text: String!
   ) {
     update_Program_by_pk(
-      pk_columns: { id: $programId }
-      _set: { startQuestionnaire: $questionaire }
+      pk_columns: { id: $itemId }
+      _set: { startQuestionnaire: $text }
     ) {
       id
     }
@@ -182,12 +182,12 @@ export const UPDATE_START_QUESTIONAIRE = gql`
 
 export const UPDATE_SPEAKER_QUESTIONAIRE = gql`
   mutation UpdateProgramSpeakerQuestionaire(
-    $programId: Int!
-    $questionaire: String!
+    $itemId: Int!
+    $text: String!
   ) {
     update_Program_by_pk(
-      pk_columns: { id: $programId }
-      _set: { speakerQuestionnaire: $questionaire }
+      pk_columns: { id: $itemId }
+      _set: { speakerQuestionnaire: $text }
     ) {
       id
     }
@@ -196,12 +196,12 @@ export const UPDATE_SPEAKER_QUESTIONAIRE = gql`
 
 export const UPDATE_ClOSING_QUESTIONAIRE = gql`
   mutation UpdateProgramClosingQuestionaire(
-    $programId: Int!
-    $questionaire: String!
+    $itemId: Int!
+    $text: String!
   ) {
     update_Program_by_pk(
-      pk_columns: { id: $programId }
-      _set: { closingQuestionnaire: $questionaire }
+      pk_columns: { id: $itemId }
+      _set: { closingQuestionnaire: $text }
     ) {
       id
     }
