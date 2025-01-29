@@ -20,6 +20,6 @@ export interface UpdateProgramTitle {
 }
 
 export interface UpdateProgramTitleVariables {
-  programId: number;
-  title: string;
+  itemId: number;
+  text: string;
 }
