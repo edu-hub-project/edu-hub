@@ -7,10 +7,21 @@
 // GraphQL mutation operation: SaveCourseImage
 // ====================================================
 
+export interface SaveCourseImage_saveCourseImage_resizedPaths {
+  __typename: "resizedImagePath";
+  size: number;
+  filePath: string;
+  accessUrl: string;
+}
+
 export interface SaveCourseImage_saveCourseImage {
-  __typename: "saveFileOutput";
-  file_path: string;
-  google_link: string;
+  __typename: "saveImageResult";
+  success: boolean;
+  messageKey: string;
+  error: string | null;
+  filePath: string;
+  accessUrl: string;
+  resizedPaths: SaveCourseImage_saveCourseImage_resizedPaths[] | null;
 }
 
 export interface SaveCourseImage {

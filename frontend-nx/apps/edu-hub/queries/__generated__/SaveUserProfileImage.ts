@@ -7,14 +7,25 @@
 // GraphQL mutation operation: SaveUserProfileImage
 // ====================================================
 
+export interface SaveUserProfileImage_saveUserProfileImage_resizedPaths {
+  __typename: "resizedImagePath";
+  size: number;
+  filePath: string;
+  accessUrl: string;
+}
+
 export interface SaveUserProfileImage_saveUserProfileImage {
-  __typename: "saveFileOutput";
-  file_path: string;
-  google_link: string;
+  __typename: "saveImageResult";
+  success: boolean;
+  messageKey: string;
+  error: string | null;
+  filePath: string;
+  accessUrl: string;
+  resizedPaths: SaveUserProfileImage_saveUserProfileImage_resizedPaths[] | null;
 }
 
 export interface SaveUserProfileImage {
-  saveUserProfileImage: SaveUserProfileImage_saveUserProfileImage | null;
+  saveUserProfileImage: SaveUserProfileImage_saveUserProfileImage;
 }
 
 export interface SaveUserProfileImageVariables {

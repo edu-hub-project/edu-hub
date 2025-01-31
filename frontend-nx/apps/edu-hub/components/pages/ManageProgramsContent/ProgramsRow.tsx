@@ -163,11 +163,12 @@ export const ProgramsRow: FC<ProgramsRowProps> = ({
             programId: program.id,
           },
         });
-        if (res.data?.saveAttendanceCertificateTemplate?.file_path) {
+
+        if (res.data?.saveAttendanceCertificateTemplate?.success) {
           await updateParticipationTemplate({
             variables: {
               programId: program.id,
-              templatePath: res.data?.saveAttendanceCertificateTemplate?.file_path,
+              templatePath: res.data.saveAttendanceCertificateTemplate.filePath,
             },
           });
 
@@ -221,11 +222,11 @@ export const ProgramsRow: FC<ProgramsRowProps> = ({
             },
           });
 
-          if (response.data?.saveAchievementCertificateTemplate?.file_path) {
+          if (response.data?.saveAchievementCertificateTemplate?.success) {
             await updateAchievementCertificationTemplate({
               variables: {
                 programId: program.id,
-                templatePath: response.data?.saveAchievementCertificateTemplate?.file_path,
+                templatePath: response.data.saveAchievementCertificateTemplate.filePath,
               },
             });
 

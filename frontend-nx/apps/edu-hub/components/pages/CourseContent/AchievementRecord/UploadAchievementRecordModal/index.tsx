@@ -206,6 +206,7 @@ const UploadAchievementRecordModal: FC<IProps> = ({
           setAlertMessage(`${t('achievements-page:documentation-missing')}`);
           return;
         }
+
         const result = await insertAnAchievementRecordAPI({
           variables: {
             insertInput: {
@@ -235,19 +236,22 @@ const UploadAchievementRecordModal: FC<IProps> = ({
         if (!state.documentationUrl) return;
         const uploadResult = await saveAchievementRecordDocumentation({
           variables: {
-            achievementRecordId,
             base64File: state.documentationUrl.data,
             fileName: state.documentationUrl.name,
+            achievementRecordId,
           },
         });
-        if (!uploadResult.data?.saveAchievementRecordDocumentation?.file_path) {
+
+        if (!uploadResult.data?.saveAchievementRecordDocumentation?.success) {
+          setAlertMessage(t(uploadResult.data?.saveAchievementRecordDocumentation?.messageKey || 'operation-failed'));
           return;
         }
+
         await updateAnAchievementRecordAPI({
           variables: {
             id: achievementRecordId,
             setInput: {
-              documentationUrl: uploadResult.data.saveAchievementRecordDocumentation.file_path,
+              documentationUrl: uploadResult.data.saveAchievementRecordDocumentation.filePath,
             },
           },
         });
