@@ -108,10 +108,11 @@ export const bytesToBase64 = (bytes: Uint8Array) => {
   return base64;
 };
 
-export interface UploadFile {
+export type UploadFile = {
   name: string;
   data: string;
-}
+  size: number;
+} | null;
 
 export const parseFileUploadEvent = async (
   event: any
@@ -159,6 +160,7 @@ export const parseFileUploadEvent = async (
         return {
           name,
           data: fileBase64,
+          size: file.size,
         };
       } else {
         return null;

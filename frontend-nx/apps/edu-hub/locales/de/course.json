@@ -23,5 +23,8 @@
   },
   "toCourseChat": "ZUM KURS-CHAT",
   "toOnlineMeeting": "ZUM ONLINE-MEETING",
-  "maxFileSize": "Maximale Dateigröße: 20MB"
+  "max_file_size": "Maximale Dateigröße: {{size}} MB",
+  "upload_achievement_record_modal": {
+    "file_too_large": "Die Datei ist zu groß. Die maximale Größe beträgt {{size}} MB."
+  }
 }
