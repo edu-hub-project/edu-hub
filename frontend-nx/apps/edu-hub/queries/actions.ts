@@ -22,8 +22,11 @@ export const SAVE_ATTENDANCE_CERTIFICATE_TEMPLATE = gql`
       filename: $fileName
       programid: $programId
     ) {
-      file_path
-      google_link
+      success
+      messageKey
+      error
+      filePath
+      accessUrl
     }
   }
 `;
@@ -39,8 +42,11 @@ export const SAVE_ACHIEVEMENT_CERTIFICATE_TEMPLATE = gql`
       filename: $fileName
       programid: $programId
     ) {
-      file_path
-      google_link
+      success
+      messageKey
+      error
+      filePath
+      accessUrl
     }
   }
 `;
@@ -56,8 +62,16 @@ export const SAVE_ACHIEVEMENT_RECORD_COVER_IMAGE = gql`
       filename: $fileName
       achievementRecordId: $achievementRecordId
     ) {
-      file_path
-      google_link
+      success
+      messageKey
+      error
+      filePath
+      accessUrl
+      resizedPaths {
+        size
+        filePath
+        accessUrl
+      }
     }
   }
 `;
@@ -73,8 +87,11 @@ export const SAVE_ACHIEVEMENT_RECORD_DOCUMENTATION = gql`
       filename: $fileName
       achievementRecordId: $achievementRecordId
     ) {
-      file_path
-      google_link
+      success
+      messageKey
+      error
+      filePath
+      accessUrl
     }
   }
 `;
@@ -90,8 +107,11 @@ export const SAVE_ACHIEVEMENT_DOCUMENTATION_TEMPLATE = gql`
       filename: $fileName
       achievementDocumentationTemplateId: $achievementDocumentationTemplateId
     ) {
-      file_path
-      google_link
+      success
+      messageKey
+      error
+      filePath
+      accessUrl
     }
   }
 `;
@@ -115,8 +135,16 @@ export const SAVE_USER_PROFILE_IMAGE = gql`
       filename: $fileName
       userid: $userId
     ) {
-      file_path
-      google_link
+      success
+      messageKey
+      error
+      filePath
+      accessUrl
+      resizedPaths {
+        size
+        filePath
+        accessUrl
+      }
     }
   }
 `;
@@ -132,8 +160,16 @@ export const SAVE_COURSE_IMAGE = gql`
       filename: $fileName
       courseid: $courseId
     ) {
-      file_path
-      google_link
+      success
+      messageKey
+      error
+      filePath
+      accessUrl
+      resizedPaths {
+        size
+        filePath
+        accessUrl
+      }
     }
   }
 `;

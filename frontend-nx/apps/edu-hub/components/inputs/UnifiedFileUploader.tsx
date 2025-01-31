@@ -57,10 +57,20 @@ const UnifiedFileUploader: React.FC<UnifiedFileUploaderProps> = ({
   const theme = useTheme();
 
   const [updateFile] = useRoleMutation(updateFileMutation, {
-    onError: (error) => handleError(t(error.message)),
+    onError: (error) => {
+      console.error('Update file error:', error);
+      handleError(t(error.message));
+    },
     onCompleted: (data) => {
-      if (onFileUpdated) onFileUpdated(data);
-      setShowSavedNotification(true);
+      const updatedUser = data?.update_User_by_pk;
+
+      if (updatedUser?.picture) {
+        if (onFileUpdated) onFileUpdated(data);
+        setShowSavedNotification(true);
+      } else {
+        console.error('Update file failed: No picture field in response');
+        handleError(t('operation_failed'));
+      }
     },
     refetchQueries: variant === 'material' ? refetchQueries : undefined,
   });
@@ -82,20 +92,20 @@ const UnifiedFileUploader: React.FC<UnifiedFileUploaderProps> = ({
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const selectedFile = event.target.files?.[0];
       if (selectedFile) {
-        if (selectedFile.size > maxFileSize) {
-          handleError(t('file_uploader.file_size_exceeds_limit', { maxFileSize: maxFileSize / 1024 / 1024 }));
-          return;
-        }
+        try {
+          if (selectedFile.size > maxFileSize) {
+            handleError(t('file_uploader.file_size_exceeds_limit', { maxFileSize: maxFileSize / 1024 / 1024 }));
+            return;
+          }
 
-        if (element === 'profilePicture') {
-          try {
+          if (element === 'profilePicture') {
             const base64File = await new Promise<string>((resolve) => {
               const reader = new FileReader();
               reader.onloadend = () => resolve(reader.result as string);
               reader.readAsDataURL(selectedFile);
             });
 
-            const result = await saveUserProfileImage({
+            const saveResult = await saveUserProfileImage({
               variables: {
                 base64File: base64File.split(',')[1],
                 fileName: selectedFile.name,
@@ -103,21 +113,24 @@ const UnifiedFileUploader: React.FC<UnifiedFileUploaderProps> = ({
               },
             });
 
-            const userProfileImage = result.data?.saveUserProfileImage?.google_link;
-            if (userProfileImage) {
-              updateFile({
+            const uploadResult = saveResult.data?.saveUserProfileImage;
+
+            if (uploadResult?.success) {
+              await updateFile({
                 variables: {
                   ...identifierVariables,
-                  file: result.data?.saveUserProfileImage?.file_path,
+                  file: uploadResult.filePath,
                 },
               });
+            } else {
+              throw new Error(uploadResult?.messageKey || 'IMAGE_SAVE_ERROR');
             }
-          } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            handleError(`${t('file_uploader.error_uploading_profile_picture')}: ${errorMessage}`);
+          } else {
+            await updateFile({ variables: { ...identifierVariables, file: selectedFile } });
           }
-        } else {
-          updateFile({ variables: { ...identifierVariables, file: selectedFile } });
+        } catch (error) {
+          console.error('File upload error:', error);
+          handleError(t(error instanceof Error ? error.message : 'IMAGE_SAVE_ERROR'));
         }
       }
     },

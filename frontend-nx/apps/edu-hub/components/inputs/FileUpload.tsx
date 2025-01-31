@@ -20,9 +20,18 @@ const FileUpload = ({ id, uploadMutation, submitMutation, uploadVariables, submi
           ...uploadVariables,
         },
       });
+
       const resultData = uploadResult.data;
       const key = Object.keys(resultData)[0];
-      fileUrl = resultData[key].file_path;
+      const result = resultData[key];
+
+      // Check if upload was successful
+      if (!result.success) {
+        console.error('File upload failed:', result.error);
+        return;
+      }
+
+      fileUrl = result.filePath; // Changed from file_path to filePath
     }
 
     // Submit the entire form data, including the file URL
