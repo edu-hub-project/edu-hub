@@ -128,7 +128,7 @@ const AchievementRecord: FC<IProps> = ({ courseId, achievementRecordUploadDeadli
         )}
 
         <div>
-          {myRecords ? (
+          {myRecords && myRecords.documentationUrl ? (
             <p>
               {t('course-page:last_record_upload', {
                 dateTime: formattedDateWithTime(new Date(myRecords.created_at), lang),
