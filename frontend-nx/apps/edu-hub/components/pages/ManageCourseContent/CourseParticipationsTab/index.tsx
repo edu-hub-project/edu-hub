@@ -197,7 +197,7 @@ const ParticipationList: FC<IPropsParticipationList> = ({ course, qResult }) => 
             )
           : null;
 
-      console.log("mostRecentRecord", mostRecentRecord);
+      console.log('mostRecentRecord', mostRecentRecord);
 
       // return a new object that combines the enrollment and its most recent record
       return {
@@ -388,7 +388,11 @@ const ParticipationRow: FC<IPropsParticipationRow> = ({
 
   const handleDetailsClick = async () => {
     setShowDetails((prev) => !prev);
-    if (!documentationUrlLoaded && enrollment.mostRecentRecord !== null) {
+    if (
+      !documentationUrlLoaded &&
+      enrollment.mostRecentRecord?.documentationUrl &&
+      enrollment.mostRecentRecord.documentationUrl !== 'pending_upload'
+    ) {
       getAchievementRecordDocumentation({
         variables: {
           path: enrollment.mostRecentRecord.documentationUrl,
@@ -463,15 +467,20 @@ const ParticipationRow: FC<IPropsParticipationRow> = ({
         </td>
         <td className={`${tdStyle} min-w-[260px]`}>
           <div className="flex flex-row">
-            {!enrollment.mostRecentRecord && (
+            {!enrollment.mostRecentRecord?.documentationUrl ||
+            enrollment.mostRecentRecord.documentationUrl === 'pending_upload' ? (
               <div>
                 <p className={pStyle}> {t('course-page:not-submitted')} </p>
               </div>
+            ) : (
+              <>
+                {enrollment.mostRecentRecord?.rating === AchievementRecordRating_enum.UNRATED && <Dot color="grey" />}
+                {enrollment.mostRecentRecord?.rating === AchievementRecordRating_enum.PASSED && (
+                  <Dot color="lightgreen" />
+                )}
+                {enrollment.mostRecentRecord?.rating === AchievementRecordRating_enum.FAILED && <Dot color="red" />}
+              </>
             )}
-
-            {enrollment.mostRecentRecord?.rating === AchievementRecordRating_enum.UNRATED && (<Dot color="grey" />)}
-            {enrollment.mostRecentRecord?.rating === AchievementRecordRating_enum.PASSED && (<Dot color="lightgreen" />)}
-            {enrollment.mostRecentRecord?.rating === AchievementRecordRating_enum.FAILED && (<Dot color="red" />)}
           </div>
         </td>
 
@@ -544,50 +553,60 @@ const ShowDetails: FC<IPropsShowDetails> = ({ enrollment, achievementRecordDocum
         </td>
         <td colSpan={3} className={`${tdStyle} min-w-[260px]`}>
           <div className="flex flex-col">
-            {enrollment.mostRecentRecord && (
-              <>
-                <div className="flex items-center mb-3">
-                <Dot
-                  onClick={() => onSetAchievementRecordRatingClick(AchievementRecordRating_enum.UNRATED)}
-                  className="cursor-pointer"
-                  color="grey"
-                  size={enrollment.mostRecentRecord.rating === AchievementRecordRating_enum.UNRATED ? 'LARGE' : 'DEFAULT'}
-                />
-                <Dot
-                  onClick={() => onSetAchievementRecordRatingClick(AchievementRecordRating_enum.PASSED)}
-                  className="cursor-pointer"
-                  color="lightgreen"
-                  size={enrollment.mostRecentRecord.rating === AchievementRecordRating_enum.PASSED ? 'LARGE' : 'DEFAULT'}
-                />
-                <Dot
-                  onClick={() => onSetAchievementRecordRatingClick(AchievementRecordRating_enum.FAILED)}
-                  className="cursor-pointer"
-                  color="red"
-                  size={enrollment.mostRecentRecord.rating === AchievementRecordRating_enum.FAILED ? 'LARGE' : 'DEFAULT'}
-                />
-                </div>
-                <div className="mb-3">
-                  {`${t('manageCourse:projectTitle')}: `}
-                  {enrollment.mostRecentRecord.AchievementOption.title}
-                </div>
-                <div className="mb-3">
-                  {`${t('manageCourse:lastRecordUpload')}: ${formattedDateWithTime(
-                    new Date(enrollment.mostRecentRecord.created_at),
-                    lang
-                  )}`}
-                </div>
-                <Button
-                  as={'a'}
-                  href={
-                    achievementRecordDocumentationResult.loading
-                      ? '#'
-                      : achievementRecordDocumentationResult?.data?.getSignedUrl?.link
-                  }
-                >
-                  {achievementRecordDocumentationResult.loading ? <CircularProgress /> : 'Download Documentation'}
-                </Button>
-              </>
-            )}
+            {enrollment.mostRecentRecord &&
+              enrollment.mostRecentRecord.documentationUrl &&
+              enrollment.mostRecentRecord.documentationUrl !== 'pending_upload' && (
+                <>
+                  <div className="flex items-center mb-3">
+                    <Dot
+                      onClick={() => onSetAchievementRecordRatingClick(AchievementRecordRating_enum.UNRATED)}
+                      className="cursor-pointer"
+                      color="grey"
+                      size={
+                        enrollment.mostRecentRecord.rating === AchievementRecordRating_enum.UNRATED
+                          ? 'LARGE'
+                          : 'DEFAULT'
+                      }
+                    />
+                    <Dot
+                      onClick={() => onSetAchievementRecordRatingClick(AchievementRecordRating_enum.PASSED)}
+                      className="cursor-pointer"
+                      color="lightgreen"
+                      size={
+                        enrollment.mostRecentRecord.rating === AchievementRecordRating_enum.PASSED ? 'LARGE' : 'DEFAULT'
+                      }
+                    />
+                    <Dot
+                      onClick={() => onSetAchievementRecordRatingClick(AchievementRecordRating_enum.FAILED)}
+                      className="cursor-pointer"
+                      color="red"
+                      size={
+                        enrollment.mostRecentRecord.rating === AchievementRecordRating_enum.FAILED ? 'LARGE' : 'DEFAULT'
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    {`${t('manageCourse:projectTitle')}: `}
+                    {enrollment.mostRecentRecord.AchievementOption.title}
+                  </div>
+                  <div className="mb-3">
+                    {`${t('manageCourse:lastRecordUpload')}: ${formattedDateWithTime(
+                      new Date(enrollment.mostRecentRecord.created_at),
+                      lang
+                    )}`}
+                  </div>
+                  <Button
+                    as={'a'}
+                    href={
+                      achievementRecordDocumentationResult.loading
+                        ? '#'
+                        : achievementRecordDocumentationResult?.data?.getSignedUrl?.link
+                    }
+                  >
+                    {achievementRecordDocumentationResult.loading ? <CircularProgress /> : 'Download Documentation'}
+                  </Button>
+                </>
+              )}
           </div>
         </td>
       </tr>
