@@ -4,7 +4,11 @@ import { MdAddCircleOutline } from 'react-icons/md';
 import { UploadFile } from '../../../../../helpers/filehandling';
 import { makeFullName } from '../../../../../helpers/util';
 import { useAuthedMutation } from '../../../../../hooks/authedMutation';
-import { INSERT_AN_ACHIEVEMENT_RECORD, UPDATE_AN_ACHIEVEMENT_RECORD } from '../../../../../queries/achievementRecord';
+import {
+  INSERT_AN_ACHIEVEMENT_RECORD,
+  UPDATE_AN_ACHIEVEMENT_RECORD,
+  DELETE_ACHIEVEMENT_RECORD,
+} from '../../../../../queries/achievementRecord';
 import { SAVE_ACHIEVEMENT_RECORD_DOCUMENTATION } from '../../../../../queries/actions';
 import {
   InsertAnAchievementRecord,
@@ -38,6 +42,10 @@ import { QueryResult } from '@apollo/client';
 import FileDownload from '../../../../inputs/FileDownload';
 import UploadUI from './UploadUI';
 import AchievementOptionDropDown from './AchievementOptionDropDown';
+import {
+  DeleteAchievementRecord,
+  DeleteAchievementRecordVariables,
+} from '../../../../../queries/__generated__/DeleteAchievementRecord';
 
 interface State {
   achievementRecordTableId: number; // book keeping
@@ -65,6 +73,9 @@ interface IProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const MAX_FILE_SIZE_MB = 1;
+const BYTES_PER_MB = 1024 * 1024;
 
 const UploadAchievementRecordModal: FC<IProps> = ({
   achievementOptionsQuery,
@@ -115,6 +126,13 @@ const UploadAchievementRecordModal: FC<IProps> = ({
   const [isVisibleAchievementOptions, setAchievementOptionVisibility] = useState(false);
   const [archiveOptionsAnchorElement, setAnchorElement] = useState<HTMLElement>();
   const [achievementOptions, setAchievementOptions] = useState([] as MinAchievementOption[]);
+
+  const [deleteAchievementRecordAPI] = useAuthedMutation<DeleteAchievementRecord, DeleteAchievementRecordVariables>(
+    DELETE_ACHIEVEMENT_RECORD,
+    {
+      onError: (error) => handleError(t(error.message)),
+    }
+  );
 
   useEffect(() => {
     const options = [...(achievementOptionsQuery.data?.AchievementOptionCourse || [])];
@@ -177,9 +195,17 @@ const UploadAchievementRecordModal: FC<IProps> = ({
 
   const onFileChange = useCallback(
     (name: string, file: UploadFile) => {
+      if (file) {
+        // Check file size before allowing upload
+        const fileSizeInMB = file.size / BYTES_PER_MB;
+        if (fileSizeInMB > MAX_FILE_SIZE_MB) {
+          setAlertMessage(t('course:upload_achievement_record_modal.file_too_large', { size: MAX_FILE_SIZE_MB }));
+          return;
+        }
+      }
       dispatch({ type: name, value: file });
     },
-    [dispatch]
+    [dispatch, setAlertMessage, t]
   );
 
   const [insertAnAchievementRecordAPI] = useAuthedMutation<
@@ -189,6 +215,7 @@ const UploadAchievementRecordModal: FC<IProps> = ({
 
   const save = useCallback(
     async (event) => {
+      let createdRecordId: number | null = null;
       try {
         setLoading(true);
         event.preventDefault();
@@ -222,40 +249,54 @@ const UploadAchievementRecordModal: FC<IProps> = ({
               AchievementRecordAuthors: {
                 data: state.authors.map((a) => ({ userId: a.id })),
               },
+              documentationUrl: 'pending_upload',
             },
           },
         });
+
         if (result.errors || !result.data?.insert_AchievementRecord_one?.id) {
           setAlertMessage(t('operation-failed'));
           return;
         }
 
-        const achievementRecordId = result.data.insert_AchievementRecord_one.id;
-        if (achievementRecordId <= 0) return;
+        createdRecordId = result.data.insert_AchievementRecord_one.id;
 
-        if (!state.documentationUrl) return;
+        // Try to upload the file
         const uploadResult = await saveAchievementRecordDocumentation({
           variables: {
             base64File: state.documentationUrl.data,
             fileName: state.documentationUrl.name,
-            achievementRecordId,
+            achievementRecordId: createdRecordId,
           },
         });
 
         if (!uploadResult.data?.saveAchievementRecordDocumentation?.success) {
-          setAlertMessage(t(uploadResult.data?.saveAchievementRecordDocumentation?.messageKey || 'operation-failed'));
-          return;
+          throw new Error(uploadResult.data?.saveAchievementRecordDocumentation?.messageKey || 'upload-failed');
         }
 
+        // Update with real URL
         await updateAnAchievementRecordAPI({
           variables: {
-            id: achievementRecordId,
+            id: createdRecordId,
             setInput: {
               documentationUrl: uploadResult.data.saveAchievementRecordDocumentation.filePath,
             },
           },
         });
+
         onSuccess();
+      } catch (error) {
+        // Clean up the record if it was created but upload failed
+        if (createdRecordId) {
+          try {
+            await deleteAchievementRecordAPI({
+              variables: { id: createdRecordId },
+            });
+          } catch (deleteError) {
+            console.error('Failed to delete incomplete record:', deleteError);
+          }
+        }
+        setAlertMessage(t('operation-failed'));
       } finally {
         setLoading(false);
       }
@@ -274,6 +315,7 @@ const UploadAchievementRecordModal: FC<IProps> = ({
       setAlertMessage,
       t,
       onSuccess,
+      deleteAchievementRecordAPI,
     ]
   );
 
@@ -340,7 +382,7 @@ const UploadAchievementRecordModal: FC<IProps> = ({
               </div>
             </div>
 
-            <div className="text-xs italic text-right">{t('course:maxFileSize')}</div>
+            <div className="text-xs italic text-right">{t('course:max_file_size', { size: MAX_FILE_SIZE_MB })}</div>
             <div className="flex justify-center items-center">
               <Button>{isLoading ? <CircularProgress /> : t('upload')}</Button>
             </div>
