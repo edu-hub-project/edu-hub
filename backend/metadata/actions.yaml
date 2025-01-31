@@ -118,7 +118,7 @@ actions:
         - name: bucket
           value_from_env: HASURA_BUCKET
         - name: name
-          value: saveFile
+          value: saveImage
         - name: file-path
           value: achievement-records/record-${achievementRecordId}/public/cover-image/${filename}
         - name: is-public
@@ -241,4 +241,7 @@ custom_types:
     - name: LoadParticipationDataResult
     - name: UpdateAdminStatusResult
     - name: GetAdminUsersResult
+    - name: saveFileResult
+    - name: saveImageResult
+    - name: resizedImagePath
   scalars: []

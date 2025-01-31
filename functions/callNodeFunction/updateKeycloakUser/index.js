@@ -44,26 +44,40 @@ const updateKeycloakUser = async (userId, updatedFields, token) => {
   }
 };
 
-const updateKeycloakUserHandler = async (req, logger) => {
-  let status = 200;
-  const result = {
-    updatedUserId: null,
-    messageKey: "",
-    error: null,
-  };
+/**
+ * Updates user information in Keycloak when user data changes in the database.
+ *
+ * @param {Object} req Request object containing:
+ *   - body.event.data.old (Object): Previous user data
+ *   - body.event.data.new (Object): Updated user data containing:
+ *     - id (string): User ID
+ *     - firstName (string, optional): User's first name
+ *     - lastName (string, optional): User's last name
+ *     - email (string, optional): User's email
+ * @returns {Object} Response containing:
+ *   - success (boolean): Whether the operation was successful
+ *   - messageKey (string): Translation key for messages
+ *   - error (string, optional): Error message if operation failed
+ *   - userId (string, optional): ID of the updated user
+ */
+const updateKeycloakUserHandler = async (req) => {
+  logger.info("########## Update Keycloak User ##########");
+  logger.debug("Request parameters", { 
+    eventData: req.body.event?.data 
+  });
 
   try {
     if (!req.body.event || !req.body.event.data) {
       logger.error("Missing required event data");
-      status = 400;
-      result.error = "ERROR_MISSING_EVENT_DATA";
-      result.messageKey = "UPDATE_FAILED_MISSING_EVENT_DATA";
-      return { status, result };
+      return {
+        success: false,
+        messageKey: "INVALID_INPUT",
+        error: "Missing required event data"
+      };
     }
 
     const { old: oldData, new: newData } = req.body.event.data;
     const userId = newData.id;
-    result.updatedUserId = userId;
 
     const updatedFields = {};
     if (oldData.firstName !== newData.firstName) updatedFields.firstName = newData.firstName;
@@ -72,26 +86,34 @@ const updateKeycloakUserHandler = async (req, logger) => {
 
     if (Object.keys(updatedFields).length === 0) {
       logger.debug(`No relevant fields updated for userId: ${userId}`);
-      result.messageKey = "UPDATE_SKIPPED_NO_RELEVANT_CHANGES";
-      return { status, result };
+      return {
+        success: true,
+        messageKey: "UPDATE_SKIPPED",
+        userId
+      };
     }
 
     const keycloakToken = await getKeycloakToken();
     await updateKeycloakUser(userId, updatedFields, keycloakToken);
 
     logger.debug(`Keycloak update process completed for userId: ${userId}`);
-    result.messageKey = "UPDATE_SUCCESS";
-
-    return { status, result };
+    return {
+      success: true,
+      messageKey: "UPDATE_SUCCESS",
+      userId
+    };
 
   } catch (error) {
-    logger.error("Error updating user in Keycloak", { error: error.message, stack: error.stack });
-    status = error.status || 500;
-    result.error = "ERROR_UPDATING_KEYCLOAK_USER";
-    result.messageKey = "UPDATE_FAILED_GENERAL_ERROR";
-    result.details = error.message;
-    
-    return { status, result };
+    logger.error("Error updating user in Keycloak", { 
+      error: error.message, 
+      stack: error.stack 
+    });
+    return {
+      success: false,
+      messageKey: "UPDATE_FAILED",
+      error: "Failed to update user in Keycloak",
+      details: error.message
+    };
   }
 };
 

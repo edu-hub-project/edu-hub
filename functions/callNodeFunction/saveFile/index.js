@@ -7,49 +7,83 @@ const BYTES_PER_MB = 1024 * 1024;
 const DEFAULT_MAX_FILE_SIZE_MB = 20;
 
 /**
- * Responds to any HTTP request to save a file.
- * Validates the request, calculates the file size, and saves the file to Google Cloud Storage.
+ * Saves a base64 encoded file to cloud storage.
  *
- * @param {!express:Request} req HTTP request context. Expects base64 encoded file content,
- * a file path template in headers, and other optional parameters like file size limit.
- * @param {!express:Response} res HTTP response context. Returns the file path and Google Cloud link of the saved file.
+ * @param {Object} req Request object containing:
+ *   - input.base64file (string): Base64 encoded file content
+ *   - headers.file-path (string): Template path for file storage
+ *   - headers.bucket (string): Storage bucket name
+ *   - headers.is-public (boolean, optional): Whether file should be public
+ *   - headers.max-file-size-mb (number, optional): Maximum file size in MB
+ * @returns {Object} Response containing:
+ *   - success (boolean): Whether the operation was successful
+ *   - messageKey (string): Translation key for messages
+ *   - error (string, optional): Error message if operation failed
+ *   - filePath (string): Path to the file in the storage bucket
+ *   - accessUrl (string): URL to access the file (signed URL if private, public URL if public)
  */
-const saveFile = async (req, res) => {
-  try{
+const saveFile = async (req) => {
+  logger.info("########## Save File ##########");
+  logger.debug("Request parameters", {
+    templatePath: req.headers['file-path'],
+    bucket: req.headers.bucket,
+    isPublic: req.headers['is-public'],
+    maxFileSize: req.headers['max-file-size-mb']
+  });
+
+  try {
     // Validate required fields
     if (!req.body.input.base64file || !req.headers['file-path'] || !req.headers.bucket) {
-      return res.status(400).json({ message: "Missing required fields" });
+      logger.error("Missing required fields");
+      return {
+        success: false,
+        messageKey: "INVALID_INPUT",
+        error: "Missing required fields: base64file, file-path, or bucket"
+      };
     }
-    
+
     const storage = buildCloudStorage(Storage);
     const content = req.body.input.base64file;
     const templatePath = req.headers['file-path'];
     const isPublic = req.headers['is-public'] ?? false;
     const maxFileSizeInMB = req.headers['max-file-size-mb'] ?? DEFAULT_MAX_FILE_SIZE_MB;
-    logger.debug(`Received saveFile request with isPublic: ${isPublic}, maxFileSize: ${maxFileSizeInMB}`);
 
+    // Validate file size
     const fileSizeInBytes = Buffer.byteLength(content, 'base64');
     const fileSizeInMB = fileSizeInBytes / BYTES_PER_MB;
-    logger.debug(`File size in MB: ${fileSizeInMB}`);
-
     if (fileSizeInMB > maxFileSizeInMB) {
-      logger.error("File size exceeds maximum size", { fileSize: fileSizeInMB, maxFileSize: maxFileSizeInMB});
-      return res.status(400).json({
-        message: `File size exceeds maximum size of ${maxFileSizeInMB} MB`,
+      logger.error("File size exceeds maximum size", { 
+        fileSize: fileSizeInMB, 
+        maxFileSize: maxFileSizeInMB 
       });
+      return {
+        success: false,
+        messageKey: "FILE_TOO_LARGE",
+        error: `File size exceeds maximum size of ${maxFileSizeInMB} MB`
+      };
     }
-    
+
     const filePath = replacePlaceholders(templatePath, req.body.input);
-    logger.debug(`File path after replacing placeholders: ${filePath}`);
-
-    const link = await storage.saveToBucket(filePath, req.headers.bucket, content, isPublic);
-    logger.debug(`File saved successfully: ${filePath}, public: ${isPublic}`);
-
-    return res.json({ file_path: filePath, google_link: link });
+    const accessUrl = await storage.saveToBucket(filePath, req.headers.bucket, content, isPublic);
+    
+    logger.info("File saved successfully", { filePath, isPublic });
+    return {
+      success: true,
+      messageKey: "FILE_SAVE_SUCCESS",
+      filePath,
+      accessUrl
+    };
 
   } catch (error) {
-    logger.error("Error saving file", { error: error.message, stack: error.stack });
-    return res.status(500).json({ message: "Internal Server Error" });
+    logger.error("Error saving file", { 
+      error: error.message, 
+      stack: error.stack 
+    });
+    return {
+      success: false,
+      messageKey: "FILE_SAVE_ERROR",
+      error: "An error occurred while saving the file"
+    };
   }
 };
 

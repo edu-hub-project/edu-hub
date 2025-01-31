@@ -15,7 +15,10 @@ This guide covers the development of serverless functions in our system, ensurin
 ## Basic Python Function Template
 
 ```python
-def template_function(arguments):
+from typing import Dict, Any
+import logging
+
+def template_function(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """
     Description of what the function does.
     
@@ -61,18 +64,24 @@ def template_function(arguments):
 ## Implementation Steps
 
 1. **Create Function File**
-   - Place in `functions/callPythonFunction/pythonFunctions/`
-   - Use snake_case for filename: `your_function_name.py`
+   - Path: `functions/callPythonFunction/pythonFunctions/your_function_name.py`
+   - Naming: Use snake_case (e.g., `create_certificates.py`)
+   - Required imports:
+     ```python
+     from typing import Dict, Any
+     import logging
+     ```
 
 2. **Register Function**
-   ```python:functions/callPythonFunction/main.py
-   from pythonFunctions.your_function_name import your_function_name
-
-   PYTHON_FUNCTIONS: Dict[str, Callable] = {
-       # ... existing functions ...
-       "your_function_name": your_function_name,
-   }
-   ```
+   - File: `functions/callPythonFunction/main.py`
+   - Import and register pattern:
+     ```python
+     from pythonFunctions.your_function_name import your_function_name
+     
+     PYTHON_FUNCTIONS: Dict[str, Callable] = {
+         "your_function_name": your_function_name,
+     }
+     ```
 
 3. **Define a Trigger or Action in Hasura**
   An action you can define as follows in the Hasura console:
@@ -102,18 +111,20 @@ def template_function(arguments):
    It is set to `Asynchronous` by default, which will cause errors when trying to access the response fields.
 
 4. **Create Frontend Query**
-   ```typescript:frontend-nx/apps/edu-hub/queries/actions.ts
-   export const YOUR_FUNCTION = gql`
-     mutation yourFunctionName($param1: Type!, $param2: Type) {
-       yourFunctionName(param1: $param1, param2: $param2) {
-         success
-         messageKey
-         error
-         # Additional fields
+   - File: `frontend-nx/apps/edu-hub/queries/actions.ts`
+   - Add GraphQL mutation:
+     ```typescript
+     export const YOUR_FUNCTION = gql`
+       mutation yourFunctionName($param1: Type!, $param2: Type) {
+         yourFunctionName(param1: $param1, param2: $param2) {
+           success
+           messageKey
+           error
+           # Additional fields
+         }
        }
-     }
-   `;
-   ```
+     `;
+     ```
 
 5. **Add Translation Keys**
    If you use messageKeys in your function, you need to add them in the specific language file of the component calling the function.
@@ -208,3 +219,23 @@ Do not use a nested data object to return the result of the function but rather 
    - Explain complex business logic
    - Document assumptions
    - Note any side effects
+
+## Common Pitfalls
+1. **Function Registration**
+   - Ensure function name in `main.py` matches the `Function-Name` header
+   - Function name must be snake_case in Python, camelCase in GraphQL
+
+2. **Error Handling**
+   - Always return the standard response format
+   - Log errors before returning
+   - Use appropriate message keys
+
+3. **Type Safety**
+   - Use type hints in Python functions
+   - Validate input parameters
+   - Match GraphQL types with Python types
+
+4. **Testing**
+   - Test with various input combinations
+   - Verify error handling
+   - Check translation keys exist

@@ -56,7 +56,7 @@ import {
   UPDATE_COURSE_ECTS,
   UPDATE_COURSE_EXTERNAL_REGISTRATION_LINK,
   UPDATE_COURSE_TITLE,
-  UPDATE_COURSE_MAX_MISSED_SESSION
+  UPDATE_COURSE_MAX_MISSED_SESSION,
 } from '../../../queries/course';
 import useErrorHandler from '../../../hooks/useErrorHandler';
 import { ErrorMessageDialog } from '../../common/dialogs/ErrorMessageDialog';
@@ -289,28 +289,24 @@ const SingleCourseRow: FC<IPropsCourseOneRow> = ({
             courseId: course.id,
           },
         });
-        const coverImage = result.data?.saveCourseImage?.google_link;
-        if (coverImage != null) {
+
+        const uploadResult = result.data?.saveCourseImage;
+        if (uploadResult?.success) {
           await updateCourseQuery({
             variables: {
               id: course.id,
               changes: {
-                coverImage: result.data?.saveCourseImage?.file_path,
+                coverImage: uploadResult.filePath,
               },
             },
           });
           refetchCourses();
+        } else {
+          handleError(t(uploadResult?.messageKey || 'operation-failed'));
         }
       }
     },
-    [
-      course,
-      // qResult,
-      saveCourseImage,
-      // course.id,
-      updateCourseQuery,
-      refetchCourses,
-    ]
+    [course.id, saveCourseImage, updateCourseQuery, refetchCourses, handleError, t]
   );
 
   const [applicationEndDate, setApplicationEndDate] = useState(
