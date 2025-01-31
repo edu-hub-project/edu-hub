@@ -41,6 +41,14 @@ export const DELETE_AN_ACHIEVEMENT_RECORD_AUTHOR = gql`
   }
 `;
 
+export const DELETE_ACHIEVEMENT_RECORD = gql`
+  mutation DeleteAchievementRecord($id: Int!) {
+    delete_AchievementRecord_by_pk(id: $id) {
+      id
+    }
+  }
+`;
+
 export const ACHIEVEMENT_RECORDS_WITH_AUTHORS = gql`
   ${ACHIEVEMENT_RECORD_FRAGMENT}
   ${ACHIEVEMENT_RECORD_AUTHOR_FRAGMENT}
