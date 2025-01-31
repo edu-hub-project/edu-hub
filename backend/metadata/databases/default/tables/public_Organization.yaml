@@ -44,3 +44,4 @@ select_permissions:
         - type
         - updated_at
       filter: {}
+      allow_aggregations: true
