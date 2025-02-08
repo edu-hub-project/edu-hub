@@ -74,7 +74,7 @@ interface IProps {
   onClose: () => void;
 }
 
-const MAX_FILE_SIZE_MB = 1;
+const MAX_FILE_SIZE_MB = 10;
 const BYTES_PER_MB = 1024 * 1024;
 
 const UploadAchievementRecordModal: FC<IProps> = ({
