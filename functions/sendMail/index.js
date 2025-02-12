@@ -57,7 +57,8 @@ exports.sendMail = async (req, res) => {
         const productionMailgun = new Mailgun(formData);
         await productionMailgun.client({
           username: 'api',
-          key: process.env.MAILGUN_API_KEY
+          key: process.env.MAILGUN_API_KEY,
+          url: 'https://api.eu.mailgun.net'
         }).messages.create(process.env.MAILGUN_DOMAIN, msg);
         break;
 
