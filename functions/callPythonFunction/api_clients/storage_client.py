@@ -84,14 +84,16 @@ class StorageClient:
             local_path = os.path.join(base_dir, "opencampus_attendencecert_template_WS2022.png")
             with open(local_path, 'rb') as f:
                 file_data = f.read()
-            image_data = BytesIO(file_data)
-            mime_type = "image/png"
-            base64_encoded_data = base64.b64encode(image_data.getvalue()).decode()
-            return f"data:{mime_type};base64,{base64_encoded_data}"
+            return BytesIO(file_data)
         else:
             blob = self.storage_client.bucket(self.bucket_name).blob(file_path)
             blob_data = blob.download_as_bytes()
             return BytesIO(blob_data)
+    def download_image_from_gcs(self, image_url):
+        image_data = self.download_file(image_url)
+        mime_type = "image/png"
+        base64_encoded_data = base64.b64encode(image_data.getvalue()).decode()
+        return f"data:{mime_type};base64,{base64_encoded_data}"
 
     def upload_file(self, path, blob_name, buffer, content_type):
         if self.env == "development":
