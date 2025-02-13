@@ -96,7 +96,7 @@ class CertificateCreator:
         """
         try:
             # Vorbereitung des Textinhalts
-            image = self.storage_client.download_file(template_image_url)
+            image = self.storage_client.download_image_from_gcs(template_image_url)
             text_content = self.prepare_text_content(enrollment, image)
 
             # Erstellen der Jinja2-Umgebung und Rendern von HTML
