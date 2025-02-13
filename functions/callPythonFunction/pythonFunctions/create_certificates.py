@@ -43,63 +43,94 @@ class CertificateCreator:
         1. Fetches the template image and text based on the certificate type and enrollments.
         2. Iterates through each enrollment and generates a certificate.
         3. Updates the course enrollment records with the generated certificate URLs.
+        
+        Returns:
+            dict: Response containing success status, count of generated certificates, and error message if any
         """
-    
-        template_image_url = self.fetch_template_image()
-        template_text = self.fetch_template_text()
-        successful_count = 0
-    
-        for i, enrollment in enumerate(self.enrollments, 1):
-            try:
-                pdf_url = self.generate_and_save_certificate_to_gcs(template_image_url, template_text, enrollment)
-                self.eduhub_client.update_course_enrollment_record(enrollment["User"]["id"], enrollment["Course"]["id"], pdf_url, self.certificate_type)
-                successful_count += 1
-            except Exception as e:
-                logging.error(f"Error in processing enrollment {i}: {e}")
-    
-        logging.info(f"{successful_count}/{len(self.enrollments)} {self.certificate_type} certificate(s) successfully   generated.")
-        return successful_count
+        try:
+            template_image_url = self.fetch_template_image()
+            template_text = self.fetch_template_text()
+            successful_count = 0
+        
+            for i, enrollment in enumerate(self.enrollments, 1):
+                try:
+                    pdf_url = self.generate_and_save_certificate_to_gcs(template_image_url, template_text, enrollment)
+                    self.eduhub_client.update_course_enrollment_record(enrollment["User"]["id"], enrollment["Course"]["id"], pdf_url, self.certificate_type)
+                    successful_count += 1
+                except Exception as e:
+                    logging.error(f"Error in processing enrollment {i}: {e}")
+        
+            logging.info(f"{successful_count}/{len(self.enrollments)} {self.certificate_type} certificate(s) successfully generated.")
+            
+            return {
+                "success": True,
+                "count": successful_count,
+                "message": f"Successfully generated {successful_count} certificates",
+                "certificateType": self.certificate_type
+            }
+            
+        except Exception as e:
+            logging.error(f"Error in certificate creation process: {str(e)}")
+            return {
+                "success": False,
+                "error": str(e),
+                "count": 0,
+                "certificateType": self.certificate_type
+            }
 
     def generate_and_save_certificate_to_gcs(self, template_image_url, template_text, enrollment):
         """
-       Generates a certificate and saves it to Google Cloud Storage (GCS).
+        Generates a certificate and saves it to Google Cloud Storage (GCS).
 
         Args:
             template_image_url (str): The URL of the template image.
             template_text (str): The HTML template text for the certificate.
             enrollment (dict): The enrollment data for the user.
 
-        This method performs the following steps:
-        1. Downloads the template image from GCS.
-        2. Prepares the text content for the certificate using enrollment data.
-        3. Renders the HTML template with the prepared text content.
-        4. Converts the rendered HTML to a PDF.
-        5. Uploads the generated PDF to GCS and returns the URL.
+        Returns:
+            str: The file name of the generated PDF certificate
+        
+        Raises:
+            RuntimeError: If PDF creation fails
+            Exception: For other errors during the process
         """
-        # Vorbereitung des Textinhalts
-        image = self.storage_client.download_file(template_image_url)
-        text_content = self.prepare_text_content(enrollment, image)
+        try:
+            # Vorbereitung des Textinhalts
+            image = self.storage_client.download_file(template_image_url)
+            text_content = self.prepare_text_content(enrollment, image)
 
-        # Erstellen der Jinja2-Umgebung und Rendern von HTML
-        env = Environment(loader=DictLoader({'template': template_text}))
-        template = env.get_template('template')
-        rendered_html = template.render(text_content)
+            # Erstellen der Jinja2-Umgebung und Rendern von HTML
+            env = Environment(loader=DictLoader({'template': template_text}))
+            template = env.get_template('template')
+            rendered_html = template.render(text_content)
 
-        # Konvertierung von HTML zu PDF mit XHTML2PDF
-        pdf_bytes_io = BytesIO()
-        pisa_status = pisa.CreatePDF(rendered_html, dest=pdf_bytes_io)
+            # Konvertierung von HTML zu PDF mit XHTML2PDF
+            pdf_bytes_io = BytesIO()
+            pisa_status = pisa.CreatePDF(rendered_html, dest=pdf_bytes_io)
 
-        if not pisa_status.err:
-            pdf_bytes_io.seek(0)
-            pdf_file_name = self.generate_pdf_file_name(enrollment)
-            url = self.storage_client.upload_file(
-                path="", blob_name=pdf_file_name, buffer=pdf_bytes_io, content_type='application/pdf')
-            logging.info(f'PDF available at: {url}')
-            return url
-        else:
-            logging.error("Failed to create PDF with XHTML2PDF.")
-            raise RuntimeError("PDF creation failed")
-
+            if not pisa_status.err:
+                pdf_bytes_io.seek(0)
+                pdf_file_name = self.generate_pdf_file_name(enrollment)
+                url = self.storage_client.upload_file(
+                    path="", 
+                    blob_name=pdf_file_name, 
+                    buffer=pdf_bytes_io, 
+                    content_type='application/pdf'
+                )
+                logging.info(f'PDF available at: {url}')
+                return pdf_file_name
+            else:
+                error_msg = "Failed to create PDF with XHTML2PDF"
+                logging.error(error_msg)
+                raise RuntimeError(error_msg)
+            
+        except RuntimeError as e:
+            logging.error(f"PDF creation failed: {str(e)}")
+            raise
+        except Exception as e:
+            error_msg = f"Error in certificate generation process: {str(e)}"
+            logging.error(error_msg)
+            raise RuntimeError(error_msg)
 
     def fetch_template_image(self):
         """
@@ -108,16 +139,38 @@ class CertificateCreator:
         Returns:
             str: The URL of the template image.
 
-        This method selects the appropriate template image URL based on whether the certificate type is 'achievement' or 'attendance'.
+        Raises:
+            ValueError: If certificate type is invalid
+            KeyError: If template URL is missing in the enrollment data
+            Exception: For other unexpected errors
         """
-        if self.certificate_type == "achievement":
-            return self.enrollments[0]['Course']['Program']['achievementCertificateTemplateURL']
-        elif self.certificate_type == "attendance":
-            return self.enrollments[0]['Course']['Program']['attendanceCertificateTemplateURL']
-        else:
-            raise ValueError("Invalid Certificate type")
+        try:
+            if not self.enrollments:
+                raise ValueError("No enrollments found")
+            
+            program = self.enrollments[0]['Course']['Program']
+            
+            if self.certificate_type == "achievement":
+                if not program.get('achievementCertificateTemplateURL'):
+                    raise KeyError("Achievement certificate template URL not found")
+                return program['achievementCertificateTemplateURL']
+            
+            elif self.certificate_type == "attendance":
+                if not program.get('attendanceCertificateTemplateURL'):
+                    raise KeyError("Attendance certificate template URL not found")
+                return program['attendanceCertificateTemplateURL']
+            
+            else:
+                raise ValueError(f"Invalid certificate type: {self.certificate_type}")
+            
+        except (KeyError, ValueError) as e:
+            logging.error(f"Error fetching template image: {str(e)}")
+            raise
+        except Exception as e:
+            error_msg = f"Unexpected error fetching template image: {str(e)}"
+            logging.error(error_msg)
+            raise RuntimeError(error_msg)
 
-        
     def fetch_template_text(self):
         """
         Fetches the HTML template text for the certificate.
@@ -125,35 +178,36 @@ class CertificateCreator:
         Returns:
             str: The HTML template text.
 
-        This method performs a GraphQL query to fetch the template text based on the program ID and certificate type.
-        It searches for a matching template that corresponds to the record type and certificate type.
+        Raises:
+            ValueError: If no matching template is found
+            RequestException: If GraphQL request fails
+            Exception: For other unexpected errors
         """
-        record_type = self.enrollments[0]['User']['AchievementRecordAuthors'][0]['AchievementRecord']['AchievementOption']['recordType']
-        program_id = self.enrollments[0]['Course']['Program']['id']
-        logging.info(f"##########################retrieved recordtype {record_type}")
-
-        query = """
-        query getTemplateHtml($programId: Int!) {
-    CertificateTemplateProgram(where: {programId: {_eq: $programId}}) {
-        CertificateTemplateText {
-            html
-            recordType
-            certificateType 
-        }
-    }
-}
-
-        """
-        variables = {
-            "programId": program_id
-        }
-
-        headers = {
-            "Content-Type": "application/json",
-            "x-hasura-admin-secret": self.eduhub_client.hasura_admin_secret
-        }
-
         try:
+            if not self.enrollments:
+                raise ValueError("No enrollments found")
+            
+            record_type = self.enrollments[0]['User']['AchievementRecordAuthors'][0]['AchievementRecord']['AchievementOption']['recordType']
+            program_id = self.enrollments[0]['Course']['Program']['id']
+            logging.info(f"Fetching template for record type: {record_type}")
+
+            query = """
+            query getTemplateHtml($programId: Int!) {
+                CertificateTemplateProgram(where: {programId: {_eq: $programId}}) {
+                    CertificateTemplateText {
+                        html
+                        recordType
+                        certificateType 
+                    }
+                }
+            }
+            """
+            variables = {"programId": program_id}
+            headers = {
+                "Content-Type": "application/json",
+                "x-hasura-admin-secret": self.eduhub_client.hasura_admin_secret
+            }
+
             response = requests.post(
                 self.eduhub_client.url,
                 json={'query': query, 'variables': variables},
@@ -163,64 +217,85 @@ class CertificateCreator:
             data = response.json()
 
             if 'errors' in data:
-                logging.error(f"GraphQL Error: {data['errors']}")
-                return None
+                raise requests.exceptions.RequestException(f"GraphQL Error: {data['errors']}")
 
-            # Run through the templates and find the right template.
-            #logging.info(f"recieved data:{data['data']}")
             templates = data['data']['CertificateTemplateProgram']
-            #logging.info(f"Found templates: {templates}")
             certificate_type_in_caps = self.certificate_type.upper()
-            #logging.info(f"#######################Retrieved certificatetype: {certificate_type_in_caps}")
+
             for program in templates:
                 template = program['CertificateTemplateText']
                 if template['recordType'] == record_type and template['certificateType'] == certificate_type_in_caps:
                     return template['html']
 
-            logging.error("No matching template found for the specified recordType and certificateType.")
-            return None
+            raise ValueError(f"No matching template found for recordType: {record_type} and certificateType: {certificate_type_in_caps}")
 
         except requests.exceptions.RequestException as e:
-            logging.error(f"An error occurred during the GraphQL request: {str(e)}")
-            return None
+            logging.error(f"GraphQL request failed: {str(e)}")
+            raise
+        except ValueError as e:
+            logging.error(f"Template not found: {str(e)}")
+            raise
+        except Exception as e:
+            error_msg = f"Unexpected error fetching template text: {str(e)}"
+            logging.error(error_msg)
+            raise RuntimeError(error_msg)
 
     def prepare_text_content(self, enrollment, image):
         """
-        Searches the respective values from the enrollment information for the variables to be filled in the HTML template. 
+        Prepares the text content for the certificate template.
 
         Args:
-            enrollment (dict): The enrollment data for the user.
-            image (str): The template image.
+            enrollment (dict): The enrollment data for the user
+            image (str): The template image
 
         Returns:
-            dict: The text content to be rendered in the certificate.
+            dict: The prepared text content for the certificate
 
-        This method prepares the content based on the certificate type. It includes user details,
-        course details, and other relevant information that will be rendered in the certificate template.
+        Raises:
+            ValueError: If certificate type is invalid or required data is missing
+            KeyError: If required enrollment data is missing
+            Exception: For other unexpected errors
         """
-        if self.certificate_type == "attendance":
-            session_titles = self.get_attended_sessions(enrollment, enrollment["Course"]["Sessions"])
-            return {
-                "full_name": f"{enrollment['User']['firstName']} {enrollment['User']['lastName']}",
-                "course_name": enrollment["Course"]["title"],
-                "semester": enrollment["Course"]["Program"]["title"],
-                "event_entries": session_titles,
-                "template": image,
-                "ECTS": enrollment["Course"]["ects"]
-            }
-        elif self.certificate_type == "achievement":
-            learning_goals = [goal.strip() for goal in enrollment["Course"]["learningGoals"].split(". ") if goal.strip()]
-            return {
-                "full_name": f"{enrollment['User']['firstName']} {enrollment['User']['lastName']}",
-                "course_name": enrollment["Course"]["title"],
-                "semester": enrollment["Course"]["Program"]["title"],
-                "template": image,
-                "ECTS": str(int(enrollment["Course"]["ects"]) * 30),
-                "learningGoalsList": learning_goals,
-                "praxisprojekt": enrollment["User"]["AchievementRecordAuthors"][0]["AchievementRecord"]["AchievementOption"]["title"]
-            }
-        else:
-            raise ValueError("Invalid certificate type")
+        try:
+            if self.certificate_type == "attendance":
+                if not enrollment.get('User') or not enrollment.get('Course'):
+                    raise KeyError("Missing required enrollment data")
+                
+                session_titles = self.get_attended_sessions(enrollment, enrollment["Course"]["Sessions"])
+                return {
+                    "full_name": f"{enrollment['User']['firstName']} {enrollment['User']['lastName']}",
+                    "course_name": enrollment["Course"]["title"],
+                    "semester": enrollment["Course"]["Program"]["title"],
+                    "event_entries": session_titles,
+                    "template": image,
+                    "ECTS": enrollment["Course"]["ects"]
+                }
+            
+            elif self.certificate_type == "achievement":
+                if not enrollment.get('Course') or not enrollment.get('Course', {}).get('learningGoals'):
+                    raise KeyError("Missing required course or learning goals data")
+                
+                learning_goals = [goal.strip() for goal in enrollment["Course"]["learningGoals"].split(". ") if goal.strip()]
+                return {
+                    "full_name": f"{enrollment['User']['firstName']} {enrollment['User']['lastName']}",
+                    "course_name": enrollment["Course"]["title"],
+                    "semester": enrollment["Course"]["Program"]["title"],
+                    "template": image,
+                    "ECTS": str(int(enrollment["Course"]["ects"]) * 30),
+                    "learningGoalsList": learning_goals,
+                    "praxisprojekt": enrollment["User"]["AchievementRecordAuthors"][0]["AchievementRecord"]["AchievementOption"]["title"]
+                }
+            
+            else:
+                raise ValueError(f"Invalid certificate type: {self.certificate_type}")
+            
+        except (KeyError, ValueError) as e:
+            logging.error(f"Error preparing text content: {str(e)}")
+            raise
+        except Exception as e:
+            error_msg = f"Unexpected error preparing text content: {str(e)}"
+            logging.error(error_msg)
+            raise RuntimeError(error_msg)
 
     def generate_pdf_file_name(self, enrollment):
         """
