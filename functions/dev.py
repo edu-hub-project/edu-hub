@@ -40,7 +40,7 @@ os.chdir("..")
 
 @app.route("/", methods=["POST"])
 def handle_request():
-    return jsonify(main_module.call_python_function(request))
+    return main_module.call_python_function(request)
 
 
 def main():
