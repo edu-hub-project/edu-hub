@@ -38,45 +38,31 @@ class CertificateCreator:
     def create_certificates(self):
         """
         Creates certificates for all enrollments and updates the course enrollment records.
-
-        This method performs the following steps:
-        1. Fetches the template image and text based on the certificate type and enrollments.
-        2. Iterates through each enrollment and generates a certificate.
-        3. Updates the course enrollment records with the generated certificate URLs.
         
         Returns:
-            dict: Response containing success status, count of generated certificates, and error message if any
+            int: Count of successfully generated certificates
+            
+        Raises:
+            RuntimeError: If there's an error in the certificate creation process
         """
-        try:
-            template_image_url = self.fetch_template_image()
-            template_text = self.fetch_template_text()
-            successful_count = 0
+        template_image_url = self.fetch_template_image()
+        template_text = self.fetch_template_text()
+        successful_count = 0
+
+        for i, enrollment in enumerate(self.enrollments, 1):
+            try:
+                pdf_url = self.generate_and_save_certificate_to_gcs(template_image_url, template_text, enrollment)
+                self.eduhub_client.update_course_enrollment_record(enrollment["User"]["id"], enrollment["Course"]["id"], pdf_url, self.certificate_type)
+                successful_count += 1
+            except Exception as e:
+                logging.error(f"Error in processing enrollment {i}: {e}")
         
-            for i, enrollment in enumerate(self.enrollments, 1):
-                try:
-                    pdf_url = self.generate_and_save_certificate_to_gcs(template_image_url, template_text, enrollment)
-                    self.eduhub_client.update_course_enrollment_record(enrollment["User"]["id"], enrollment["Course"]["id"], pdf_url, self.certificate_type)
-                    successful_count += 1
-                except Exception as e:
-                    logging.error(f"Error in processing enrollment {i}: {e}")
+        logging.info(f"{successful_count}/{len(self.enrollments)} {self.certificate_type} certificate(s) successfully generated.")
         
-            logging.info(f"{successful_count}/{len(self.enrollments)} {self.certificate_type} certificate(s) successfully generated.")
-            
-            return {
-                "success": True,
-                "count": successful_count,
-                "message": f"Successfully generated {successful_count} certificates",
-                "certificateType": self.certificate_type
-            }
-            
-        except Exception as e:
-            logging.error(f"Error in certificate creation process: {str(e)}")
-            return {
-                "success": False,
-                "error": str(e),
-                "count": 0,
-                "certificateType": self.certificate_type
-            }
+        if successful_count == 0:
+            raise RuntimeError("Failed to generate any certificates")
+        
+        return successful_count
 
     def generate_and_save_certificate_to_gcs(self, template_image_url, template_text, enrollment):
         """
@@ -187,13 +173,22 @@ class CertificateCreator:
             if not self.enrollments:
                 raise ValueError("No enrollments found")
             
-            record_type = self.enrollments[0]['User']['AchievementRecordAuthors'][0]['AchievementRecord']['AchievementOption']['recordType']
             program_id = self.enrollments[0]['Course']['Program']['id']
+            
+            logging.info(f"Certificate Type: {self.certificate_type}")
+            # Only get record_type for achievement certificates
+            if self.certificate_type == "achievement":
+                if not self.enrollments[0].get('User', {}).get('AchievementRecordAuthors'):
+                    raise ValueError("No achievement record found for user")
+                record_type = self.enrollments[0]['User']['AchievementRecordAuthors'][0]['AchievementRecord']['AchievementOption']['recordType']
+            else:  # attendance certificate
+                record_type = "DOCUMENTATION"  # or whatever the correct record type is for attendance
+            
             logging.info(f"Fetching template for record type: {record_type}")
 
             query = """
-            query getTemplateHtml($programId: Int!) {
-                CertificateTemplateProgram(where: {programId: {_eq: $programId}}) {
+            query getTemplateHtml($programId: Int!, $certificateType: CertificateType_enum!, $recordType: AchievementRecordType_enum!) {
+                CertificateTemplateProgram(where: {programId: {_eq: $programId}, CertificateTemplateText: {certificateType: {_eq: $certificateType}, recordType: {_eq: $recordType}}}) {
                     CertificateTemplateText {
                         html
                         recordType
@@ -202,7 +197,7 @@ class CertificateCreator:
                 }
             }
             """
-            variables = {"programId": program_id}
+            variables = {"programId": program_id, "certificateType": self.certificate_type.upper(), "recordType": record_type}
             headers = {
                 "Content-Type": "application/json",
                 "x-hasura-admin-secret": self.eduhub_client.hasura_admin_secret
@@ -219,15 +214,12 @@ class CertificateCreator:
             if 'errors' in data:
                 raise requests.exceptions.RequestException(f"GraphQL Error: {data['errors']}")
 
-            templates = data['data']['CertificateTemplateProgram']
-            certificate_type_in_caps = self.certificate_type.upper()
-
-            for program in templates:
-                template = program['CertificateTemplateText']
-                if template['recordType'] == record_type and template['certificateType'] == certificate_type_in_caps:
-                    return template['html']
-
-            raise ValueError(f"No matching template found for recordType: {record_type} and certificateType: {certificate_type_in_caps}")
+            # check if the template is empty or more than one template is found
+            if not data['data']['CertificateTemplateProgram'] or len(data['data']['CertificateTemplateProgram']) > 1:
+                raise ValueError(f"No matching template found for recordType: {record_type} and certificateType: {self.certificate_type.upper()}")
+            
+            # Get the first template from the list of templates
+            return data['data']['CertificateTemplateProgram'][0]['CertificateTemplateText']['html']
 
         except requests.exceptions.RequestException as e:
             logging.error(f"GraphQL request failed: {str(e)}")
@@ -385,13 +377,17 @@ def create_certificates(arguments):
             - messageKey (str, optional): Translation key for the error message
     """
     try:
-        certificate_creator = CertificateCreator(arguments)
-        successful_count = certificate_creator.create_certificates()
+        # if list of userIds is empty set count to 0
+        if not arguments["input"]["userIds"]:
+            count = 0
+        else:
+            certificate_creator = CertificateCreator(arguments)
+            count = certificate_creator.create_certificates()
         
-        logging.info(f"Successfully generated {successful_count} certificates")
+        logging.info(f"Successfully generated {count} certificates")
         return {
             "success": True,
-            "count": successful_count,
+            "count": count,
             "certificateType": arguments["input"]["certificateType"],
             "messageKey": "CERTIFICATES_GENERATED_SUCCESS"
         }
