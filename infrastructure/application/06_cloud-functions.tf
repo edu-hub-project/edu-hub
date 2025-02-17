@@ -30,6 +30,57 @@ resource "google_project_iam_member" "service_account_token_creator" {
 #####
 
 ###############################################################################
+# Create Google cloud function for API proxy
+#####
+# Apply IAM policy which grants any user the privilege to invoke the serverless function
+resource "google_cloud_run_service_iam_policy" "api_proxy_noauth_invoker" {
+  location    = google_cloudfunctions2_function.api_proxy.location
+  project     = google_cloudfunctions2_function.api_proxy.project
+  service     = google_cloudfunctions2_function.api_proxy.name
+  policy_data = data.google_iam_policy.noauth_invoker.policy_data
+}
+
+# Retrieve data object with zipped source code
+data "google_storage_bucket_object" "api_proxy" {
+  name   = "cloud-functions/apiProxy.zip"
+  bucket = var.project_id
+}
+
+# Create cloud function
+resource "google_cloudfunctions2_function" "api_proxy" {
+  provider    = google-beta
+  location    = var.region
+  name        = "api-proxy"
+  description = "API proxy for transforming and routing various API responses"
+
+  build_config {
+    runtime     = "python311"
+    entry_point = "handle_request" # More generic entry point name
+    environment_variables = {
+      # Causes a re-deploy of the function when the source changes
+      "SOURCE_SHA" = data.google_storage_bucket_object.api_proxy.md5hash
+    }
+    source {
+      storage_source {
+        bucket = var.project_id
+        object = data.google_storage_bucket_object.api_proxy.name
+      }
+    }
+  }
+
+  service_config {
+    environment_variables = {
+      HASURA_ENDPOINT     = "https://${local.hasura_service_name}.opencampus.sh/v1/graphql"
+      HASURA_ADMIN_SECRET = var.hasura_graphql_admin_key
+    }
+    max_instance_count = 1
+    available_memory   = "256M"
+    timeout_seconds    = 60
+    ingress_settings   = var.cloud_function_ingress_settings
+  }
+}
+
+###############################################################################
 # Create Google cloud function for callPythonFunction
 #####
 # Apply IAM policy (see 'main.tf') which grants any user the privilige to invoke the serverless function

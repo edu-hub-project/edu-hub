@@ -46,16 +46,6 @@ actions:
           value_from_env: HASURA_BUCKET
         - name: name
           value: getAdminUsers
-  - name: getMoocHubData
-    definition:
-      kind: ""
-      handler: '{{CLOUD_FUNCTION_LINK_CALL_PYTHON_FUNCTION}}'
-      headers:
-        - name: Function-Name
-          value: provide_moochub_data
-    permissions:
-      - role: anonymous
-    comment: Provides the data for the MOOCHub API
   - name: getSignedUrl
     definition:
       kind: ""
