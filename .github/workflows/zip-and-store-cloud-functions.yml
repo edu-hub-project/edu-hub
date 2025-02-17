@@ -31,6 +31,16 @@ jobs:
       - name: Check Out the Repository Branch
         uses: actions/checkout@v4
 
+      - name: Replace symlinks with actual files
+        run: |
+          # Remove symlinks and copy actual files for apiProxy
+          rm -f ./${{ inputs.CLOUD_FUNCTION_FOLDER }}/apiProxy/api_clients
+          cp -r ./${{ inputs.CLOUD_FUNCTION_FOLDER }}/shared_libs/api_clients ./${{ inputs.CLOUD_FUNCTION_FOLDER }}/apiProxy/
+
+          # Remove symlinks and copy actual files for callPythonFunction
+          rm -f ./${{ inputs.CLOUD_FUNCTION_FOLDER }}/callPythonFunction/api_clients
+          cp -r ./${{ inputs.CLOUD_FUNCTION_FOLDER }}/shared_libs/api_clients ./${{ inputs.CLOUD_FUNCTION_FOLDER }}/callPythonFunction/
+
       - name: Zip Archive for callPythonFunction
         uses: thedoctor0/zip-release@main
         with:
@@ -72,6 +82,13 @@ jobs:
           type: "zip"
           directory: "./${{ inputs.CLOUD_FUNCTION_FOLDER }}/sendQuestionaires"
           filename: "../sendQuestionaires.zip"
+
+      - name: Zip Archive for apiProxy
+        uses: thedoctor0/zip-release@main
+        with:
+          type: "zip"
+          directory: "./${{ inputs.CLOUD_FUNCTION_FOLDER }}/apiProxy"
+          filename: "../apiProxy.zip"
 
       - name: Authenticate to Google Cloud
         id: "auth"
