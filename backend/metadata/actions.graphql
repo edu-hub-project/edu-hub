@@ -25,10 +25,6 @@ type Query {
 }
 
 type Query {
-  getMoocHubData: moocHubSchema
-}
-
-type Query {
   getSignedUrl(
     path: String!
   ): getSignedUrlOutput
