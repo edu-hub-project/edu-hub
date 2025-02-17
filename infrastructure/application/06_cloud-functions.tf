@@ -73,10 +73,11 @@ resource "google_cloudfunctions2_function" "api_proxy" {
       HASURA_ENDPOINT     = "https://${local.hasura_service_name}.opencampus.sh/v1/graphql"
       HASURA_ADMIN_SECRET = var.hasura_graphql_admin_key
     }
-    max_instance_count = 1
-    available_memory   = "256M"
-    timeout_seconds    = 60
-    ingress_settings   = var.cloud_function_ingress_settings
+    max_instance_count    = 1
+    available_memory      = "256M"
+    timeout_seconds       = 60
+    ingress_settings      = var.cloud_function_ingress_settings
+    service_account_email = google_service_account.custom_cloud_function_account.email
   }
 }
 
