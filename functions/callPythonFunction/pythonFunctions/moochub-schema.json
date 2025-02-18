@@ -1,0 +1,3188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/moochub/schema/releases/tag/v3.0.1",
+  "title": "JSON schema for MOOC providers integrated into moochub.org",
+  "description": "This schema specifies the JSON format each MOOC provider must offer in order to be integrated into moochub.org",
+  "type": "object",
+  "properties": {
+    "links": {
+      "title": "Links",
+      "type": "object",
+      "description": "Page information for the API",
+      "required": [
+        "self",
+        "first",
+        "last"
+      ],
+      "properties": {
+        "self": {
+          "type": "string",
+          "format": "iri",
+          "description": "The current page"
+        },
+        "first": {
+          "type": "string",
+          "format": "iri",
+          "description": "The first page"
+        },
+        "last": {
+          "type": "string",
+          "format": "iri",
+          "description": "The last page"
+        },
+        "next": {
+          "type": "string",
+          "format": "iri",
+          "description": "The next page if available"
+        },
+        "prev": {
+          "type": "string",
+          "format": "iri",
+          "description": "The previous page if available"
+        }
+      }
+    },
+    "data": {
+      "type": "array",
+      "description": "The actual data of the response",
+      "uniqueItems": true,
+      "items": {
+        "title": "Course",
+        "type": "object",
+        "description": "Serialized course object",
+        "required": [
+          "id",
+          "type",
+          "attributes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the course as an UUID.",
+            "format": "uuid",
+            "example": "8978f51e-770c-4d0a-a2e3-23fae8f6aa79"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the object.",
+            "enum": [
+              "Course"
+            ]
+          },
+          "attributes": {
+            "type": "object",
+            "description": "The Attributes of the course.",
+            "required": [
+              "name",
+              "learningResourceType",
+              "publisher",
+              "url",
+              "license",
+              "creator"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "The title of the course.",
+                "example": "Confidential Communication in the Internet"
+              },
+              "courseCode": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "An internal short code of the course. Also possible to give internal codes for templates here.",
+                "example": "confidentialcommunication2021"
+              },
+              "learningResourceType": {
+                "type": "object",
+                "description": "The learning resource type as listed at https://w3id.org/kim/hcrt/scheme. This describes the resource according to HCRT (Higher Education Resource Type).",
+                "required": [
+                  "identifier",
+                  "type",
+                  "inScheme"
+                ],
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "description": "This is an IRI pointing at a node describing the learning resource type. Currently, only https://w3id.org/kim/hcrt/course is allowed.",
+                    "format": "iri",
+                    "enum": [
+                      "https://w3id.org/kim/hcrt/course"
+                    ]
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "Concept"
+                    ],
+                    "description": "The type of the object according to AMB standard."
+                  },
+                  "inScheme": {
+                    "type": "string",
+                    "format": "iri",
+                    "description": "A pointer to the used scheme. Currently, only https://w3id.org/kim/hcrt/scheme is allowed.",
+                    "enum": [
+                      "https://w3id.org/kim/hcrt/scheme"
+                    ]
+                  }
+                }
+              },
+              "courseMode": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "minItems": 0,
+                "uniqueItems": true,
+                "description": "This attribute describes the course mode. It is limited to \"blended\", \"online\", \"onsite\", \"synchronous\" and \"asynchronous\".",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "blended",
+                    "onsite",
+                    "online",
+                    "synchronous",
+                    "asynchronous"
+                  ]
+                }
+              },
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Description of the course as an HTML document",
+                "example": "<p>A message on the Internet is sent through several networks and via different stations on its way to the target system. The individual stations are responsible for ensuring that the message is properly forwarded and finally delivered to the correct recipient. Each of these stations, if the message is sent in plain text, can receive the message and read its content. This means that a potential attacker, if he controls one of these intermediate systems, can also read the content of the message and even modify it before retransmitting it. Such attacks can have extreme effects on communication.</p>\\n\\n<p>In this course we will look at how and whether your connection to online banking is secure or whether the content of an e-mail is trustworthy. For this purpose we will deal with the basics of cryptography, security objectives and different types of encryption. In addition, we will provide insights into different models and standards that are used in practice.</p>\\n"
+              },
+              "inLanguage": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "uniqueItems": true,
+                "description": "List of languages in which the course is offered. Each language should be abbreviated in accordance with BCP 47: https://tools.ietf.org/html/bcp47.",
+                "items": {
+                  "type": "string",
+                  "example": "en"
+                }
+              },
+              "startDate": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "uniqueItems": true,
+                "description": "The time the course starts. It is possible to give several date-times for repetitive courses. The date-time to be given according to ISO 8601.",
+                "items": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2021-01-13T08:00:00Z"
+                }
+              },
+              "endDate": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "uniqueItems": true,
+                "description": "The time the course ends. It is possible to give several date-times for repetitive courses. The date-time to be given according to ISO 8601.",
+                "items": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2021-01-27T20:00:00Z"
+                }
+              },
+              "expires": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "uniqueItems": true,
+                "description": "The time and date the course is no longer available. It is possible to give several date-times for repetitive courses. The date-time to be given according to ISO 8601.",
+                "items": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": null
+                }
+              },
+              "image": {
+                "title": "ImageObject",
+                "type": "object",
+                "description": "This schema describes the attributes of an image.",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                    "example": "This is an image. It shows ..."
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "The type of the object.",
+                    "enum": [
+                      "ImageObject"
+                    ]
+                  },
+                  "contentUrl": {
+                    "type": "string",
+                    "format": "iri",
+                    "description": "The IRI pointing at the actual image.",
+                    "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                  },
+                  "license": {
+                    "type": "array",
+                    "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "items": {
+                      "title": "License",
+                      "type": "object",
+                      "description": "This schema describes the attributes of a license.",
+                      "properties": {
+                        "identifier": {
+                          "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                          "example": "CC-BY-SA-4.0",
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "iri",
+                          "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                          "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                        },
+                        "contentUrl": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "iri",
+                          "example": null,
+                          "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                        }
+                      },
+                      "required": [
+                        "identifier",
+                        "url"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "contentUrl",
+                  "license"
+                ]
+              },
+              "trailer": {
+                "title": "VideoObject",
+                "type": "object",
+                "description": "This schema describes the attributes of a video.",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "A short description of the content of the video. Can be used as an alternative text, if the video cannot be displayed."
+                  },
+                  "contentUrl": {
+                    "type": "string",
+                    "format": "iri",
+                    "description": "An IRI pointing at the actual video to be displayed.",
+                    "example": "https://player.vimeo.com/progressive_redirect/playback/488129602/rendition/720p/file.mp4?loc=external&oauth2_token_id=1212898389&signature=4065e2228ebeaf1a20b88acbd735bdbb72a8535ac5612a6cba5e78599cdebdb0"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "VideoObject"
+                    ],
+                    "description": "The type of the object."
+                  },
+                  "license": {
+                    "type": "array",
+                    "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "items": {
+                      "title": "License",
+                      "type": "object",
+                      "description": "This schema describes the attributes of a license.",
+                      "properties": {
+                        "identifier": {
+                          "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                          "example": "CC-BY-SA-4.0",
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "iri",
+                          "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                          "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                        },
+                        "contentUrl": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "iri",
+                          "example": null,
+                          "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                        }
+                      },
+                      "required": [
+                        "identifier",
+                        "url"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "contentUrl",
+                  "type",
+                  "license"
+                ]
+              },
+              "instructor": {
+                "type": "array",
+                "uniqueItems": true,
+                "description": "List of instructors of the course. Also organizations can be given.",
+                "items": {
+                  "anyOf": [
+                    {
+                      "title": "Organization",
+                      "type": "object",
+                      "description": "This schema describes the attributes of an organization.",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the organization.",
+                          "example": "openHPI"
+                        },
+                        "url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "An url for the organization. Can be a link to a homepage, Wikidata,...",
+                          "format": "iri",
+                          "example": "https://open.hpi.de/"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "The type of the object.",
+                          "enum": [
+                            "Organization"
+                          ]
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "A short description of the organization. Should be provided in HTML.",
+                          "example": "openHPI is a digital educational platform situated at the HPI with a focus on topics regarding computational sciences, internet and world wide web and design thinking."
+                        },
+                        "image": {
+                          "title": "ImageObject",
+                          "type": "object",
+                          "description": "This schema describes the attributes of an image.",
+                          "properties": {
+                            "description": {
+                              "type": "string",
+                              "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                              "example": "This is an image. It shows ..."
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "The type of the object.",
+                              "enum": [
+                                "ImageObject"
+                              ]
+                            },
+                            "contentUrl": {
+                              "type": "string",
+                              "format": "iri",
+                              "description": "The IRI pointing at the actual image.",
+                              "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                            },
+                            "license": {
+                              "type": "array",
+                              "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                              "uniqueItems": true,
+                              "minItems": 1,
+                              "items": {
+                                "title": "License",
+                                "type": "object",
+                                "description": "This schema describes the attributes of a license.",
+                                "properties": {
+                                  "identifier": {
+                                    "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                                    "example": "CC-BY-SA-4.0",
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                                    "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                                  },
+                                  "contentUrl": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "example": null,
+                                    "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                                  }
+                                },
+                                "required": [
+                                  "identifier",
+                                  "url"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "contentUrl",
+                            "license"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "type"
+                      ]
+                    },
+                    {
+                      "title": "Person",
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the person. Honorific prefix and suffix have to be excluded.",
+                          "example": "Christoph Meinel"
+                        },
+                        "honorificPrefix": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The honorific prefix of the person (e.g. Dr., Prof., ...).",
+                          "example": "Prof. Dr. "
+                        },
+                        "honorificSuffix": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The honorific suffix of the person (e.g. PhD, MD, ...).",
+                          "example": null
+                        },
+                        "url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "iri",
+                          "description": "Can be a link to a homepage, Wikidata, ORCID,...",
+                          "example": null
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "The type of the object.",
+                          "enum": [
+                            "Person"
+                          ]
+                        },
+                        "jobTitle": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The job title of the person.",
+                          "example": null
+                        },
+                        "image": {
+                          "title": "ImageObject",
+                          "type": "object",
+                          "description": "This schema describes the attributes of an image.",
+                          "properties": {
+                            "description": {
+                              "type": "string",
+                              "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                              "example": "This is an image. It shows ..."
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "The type of the object.",
+                              "enum": [
+                                "ImageObject"
+                              ]
+                            },
+                            "contentUrl": {
+                              "type": "string",
+                              "format": "iri",
+                              "description": "The IRI pointing at the actual image.",
+                              "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                            },
+                            "license": {
+                              "type": "array",
+                              "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                              "uniqueItems": true,
+                              "minItems": 1,
+                              "items": {
+                                "title": "License",
+                                "type": "object",
+                                "description": "This schema describes the attributes of a license.",
+                                "properties": {
+                                  "identifier": {
+                                    "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                                    "example": "CC-BY-SA-4.0",
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                                    "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                                  },
+                                  "contentUrl": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "example": null,
+                                    "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                                  }
+                                },
+                                "required": [
+                                  "identifier",
+                                  "url"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "contentUrl",
+                            "license"
+                          ]
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "A short description of the person. Can be a CV-like description. Should be provided in HTML",
+                          "example": null
+                        },
+                        "affiliation": {
+                          "title": "Organization",
+                          "type": "object",
+                          "description": "This schema describes the attributes of an organization.",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "The name of the organization.",
+                              "example": "openHPI"
+                            },
+                            "url": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "An url for the organization. Can be a link to a homepage, Wikidata,...",
+                              "format": "iri",
+                              "example": "https://open.hpi.de/"
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "The type of the object.",
+                              "enum": [
+                                "Organization"
+                              ]
+                            },
+                            "description": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "A short description of the organization. Should be provided in HTML.",
+                              "example": "openHPI is a digital educational platform situated at the HPI with a focus on topics regarding computational sciences, internet and world wide web and design thinking."
+                            },
+                            "image": {
+                              "title": "ImageObject",
+                              "type": "object",
+                              "description": "This schema describes the attributes of an image.",
+                              "properties": {
+                                "description": {
+                                  "type": "string",
+                                  "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                                  "example": "This is an image. It shows ..."
+                                },
+                                "type": {
+                                  "type": "string",
+                                  "description": "The type of the object.",
+                                  "enum": [
+                                    "ImageObject"
+                                  ]
+                                },
+                                "contentUrl": {
+                                  "type": "string",
+                                  "format": "iri",
+                                  "description": "The IRI pointing at the actual image.",
+                                  "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                                },
+                                "license": {
+                                  "type": "array",
+                                  "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                                  "uniqueItems": true,
+                                  "minItems": 1,
+                                  "items": {
+                                    "title": "License",
+                                    "type": "object",
+                                    "description": "This schema describes the attributes of a license.",
+                                    "properties": {
+                                      "identifier": {
+                                        "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                                        "example": "CC-BY-SA-4.0",
+                                        "type": "string"
+                                      },
+                                      "url": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ],
+                                        "format": "iri",
+                                        "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                                        "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                                      },
+                                      "contentUrl": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ],
+                                        "format": "iri",
+                                        "example": null,
+                                        "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                                      }
+                                    },
+                                    "required": [
+                                      "identifier",
+                                      "url"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "contentUrl",
+                                "license"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "type"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "type"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "teaches": {
+                "type": "array",
+                "uniqueItems": true,
+                "description": "List of learning objectives for this course as an array of Skill objects.",
+                "items": {
+                  "title": "Skill",
+                  "type": "object",
+                  "description": "This schema describes the attributes of a skill.",
+                  "properties": {
+                    "name": {
+                      "type": "array",
+                      "description": "List of names of the skill. This array allows localized strings. A name and a language have to be given in the respective element.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "inLanguage": {
+                            "type": "string",
+                            "description": "The language the name is given in. Has to be a shortcode according to BCP 47.",
+                            "example": "en"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The name of the skill in the given language by the \"inLanguage\" attribute.",
+                            "example": "PROTECTING PERSONAL DATA AND PRIVACY"
+                          }
+                        },
+                        "required": [
+                          "inLanguage",
+                          "name"
+                        ]
+                      }
+                    },
+                    "alternateName": {
+                      "type": [
+                        "array",
+                        "null"
+                      ],
+                      "description": "A list of alternative names for the skill.",
+                      "example": [
+                        "Understand Personal Privacy",
+                        "Use Privacy Policy"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "shortCode": {
+                      "type": "string",
+                      "description": "The short code of the skill if the used framework provides one.",
+                      "example": "4.2"
+                    },
+                    "description": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "A short description of the skill. Should be based on the framework used.",
+                      "example": "To protect personal data and privacy in digital environments. To understand how to use and share personally identifiable information while being able to protect oneself and others from damages. To understand that digital services use a \"Privacy policy\" to inform how personal data is used."
+                    },
+                    "educationalFramework": {
+                      "type": "string",
+                      "description": "The name of the educational framework that describes the skill.",
+                      "enum": [
+                        "ESCO",
+                        "DigComp",
+                        "GRETA"
+                      ]
+                    },
+                    "educationalFrameworkVersion": {
+                      "type": "string",
+                      "description": "The version of the educational framework that describes the skill. Can also be the year the framework was released/published.",
+                      "example": "2.2"
+                    },
+                    "url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "An IRI pointing at the document which describes the educational framework.",
+                      "format": "iri",
+                      "example": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC128415/JRC128415_01.pdf"
+                    },
+                    "targetUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "iri",
+                      "description": "An IRI pointing at the framework node of the skill.",
+                      "example": null
+                    },
+                    "educationalLevel": {
+                      "title": "EducationalLevel",
+                      "type": "object",
+                      "description": "This schema describes the attributes of an educational level.",
+                      "properties": {
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "A short description of the educational level. Should be based on the framework used.",
+                          "example": "Independently, according to my own needs, and solving well-defined and non-routine problems, I can: - discuss ways to protect my personal data and privacy in digital environments, and - discuss ways to use and share personally identifiable information while protecting myself and others from damages. - indicate privacy policy statements of how personal data is used in digital services."
+                        },
+                        "name": {
+                          "type": "array",
+                          "description": "List of names of the educational level. This array allows localized strings. A name and a language have to be given in the respective field.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "inLanguage": {
+                                "type": "string",
+                                "description": "The language the name is given in. Has to be a shortcode according to BCP 47.",
+                                "example": "en"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "The name of the educational level in the given language by the \"inLanguage\" attribute.",
+                                "example": "INTERMEDIATE"
+                              }
+                            },
+                            "required": [
+                              "inLanguage",
+                              "name"
+                            ]
+                          }
+                        },
+                        "alternateName": {
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "description": "A list of alternative names for the educational level.",
+                          "example": [
+                            "independent use of concept",
+                            "use of concept for oneself"
+                          ],
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "shortCode": {
+                          "type": "string",
+                          "example": "4",
+                          "description": "A short code for the educational level if it is provided by the used framework."
+                        },
+                        "educationalFramework": {
+                          "type": "string",
+                          "description": "The name of the educational framework that describes the educational level.",
+                          "enum": [
+                            "ESCO",
+                            "DigComp",
+                            "GRETA"
+                          ]
+                        },
+                        "educationalFrameworkVersion": {
+                          "type": "string",
+                          "description": "The version of the educational framework that describes the skill. Can also be the year the framework was released/published.",
+                          "example": "2.2"
+                        },
+                        "url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "iri",
+                          "description": "An IRI pointing at the document which describes the educational framework.",
+                          "example": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC128415/JRC128415_01.pdf"
+                        },
+                        "targetUrl": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "iri",
+                          "description": "An IRI pointing at the framework node of the educational level.",
+                          "example": null
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "The type of the object.",
+                          "enum": [
+                            "EducationalLevel"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "educationalFramework",
+                        "educationalFrameworkVersion",
+                        "type"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "educationalFramework",
+                    "educationalFrameworkVersion"
+                  ]
+                }
+              },
+              "duration": {
+                "description": "ISO 8601 encoded duration of the course.",
+                "example": "P2W",
+                "type": "string",
+                "format": "duration",
+                "pattern": "^P(?!$)(\\d+(?:\\.\\d+)?Y)?(\\d+(?:\\.\\d+)?M)?(\\d+(?:\\.\\d+)?W)?(\\d+(?:\\.\\d+)?D)?(T(?=\\d)(\\d+(?:\\.\\d+)?H)?(\\d+(?:\\.\\d+)?M)?(\\d+(?:\\.\\d+)?S)?)?$"
+              },
+              "contributor": {
+                "type": "array",
+                "description": "A List of partner institutes or persons contributed to this course.",
+                "uniqueItems": true,
+                "items": {
+                  "anyOf": [
+                    {
+                      "title": "Organization",
+                      "type": "object",
+                      "description": "This schema describes the attributes of an organization.",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the organization.",
+                          "example": "openHPI"
+                        },
+                        "url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "An url for the organization. Can be a link to a homepage, Wikidata,...",
+                          "format": "iri",
+                          "example": "https://open.hpi.de/"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "The type of the object.",
+                          "enum": [
+                            "Organization"
+                          ]
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "A short description of the organization. Should be provided in HTML.",
+                          "example": "openHPI is a digital educational platform situated at the HPI with a focus on topics regarding computational sciences, internet and world wide web and design thinking."
+                        },
+                        "image": {
+                          "title": "ImageObject",
+                          "type": "object",
+                          "description": "This schema describes the attributes of an image.",
+                          "properties": {
+                            "description": {
+                              "type": "string",
+                              "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                              "example": "This is an image. It shows ..."
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "The type of the object.",
+                              "enum": [
+                                "ImageObject"
+                              ]
+                            },
+                            "contentUrl": {
+                              "type": "string",
+                              "format": "iri",
+                              "description": "The IRI pointing at the actual image.",
+                              "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                            },
+                            "license": {
+                              "type": "array",
+                              "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                              "uniqueItems": true,
+                              "minItems": 1,
+                              "items": {
+                                "title": "License",
+                                "type": "object",
+                                "description": "This schema describes the attributes of a license.",
+                                "properties": {
+                                  "identifier": {
+                                    "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                                    "example": "CC-BY-SA-4.0",
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                                    "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                                  },
+                                  "contentUrl": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "example": null,
+                                    "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                                  }
+                                },
+                                "required": [
+                                  "identifier",
+                                  "url"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "contentUrl",
+                            "license"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "type"
+                      ]
+                    },
+                    {
+                      "title": "Person",
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the person. Honorific prefix and suffix have to be excluded.",
+                          "example": "Christoph Meinel"
+                        },
+                        "honorificPrefix": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The honorific prefix of the person (e.g. Dr., Prof., ...).",
+                          "example": "Prof. Dr. "
+                        },
+                        "honorificSuffix": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The honorific suffix of the person (e.g. PhD, MD, ...).",
+                          "example": null
+                        },
+                        "url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "iri",
+                          "description": "Can be a link to a homepage, Wikidata, ORCID,...",
+                          "example": null
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "The type of the object.",
+                          "enum": [
+                            "Person"
+                          ]
+                        },
+                        "jobTitle": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The job title of the person.",
+                          "example": null
+                        },
+                        "image": {
+                          "title": "ImageObject",
+                          "type": "object",
+                          "description": "This schema describes the attributes of an image.",
+                          "properties": {
+                            "description": {
+                              "type": "string",
+                              "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                              "example": "This is an image. It shows ..."
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "The type of the object.",
+                              "enum": [
+                                "ImageObject"
+                              ]
+                            },
+                            "contentUrl": {
+                              "type": "string",
+                              "format": "iri",
+                              "description": "The IRI pointing at the actual image.",
+                              "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                            },
+                            "license": {
+                              "type": "array",
+                              "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                              "uniqueItems": true,
+                              "minItems": 1,
+                              "items": {
+                                "title": "License",
+                                "type": "object",
+                                "description": "This schema describes the attributes of a license.",
+                                "properties": {
+                                  "identifier": {
+                                    "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                                    "example": "CC-BY-SA-4.0",
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                                    "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                                  },
+                                  "contentUrl": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "example": null,
+                                    "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                                  }
+                                },
+                                "required": [
+                                  "identifier",
+                                  "url"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "contentUrl",
+                            "license"
+                          ]
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "A short description of the person. Can be a CV-like description. Should be provided in HTML",
+                          "example": null
+                        },
+                        "affiliation": {
+                          "title": "Organization",
+                          "type": "object",
+                          "description": "This schema describes the attributes of an organization.",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "The name of the organization.",
+                              "example": "openHPI"
+                            },
+                            "url": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "An url for the organization. Can be a link to a homepage, Wikidata,...",
+                              "format": "iri",
+                              "example": "https://open.hpi.de/"
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "The type of the object.",
+                              "enum": [
+                                "Organization"
+                              ]
+                            },
+                            "description": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "A short description of the organization. Should be provided in HTML.",
+                              "example": "openHPI is a digital educational platform situated at the HPI with a focus on topics regarding computational sciences, internet and world wide web and design thinking."
+                            },
+                            "image": {
+                              "title": "ImageObject",
+                              "type": "object",
+                              "description": "This schema describes the attributes of an image.",
+                              "properties": {
+                                "description": {
+                                  "type": "string",
+                                  "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                                  "example": "This is an image. It shows ..."
+                                },
+                                "type": {
+                                  "type": "string",
+                                  "description": "The type of the object.",
+                                  "enum": [
+                                    "ImageObject"
+                                  ]
+                                },
+                                "contentUrl": {
+                                  "type": "string",
+                                  "format": "iri",
+                                  "description": "The IRI pointing at the actual image.",
+                                  "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                                },
+                                "license": {
+                                  "type": "array",
+                                  "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                                  "uniqueItems": true,
+                                  "minItems": 1,
+                                  "items": {
+                                    "title": "License",
+                                    "type": "object",
+                                    "description": "This schema describes the attributes of a license.",
+                                    "properties": {
+                                      "identifier": {
+                                        "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                                        "example": "CC-BY-SA-4.0",
+                                        "type": "string"
+                                      },
+                                      "url": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ],
+                                        "format": "iri",
+                                        "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                                        "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                                      },
+                                      "contentUrl": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ],
+                                        "format": "iri",
+                                        "example": null,
+                                        "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                                      }
+                                    },
+                                    "required": [
+                                      "identifier",
+                                      "url"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "contentUrl",
+                                "license"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "type"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "type"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "publisher": {
+                "description": "The publisher of the course. Can be a person or an organization.",
+                "anyOf": [
+                  {
+                    "title": "Organization",
+                    "type": "object",
+                    "description": "This schema describes the attributes of an organization.",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the organization.",
+                        "example": "openHPI"
+                      },
+                      "url": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "An url for the organization. Can be a link to a homepage, Wikidata,...",
+                        "format": "iri",
+                        "example": "https://open.hpi.de/"
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "The type of the object.",
+                        "enum": [
+                          "Organization"
+                        ]
+                      },
+                      "description": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "A short description of the organization. Should be provided in HTML.",
+                        "example": "openHPI is a digital educational platform situated at the HPI with a focus on topics regarding computational sciences, internet and world wide web and design thinking."
+                      },
+                      "image": {
+                        "title": "ImageObject",
+                        "type": "object",
+                        "description": "This schema describes the attributes of an image.",
+                        "properties": {
+                          "description": {
+                            "type": "string",
+                            "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                            "example": "This is an image. It shows ..."
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "The type of the object.",
+                            "enum": [
+                              "ImageObject"
+                            ]
+                          },
+                          "contentUrl": {
+                            "type": "string",
+                            "format": "iri",
+                            "description": "The IRI pointing at the actual image.",
+                            "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                          },
+                          "license": {
+                            "type": "array",
+                            "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                            "uniqueItems": true,
+                            "minItems": 1,
+                            "items": {
+                              "title": "License",
+                              "type": "object",
+                              "description": "This schema describes the attributes of a license.",
+                              "properties": {
+                                "identifier": {
+                                  "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                                  "example": "CC-BY-SA-4.0",
+                                  "type": "string"
+                                },
+                                "url": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "format": "iri",
+                                  "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                                  "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                                },
+                                "contentUrl": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "format": "iri",
+                                  "example": null,
+                                  "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                                }
+                              },
+                              "required": [
+                                "identifier",
+                                "url"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "contentUrl",
+                          "license"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "type"
+                    ]
+                  },
+                  {
+                    "title": "Person",
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the person. Honorific prefix and suffix have to be excluded.",
+                        "example": "Christoph Meinel"
+                      },
+                      "honorificPrefix": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "The honorific prefix of the person (e.g. Dr., Prof., ...).",
+                        "example": "Prof. Dr. "
+                      },
+                      "honorificSuffix": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "The honorific suffix of the person (e.g. PhD, MD, ...).",
+                        "example": null
+                      },
+                      "url": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "format": "iri",
+                        "description": "Can be a link to a homepage, Wikidata, ORCID,...",
+                        "example": null
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "The type of the object.",
+                        "enum": [
+                          "Person"
+                        ]
+                      },
+                      "jobTitle": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "The job title of the person.",
+                        "example": null
+                      },
+                      "image": {
+                        "title": "ImageObject",
+                        "type": "object",
+                        "description": "This schema describes the attributes of an image.",
+                        "properties": {
+                          "description": {
+                            "type": "string",
+                            "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                            "example": "This is an image. It shows ..."
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "The type of the object.",
+                            "enum": [
+                              "ImageObject"
+                            ]
+                          },
+                          "contentUrl": {
+                            "type": "string",
+                            "format": "iri",
+                            "description": "The IRI pointing at the actual image.",
+                            "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                          },
+                          "license": {
+                            "type": "array",
+                            "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                            "uniqueItems": true,
+                            "minItems": 1,
+                            "items": {
+                              "title": "License",
+                              "type": "object",
+                              "description": "This schema describes the attributes of a license.",
+                              "properties": {
+                                "identifier": {
+                                  "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                                  "example": "CC-BY-SA-4.0",
+                                  "type": "string"
+                                },
+                                "url": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "format": "iri",
+                                  "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                                  "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                                },
+                                "contentUrl": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "format": "iri",
+                                  "example": null,
+                                  "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                                }
+                              },
+                              "required": [
+                                "identifier",
+                                "url"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "contentUrl",
+                          "license"
+                        ]
+                      },
+                      "description": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "A short description of the person. Can be a CV-like description. Should be provided in HTML",
+                        "example": null
+                      },
+                      "affiliation": {
+                        "title": "Organization",
+                        "type": "object",
+                        "description": "This schema describes the attributes of an organization.",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "The name of the organization.",
+                            "example": "openHPI"
+                          },
+                          "url": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "An url for the organization. Can be a link to a homepage, Wikidata,...",
+                            "format": "iri",
+                            "example": "https://open.hpi.de/"
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "The type of the object.",
+                            "enum": [
+                              "Organization"
+                            ]
+                          },
+                          "description": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "A short description of the organization. Should be provided in HTML.",
+                            "example": "openHPI is a digital educational platform situated at the HPI with a focus on topics regarding computational sciences, internet and world wide web and design thinking."
+                          },
+                          "image": {
+                            "title": "ImageObject",
+                            "type": "object",
+                            "description": "This schema describes the attributes of an image.",
+                            "properties": {
+                              "description": {
+                                "type": "string",
+                                "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                                "example": "This is an image. It shows ..."
+                              },
+                              "type": {
+                                "type": "string",
+                                "description": "The type of the object.",
+                                "enum": [
+                                  "ImageObject"
+                                ]
+                              },
+                              "contentUrl": {
+                                "type": "string",
+                                "format": "iri",
+                                "description": "The IRI pointing at the actual image.",
+                                "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                              },
+                              "license": {
+                                "type": "array",
+                                "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                                "uniqueItems": true,
+                                "minItems": 1,
+                                "items": {
+                                  "title": "License",
+                                  "type": "object",
+                                  "description": "This schema describes the attributes of a license.",
+                                  "properties": {
+                                    "identifier": {
+                                      "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                                      "example": "CC-BY-SA-4.0",
+                                      "type": "string"
+                                    },
+                                    "url": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ],
+                                      "format": "iri",
+                                      "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                                      "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                                    },
+                                    "contentUrl": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ],
+                                      "format": "iri",
+                                      "example": null,
+                                      "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                                    }
+                                  },
+                                  "required": [
+                                    "identifier",
+                                    "url"
+                                  ]
+                                }
+                              }
+                            },
+                            "required": [
+                              "contentUrl",
+                              "license"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "type"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "type"
+                    ]
+                  }
+                ]
+              },
+              "url": {
+                "type": "string",
+                "description": "Link to the course detail page.",
+                "format": "iri",
+                "example": "https://open.hpi.de/courses/confidentialcommunication2021"
+              },
+              "workload": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Specifies the amount of time course participants should plan with when taking the course.",
+                "minProperties": 0,
+                "example": null,
+                "properties": {
+                  "timeValue": {
+                    "type": "integer",
+                    "description": "The numeric value of time course participants should plan with when taking the course.",
+                    "minimum": 0
+                  },
+                  "timeUnit": {
+                    "type": "string",
+                    "description": "The unit of time course participants should plan with when taking the course (e.g. h/month, h/week).",
+                    "enum": [
+                      "h/month",
+                      "h/week",
+                      "h/day"
+                    ]
+                  }
+                },
+                "required": [
+                  "timeValue",
+                  "timeUnit"
+                ]
+              },
+              "license": {
+                "type": "array",
+                "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                "uniqueItems": true,
+                "minItems": 1,
+                "items": {
+                  "title": "License",
+                  "type": "object",
+                  "description": "This schema describes the attributes of a license.",
+                  "properties": {
+                    "identifier": {
+                      "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                      "example": "CC-BY-SA-4.0",
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "iri",
+                      "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                      "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                    },
+                    "contentUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "iri",
+                      "example": null,
+                      "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                    }
+                  },
+                  "required": [
+                    "identifier",
+                    "url"
+                  ]
+                }
+              },
+              "access": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "description": "Specifies how this course can be accessed by learners. The different access options shall not be used to transport differences between available content under this access option but rather annotate the course track or certificate that can be achieved.",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "free",
+                    "paid",
+                    "student",
+                    "other"
+                  ]
+                }
+              },
+              "audience": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "description": "A list of audiences the course is intended for. The audience type is chosen by giving a node of the DublinCore vocabulary from https://www.dublincore.org/specifications/lrmi/concept_schemes/educationalAudienceRole/.",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "example": "http://purl.org/dcx/lrmi-vocabs/educationalAudienceRole/generalPublic",
+                  "format": "iri"
+                }
+              },
+              "educationalAlignment": {
+                "type": "array",
+                "description": "This list describes the topics or subjects of the course and the frameworks which are used for determination.",
+                "uniqueItems": true,
+                "items": {
+                  "title": "EducationalAlignment",
+                  "type": "object",
+                  "description": "This schema describes the attributes of an educational alignment. It represents the topic, field of study, subject, ... of a course.",
+                  "properties": {
+                    "alignmentType": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "The type of the alignment. Can only be \"educationalSubject\"",
+                      "enum": [
+                        "educationalSubject"
+                      ]
+                    },
+                    "educationalFramework": {
+                      "type": "string",
+                      "description": "The name of the educational framework that describes the educational alignment. Currently, only the standards ISCED-F and OEFOS are allowed.",
+                      "enum": [
+                        "ISCED-F",
+                        "OEFOS",
+                        "BIRD Faechersystematik"
+                      ]
+                    },
+                    "educationalFrameworkVersion": {
+                      "type": "string",
+                      "description": "The version of the educational framework that describes the skill. Can also be the year the framework was released/published.",
+                      "example": "2013"
+                    },
+                    "url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "An IRI pointing at the document which describes the educational framework.",
+                      "format": "iri",
+                      "example": "http://uis.unesco.org/sites/default/files/documents/international-standard-classification-of-education-fields-of-education-and-training-2013-detailed-field-descriptions-2015-en.pdf"
+                    },
+                    "name": {
+                      "type": "array",
+                      "description": "List of names of the educational alignment. This array allows localized strings. A name and a language have to be given in the respective element.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "inLanguage": {
+                            "type": "string",
+                            "description": "The language the name is given in. Has to be a shortcode according to BCP 47.",
+                            "example": "en"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The name of the educational alignment in the given language by the \"inLanguage\" attrib",
+                            "example": "Computer use"
+                          }
+                        },
+                        "required": [
+                          "inLanguage",
+                          "name"
+                        ]
+                      }
+                    },
+                    "alternateName": {
+                      "type": [
+                        "array",
+                        "null"
+                      ],
+                      "description": "A list of alternative names for the educational alignment. ",
+                      "example": [
+                        "use of computers",
+                        "working with computers"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "shortCode": {
+                      "type": "string",
+                      "description": "The short code for the Field of study if it is provided by the framework.",
+                      "example": "0611"
+                    },
+                    "targetUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "An IRI pointing at the framework node of the educational alignment.",
+                      "format": "iri",
+                      "example": "http://data.europa.eu/esco/isced-f/0611"
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "The type of the object.",
+                      "enum": [
+                        "EducationalAlignment"
+                      ]
+                    },
+                    "description": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "A short description of the educational alignment. Should be based on the framework used.",
+                      "example": "Computer use is the study of using computers and computer software and applications for different purposes. These programmes are generally of short duration. Programmes and qualifications with the following main content are classified here: Computer use Use of software for calculating (spread sheets) Use of software for data processing Use of software for desk top publishing Use of software for word processing Use of Internet"
+                    }
+                  },
+                  "required": [
+                    "educationalFramework",
+                    "educationalFrameworkVersion",
+                    "name",
+                    "type"
+                  ]
+                }
+              },
+              "educationalLevel": {
+                "type": "array",
+                "description": "List of categorization of competency level and the related frameworks.",
+                "uniqueItems": true,
+                "items": {
+                  "title": "EducationalLevel",
+                  "type": "object",
+                  "description": "This schema describes the attributes of an educational level.",
+                  "properties": {
+                    "description": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "A short description of the educational level. Should be based on the framework used.",
+                      "example": "Independently, according to my own needs, and solving well-defined and non-routine problems, I can: - discuss ways to protect my personal data and privacy in digital environments, and - discuss ways to use and share personally identifiable information while protecting myself and others from damages. - indicate privacy policy statements of how personal data is used in digital services."
+                    },
+                    "name": {
+                      "type": "array",
+                      "description": "List of names of the educational level. This array allows localized strings. A name and a language have to be given in the respective field.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "inLanguage": {
+                            "type": "string",
+                            "description": "The language the name is given in. Has to be a shortcode according to BCP 47.",
+                            "example": "en"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The name of the educational level in the given language by the \"inLanguage\" attribute.",
+                            "example": "INTERMEDIATE"
+                          }
+                        },
+                        "required": [
+                          "inLanguage",
+                          "name"
+                        ]
+                      }
+                    },
+                    "alternateName": {
+                      "type": [
+                        "array",
+                        "null"
+                      ],
+                      "description": "A list of alternative names for the educational level.",
+                      "example": [
+                        "independent use of concept",
+                        "use of concept for oneself"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "shortCode": {
+                      "type": "string",
+                      "example": "4",
+                      "description": "A short code for the educational level if it is provided by the used framework."
+                    },
+                    "educationalFramework": {
+                      "type": "string",
+                      "description": "The name of the educational framework that describes the educational level.",
+                      "enum": [
+                        "ESCO",
+                        "DigComp",
+                        "GRETA"
+                      ]
+                    },
+                    "educationalFrameworkVersion": {
+                      "type": "string",
+                      "description": "The version of the educational framework that describes the skill. Can also be the year the framework was released/published.",
+                      "example": "2.2"
+                    },
+                    "url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "iri",
+                      "description": "An IRI pointing at the document which describes the educational framework.",
+                      "example": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC128415/JRC128415_01.pdf"
+                    },
+                    "targetUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "iri",
+                      "description": "An IRI pointing at the framework node of the educational level.",
+                      "example": null
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "The type of the object.",
+                      "enum": [
+                        "EducationalLevel"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "educationalFramework",
+                    "educationalFrameworkVersion",
+                    "type"
+                  ]
+                }
+              },
+              "creator": {
+                "type": "array",
+                "uniqueItems": true,
+                "minItems": 1,
+                "description": "List of creators of the course. Also organizations can be given.",
+                "items": {
+                  "anyOf": [
+                    {
+                      "title": "Organization",
+                      "type": "object",
+                      "description": "This schema describes the attributes of an organization.",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the organization.",
+                          "example": "openHPI"
+                        },
+                        "url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "An url for the organization. Can be a link to a homepage, Wikidata,...",
+                          "format": "iri",
+                          "example": "https://open.hpi.de/"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "The type of the object.",
+                          "enum": [
+                            "Organization"
+                          ]
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "A short description of the organization. Should be provided in HTML.",
+                          "example": "openHPI is a digital educational platform situated at the HPI with a focus on topics regarding computational sciences, internet and world wide web and design thinking."
+                        },
+                        "image": {
+                          "title": "ImageObject",
+                          "type": "object",
+                          "description": "This schema describes the attributes of an image.",
+                          "properties": {
+                            "description": {
+                              "type": "string",
+                              "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                              "example": "This is an image. It shows ..."
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "The type of the object.",
+                              "enum": [
+                                "ImageObject"
+                              ]
+                            },
+                            "contentUrl": {
+                              "type": "string",
+                              "format": "iri",
+                              "description": "The IRI pointing at the actual image.",
+                              "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                            },
+                            "license": {
+                              "type": "array",
+                              "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                              "uniqueItems": true,
+                              "minItems": 1,
+                              "items": {
+                                "title": "License",
+                                "type": "object",
+                                "description": "This schema describes the attributes of a license.",
+                                "properties": {
+                                  "identifier": {
+                                    "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                                    "example": "CC-BY-SA-4.0",
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                                    "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                                  },
+                                  "contentUrl": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "example": null,
+                                    "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                                  }
+                                },
+                                "required": [
+                                  "identifier",
+                                  "url"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "contentUrl",
+                            "license"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "type"
+                      ]
+                    },
+                    {
+                      "title": "Person",
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the person. Honorific prefix and suffix have to be excluded.",
+                          "example": "Christoph Meinel"
+                        },
+                        "honorificPrefix": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The honorific prefix of the person (e.g. Dr., Prof., ...).",
+                          "example": "Prof. Dr. "
+                        },
+                        "honorificSuffix": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The honorific suffix of the person (e.g. PhD, MD, ...).",
+                          "example": null
+                        },
+                        "url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "iri",
+                          "description": "Can be a link to a homepage, Wikidata, ORCID,...",
+                          "example": null
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "The type of the object.",
+                          "enum": [
+                            "Person"
+                          ]
+                        },
+                        "jobTitle": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The job title of the person.",
+                          "example": null
+                        },
+                        "image": {
+                          "title": "ImageObject",
+                          "type": "object",
+                          "description": "This schema describes the attributes of an image.",
+                          "properties": {
+                            "description": {
+                              "type": "string",
+                              "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                              "example": "This is an image. It shows ..."
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "The type of the object.",
+                              "enum": [
+                                "ImageObject"
+                              ]
+                            },
+                            "contentUrl": {
+                              "type": "string",
+                              "format": "iri",
+                              "description": "The IRI pointing at the actual image.",
+                              "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                            },
+                            "license": {
+                              "type": "array",
+                              "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                              "uniqueItems": true,
+                              "minItems": 1,
+                              "items": {
+                                "title": "License",
+                                "type": "object",
+                                "description": "This schema describes the attributes of a license.",
+                                "properties": {
+                                  "identifier": {
+                                    "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                                    "example": "CC-BY-SA-4.0",
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                                    "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                                  },
+                                  "contentUrl": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "example": null,
+                                    "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                                  }
+                                },
+                                "required": [
+                                  "identifier",
+                                  "url"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "contentUrl",
+                            "license"
+                          ]
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "A short description of the person. Can be a CV-like description. Should be provided in HTML",
+                          "example": null
+                        },
+                        "affiliation": {
+                          "title": "Organization",
+                          "type": "object",
+                          "description": "This schema describes the attributes of an organization.",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "The name of the organization.",
+                              "example": "openHPI"
+                            },
+                            "url": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "An url for the organization. Can be a link to a homepage, Wikidata,...",
+                              "format": "iri",
+                              "example": "https://open.hpi.de/"
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "The type of the object.",
+                              "enum": [
+                                "Organization"
+                              ]
+                            },
+                            "description": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "A short description of the organization. Should be provided in HTML.",
+                              "example": "openHPI is a digital educational platform situated at the HPI with a focus on topics regarding computational sciences, internet and world wide web and design thinking."
+                            },
+                            "image": {
+                              "title": "ImageObject",
+                              "type": "object",
+                              "description": "This schema describes the attributes of an image.",
+                              "properties": {
+                                "description": {
+                                  "type": "string",
+                                  "description": "A short description of the image. Can be used as an alternative text, if the image cannot be displayed.",
+                                  "example": "This is an image. It shows ..."
+                                },
+                                "type": {
+                                  "type": "string",
+                                  "description": "The type of the object.",
+                                  "enum": [
+                                    "ImageObject"
+                                  ]
+                                },
+                                "contentUrl": {
+                                  "type": "string",
+                                  "format": "iri",
+                                  "description": "The IRI pointing at the actual image.",
+                                  "example": "https://imgproxy.services.openhpi.de/BTTB8dtdudOl-9rC9_BH3blZE8Y6lPOYCeDwOrM3MtA/rs:fill:314:195:0/g:ce/plain/https://openhpi-public.s3.openhpicloud.de/courses/4H0PlIvB5Pl3LVRzqcZF8x/6xCHlCi7Kj4QQCnoNlk3Hl/07_2x_green.png"
+                                },
+                                "license": {
+                                  "type": "array",
+                                  "description": "A list of licenses that apply for this resource. General licenses according to https://spdx.org/licenses/ (in the \"identifier\" and \"url\" attribute) or \"proprietary\" can be given. Additionally, it is possible to link to an optional, specific, own license document in the \"contentUrl\" attribute.",
+                                  "uniqueItems": true,
+                                  "minItems": 1,
+                                  "items": {
+                                    "title": "License",
+                                    "type": "object",
+                                    "description": "This schema describes the attributes of a license.",
+                                    "properties": {
+                                      "identifier": {
+                                        "description": "A license shortcode according to https://spdx.org/licenses/ or \"proprietary\".",
+                                        "example": "CC-BY-SA-4.0",
+                                        "type": "string"
+                                      },
+                                      "url": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ],
+                                        "format": "iri",
+                                        "description": "A license according to https://spdx.org/licenses/ or \"null\" if proprietary.",
+                                        "example": "https://spdx.org/licenses/CC-BY-SA-4.0.html"
+                                      },
+                                      "contentUrl": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ],
+                                        "format": "iri",
+                                        "example": null,
+                                        "description": "A link to the specific license document (if any, otherwise set to \"null\" - the identifier pointing at the general license is to be considered the license document then). Has to be \"null\" if identifier is \"proprietary\"."
+                                      }
+                                    },
+                                    "required": [
+                                      "identifier",
+                                      "url"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "contentUrl",
+                                "license"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "type"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "type"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "keywords": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "description": "Keywords describing the course.",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "example": "cyber security"
+                }
+              },
+              "contentLocation": {
+                "title": "Place",
+                "type": "object",
+                "description": "This schema describes the attributes of a place.",
+                "properties": {
+                  "address": {
+                    "type": "object",
+                    "description": "The physical address where a course takes place. A room can be given here, too.",
+                    "properties": {
+                      "addressCountry": {
+                        "type": "string",
+                        "description": "Country where the course takes place in accordance with ISO 3166-1.",
+                        "example": null
+                      },
+                      "streetAddress": {
+                        "type": "string",
+                        "description": "The street address where the course takes place.",
+                        "example": null
+                      },
+                      "city": {
+                        "type": "string",
+                        "description": "The city the course takes place."
+                      },
+                      "postalCode": {
+                        "type": "string",
+                        "description": "The postal code of the place where the course takes place.",
+                        "example": null
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "More detailed description of the place e.g. a room number/identifier to find the course location.",
+                        "example": null
+                      }
+                    }
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "The name of the place, university, etc. where the course is given. Also, information for \"online\" or \"hybrid\" can be given here.",
+                    "example": "online"
+                  },
+                  "latitude": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "The geo coordinate latitude of the place.",
+                    "format": "float",
+                    "example": null
+                  },
+                  "longitude": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "The geo coordinate longitude of the place.",
+                    "format": "float",
+                    "example": null
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "iri",
+                    "example": "https://open.hpi.de",
+                    "description": "The url to the online address to the course e.g. virtual room. Has to be given when course is \"online\" or \"hybrid\"."
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              },
+              "offer": {
+                "type": "array",
+                "description": "List of offers. An Offer object includes the price, currency and frequency of the payment.",
+                "uniqueItems": true,
+                "items": {
+                  "title": "Offer",
+                  "type": "object",
+                  "description": "This schema describes the attributes of an offer. ATTENTION: If the course has \"free\" in the accessMode array, one item in offers has to have price \"0.0\". If the course has several options, e.g. course in general is free but there is a certification fee: there has to be one Offer object for each case. The category field is used to give information if the offer is for the course or only certification.",
+                  "properties": {
+                    "price": {
+                      "type": "number",
+                      "description": "The price in numbers according to the respective currency.",
+                      "example": 0,
+                      "minimum": 0
+                    },
+                    "priceCurrency": {
+                      "type": "string",
+                      "description": "The currency the price is given in. Has to be given in ISO 4217 standards format",
+                      "example": "EUR"
+                    },
+                    "paymentFrequency": {
+                      "type": "string",
+                      "description": "How often the price is to pay.",
+                      "example": "other",
+                      "enum": [
+                        "one-time",
+                        "weekly",
+                        "monthly",
+                        "quarterly",
+                        "half-yearly",
+                        "by semester",
+                        "yearly",
+                        "other"
+                      ]
+                    },
+                    "category": {
+                      "type": "string",
+                      "description": "The category of the offer. Can either be \"course\" (the costs for taking the course), \"certificate\" (the costs for the certification only) or \"complete\" (all costs for a course including certification).",
+                      "enum": [
+                        "course",
+                        "certificate",
+                        "complete"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "price",
+                    "priceCurrency",
+                    "paymentFrequency",
+                    "category"
+                  ]
+                }
+              },
+              "numberOfCredits": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "The number of credits received for successfully completing the course. Currently, credits are given according the European Credit Transfer System (ECTS)",
+                "example": null,
+                "minimum": 0
+              },
+              "educationalCredentialsAwarded": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "description": "Clarification which kinds of awards for successfully completing the course are given. ECTS are awarded if numberOfCredits > 0 (No explicit information given here).",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "certificate",
+                    "record of achievement",
+                    "confirmation of participation"
+                  ],
+                  "example": "record of achievement"
+                }
+              },
+              "competencyRequired": {
+                "type": "array",
+                "description": "A list of competencies that are required to successfully complete the course. This includes skills, certificated, (high) school degrees, other courses, etc.",
+                "uniqueItems": true,
+                "example": null,
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "This schema describes the attributes of a course id. It is used to point at a specific course.",
+                      "properties": {
+                        "name": {
+                          "type": "array",
+                          "description": "List of names of the course. This array allows localized strings. A name and a language have to be given in the respective element.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "inLanguage": {
+                                "type": "string",
+                                "description": "The language the name is given in. Has to be a shortcode according to BCP 47.",
+                                "example": "en"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "The name of the course in the given language by the \"inLanguage\" attribute.",
+                                "example": "HPI Academy: Leading Digital Transformation and Innovation - Fall 2020"
+                              }
+                            },
+                            "required": [
+                              "inLanguage",
+                              "name"
+                            ]
+                          }
+                        },
+                        "educationalFramework": {
+                          "type": "string",
+                          "description": "This labels the object as a link to a course. It is needed to be compliant with a \"Skill\" ",
+                          "enum": [
+                            "Course_ID"
+                          ]
+                        },
+                        "educationalFrameworkVersion": {
+                          "type": "string",
+                          "description": "This labels the object as a link to a course. It is needed to be compliant with a \"Skill\" ",
+                          "example": "Fall 2020"
+                        },
+                        "targetUrl": {
+                          "type": "string",
+                          "description": "An IRI pointing at a course.",
+                          "example": "https://open.hpi.de/courses/digitrans2020-1"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "educationalFramework",
+                        "educationalFrameworkVersion"
+                      ]
+                    },
+                    {
+                      "title": "Skill",
+                      "type": "object",
+                      "description": "This schema describes the attributes of a skill.",
+                      "properties": {
+                        "name": {
+                          "type": "array",
+                          "description": "List of names of the skill. This array allows localized strings. A name and a language have to be given in the respective element.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "inLanguage": {
+                                "type": "string",
+                                "description": "The language the name is given in. Has to be a shortcode according to BCP 47.",
+                                "example": "en"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "The name of the skill in the given language by the \"inLanguage\" attribute.",
+                                "example": "PROTECTING PERSONAL DATA AND PRIVACY"
+                              }
+                            },
+                            "required": [
+                              "inLanguage",
+                              "name"
+                            ]
+                          }
+                        },
+                        "alternateName": {
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "description": "A list of alternative names for the skill.",
+                          "example": [
+                            "Understand Personal Privacy",
+                            "Use Privacy Policy"
+                          ],
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "shortCode": {
+                          "type": "string",
+                          "description": "The short code of the skill if the used framework provides one.",
+                          "example": "4.2"
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "A short description of the skill. Should be based on the framework used.",
+                          "example": "To protect personal data and privacy in digital environments. To understand how to use and share personally identifiable information while being able to protect oneself and others from damages. To understand that digital services use a \"Privacy policy\" to inform how personal data is used."
+                        },
+                        "educationalFramework": {
+                          "type": "string",
+                          "description": "The name of the educational framework that describes the skill.",
+                          "enum": [
+                            "ESCO",
+                            "DigComp",
+                            "GRETA"
+                          ]
+                        },
+                        "educationalFrameworkVersion": {
+                          "type": "string",
+                          "description": "The version of the educational framework that describes the skill. Can also be the year the framework was released/published.",
+                          "example": "2.2"
+                        },
+                        "url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "An IRI pointing at the document which describes the educational framework.",
+                          "format": "iri",
+                          "example": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC128415/JRC128415_01.pdf"
+                        },
+                        "targetUrl": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "iri",
+                          "description": "An IRI pointing at the framework node of the skill.",
+                          "example": null
+                        },
+                        "educationalLevel": {
+                          "title": "EducationalLevel",
+                          "type": "object",
+                          "description": "This schema describes the attributes of an educational level.",
+                          "properties": {
+                            "description": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "A short description of the educational level. Should be based on the framework used.",
+                              "example": "Independently, according to my own needs, and solving well-defined and non-routine problems, I can: - discuss ways to protect my personal data and privacy in digital environments, and - discuss ways to use and share personally identifiable information while protecting myself and others from damages. - indicate privacy policy statements of how personal data is used in digital services."
+                            },
+                            "name": {
+                              "type": "array",
+                              "description": "List of names of the educational level. This array allows localized strings. A name and a language have to be given in the respective field.",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "inLanguage": {
+                                    "type": "string",
+                                    "description": "The language the name is given in. Has to be a shortcode according to BCP 47.",
+                                    "example": "en"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "The name of the educational level in the given language by the \"inLanguage\" attribute.",
+                                    "example": "INTERMEDIATE"
+                                  }
+                                },
+                                "required": [
+                                  "inLanguage",
+                                  "name"
+                                ]
+                              }
+                            },
+                            "alternateName": {
+                              "type": [
+                                "array",
+                                "null"
+                              ],
+                              "description": "A list of alternative names for the educational level.",
+                              "example": [
+                                "independent use of concept",
+                                "use of concept for oneself"
+                              ],
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "shortCode": {
+                              "type": "string",
+                              "example": "4",
+                              "description": "A short code for the educational level if it is provided by the used framework."
+                            },
+                            "educationalFramework": {
+                              "type": "string",
+                              "description": "The name of the educational framework that describes the educational level.",
+                              "enum": [
+                                "ESCO",
+                                "DigComp",
+                                "GRETA"
+                              ]
+                            },
+                            "educationalFrameworkVersion": {
+                              "type": "string",
+                              "description": "The version of the educational framework that describes the skill. Can also be the year the framework was released/published.",
+                              "example": "2.2"
+                            },
+                            "url": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "iri",
+                              "description": "An IRI pointing at the document which describes the educational framework.",
+                              "example": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC128415/JRC128415_01.pdf"
+                            },
+                            "targetUrl": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "iri",
+                              "description": "An IRI pointing at the framework node of the educational level.",
+                              "example": null
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "The type of the object.",
+                              "enum": [
+                                "EducationalLevel"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "educationalFramework",
+                            "educationalFrameworkVersion",
+                            "type"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "educationalFramework",
+                        "educationalFrameworkVersion"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "applicationStartDate": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The time and date the period to enroll or hand in an application for the course begins. Given according to ISO 8601.",
+                "format": "date-time",
+                "example": null
+              },
+              "applicationDeadline": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "The time end date the enrolment and application period for the course ends. Given according to ISO 8601.",
+                "example": null
+              },
+              "accessMode": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "description": "Listing of accessModes e.g. audio-descriptive (for deaf people) and other handicaps, uses vocabulary from https://www.w3.org/2021/a11y-discov-vocab/latest/#accessModeSufficient-vocabulary.",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "visual",
+                    "tactile",
+                    "textual",
+                    "auditory"
+                  ]
+                }
+              },
+              "repeatFrequency": {
+                "type": "array",
+                "description": "A list of schedule objects describing in which frequency course units take place, e.g. every Tuesday 7pm to 9pm and every Thursday 6pm to 8pm.",
+                "example": null,
+                "items": {
+                  "title": "Schedule",
+                  "type": "object",
+                  "description": "This schema describes the attributes of a schedule for a course. If a course takes place on several days of a week, individual entries for each day need to be created. The same is true for several time slots on the same day.",
+                  "properties": {
+                    "byDay": {
+                      "type": "string",
+                      "description": "This is the day of the week according to https://schema.org/DayOfWeek a course takes",
+                      "pattern": "https://schema.org/*",
+                      "example": "https://schema.org/Friday"
+                    },
+                    "startTime": {
+                      "type": "string",
+                      "description": "The time the course starts on the specified day.",
+                      "format": "time"
+                    },
+                    "endTime": {
+                      "type": "string",
+                      "description": "The time the course ends on the specified day.",
+                      "format": "time"
+                    }
+                  },
+                  "required": [
+                    "byDay",
+                    "startTime",
+                    "endTime"
+                  ]
+                }
+              },
+              "dateCreated": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The date the content was created. Given according to ISO 8601.",
+                "format": "date-time",
+                "example": null
+              },
+              "dateModified": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "The date the content was changed last. Given according to ISO 8601.",
+                "example": null
+              },
+              "hollandCode": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "description": "The assessed competency described in Holland Code/RIASEC Model. The allowed values are therefor \"R\", \"I\", \"A\", \"S\", \"E\", \"C\" according to the Holland taxonomy.",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "R",
+                    "I",
+                    "A",
+                    "S",
+                    "E",
+                    "C"
+                  ]
+                }
+              },
+              "hasPart": {
+                "type": "array",
+                "description": "A list of the learning items like videos, lectures, quizzes, ... in the course.",
+                "uniqueItems": true,
+                "items": {
+                  "title": "LearningItem",
+                  "type": "object",
+                  "description": "This schema describes the attributes of a learning item.",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "The type of the object.",
+                      "enum": [
+                        "Video",
+                        "Quiz",
+                        "Test",
+                        "Podcast",
+                        "Exercise",
+                        "Text",
+                        "other"
+                      ]
+                    },
+                    "identifier": {
+                      "type": "string",
+                      "format": "iri",
+                      "description": "An IRI pointing at the learning item.",
+                      "example": "https://open.hpi.de/courses/confidentialcommunication2022/items/1uDqDl23eu0i2h6jrGR49p"
+                    },
+                    "name": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "The name of the learning item.",
+                      "example": "2.9 Certificate Standards"
+                    },
+                    "duration": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "pattern": "^P(?!$)(\\d+(?:\\.\\d+)?Y)?(\\d+(?:\\.\\d+)?M)?(\\d+(?:\\.\\d+)?W)?(\\d+(?:\\.\\d+)?D)?(T(?=\\d)(\\d+(?:\\.\\d+)?H)?(\\d+(?:\\.\\d+)?M)?(\\d+(?:\\.\\d+)?S)?)?$",
+                      "description": "ISO 8601 encoded duration.",
+                      "example": "PT19M21S"
+                    },
+                    "competencyRequired": {
+                      "type": "array",
+                      "description": "A list of competencies that are required to successfully complete this item. This includes skills, certificated, (high) school degrees, other courses",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "description": "This schema describes the attributes of a course id. It is used to point at a specific course.",
+                            "properties": {
+                              "name": {
+                                "type": "array",
+                                "description": "List of names of the course. This array allows localized strings. A name and a language have to be given in the respective element.",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "inLanguage": {
+                                      "type": "string",
+                                      "description": "The language the name is given in. Has to be a shortcode according to BCP 47.",
+                                      "example": "en"
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "The name of the course in the given language by the \"inLanguage\" attribute.",
+                                      "example": "HPI Academy: Leading Digital Transformation and Innovation - Fall 2020"
+                                    }
+                                  },
+                                  "required": [
+                                    "inLanguage",
+                                    "name"
+                                  ]
+                                }
+                              },
+                              "educationalFramework": {
+                                "type": "string",
+                                "description": "This labels the object as a link to a course. It is needed to be compliant with a \"Skill\" ",
+                                "enum": [
+                                  "Course_ID"
+                                ]
+                              },
+                              "educationalFrameworkVersion": {
+                                "type": "string",
+                                "description": "This labels the object as a link to a course. It is needed to be compliant with a \"Skill\" ",
+                                "example": "Fall 2020"
+                              },
+                              "targetUrl": {
+                                "type": "string",
+                                "description": "An IRI pointing at a course.",
+                                "example": "https://open.hpi.de/courses/digitrans2020-1"
+                              }
+                            },
+                            "required": [
+                              "name",
+                              "educationalFramework",
+                              "educationalFrameworkVersion"
+                            ]
+                          },
+                          {
+                            "title": "Skill",
+                            "type": "object",
+                            "description": "This schema describes the attributes of a skill.",
+                            "properties": {
+                              "name": {
+                                "type": "array",
+                                "description": "List of names of the skill. This array allows localized strings. A name and a language have to be given in the respective element.",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "inLanguage": {
+                                      "type": "string",
+                                      "description": "The language the name is given in. Has to be a shortcode according to BCP 47.",
+                                      "example": "en"
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "The name of the skill in the given language by the \"inLanguage\" attribute.",
+                                      "example": "PROTECTING PERSONAL DATA AND PRIVACY"
+                                    }
+                                  },
+                                  "required": [
+                                    "inLanguage",
+                                    "name"
+                                  ]
+                                }
+                              },
+                              "alternateName": {
+                                "type": [
+                                  "array",
+                                  "null"
+                                ],
+                                "description": "A list of alternative names for the skill.",
+                                "example": [
+                                  "Understand Personal Privacy",
+                                  "Use Privacy Policy"
+                                ],
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "shortCode": {
+                                "type": "string",
+                                "description": "The short code of the skill if the used framework provides one.",
+                                "example": "4.2"
+                              },
+                              "description": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "A short description of the skill. Should be based on the framework used.",
+                                "example": "To protect personal data and privacy in digital environments. To understand how to use and share personally identifiable information while being able to protect oneself and others from damages. To understand that digital services use a \"Privacy policy\" to inform how personal data is used."
+                              },
+                              "educationalFramework": {
+                                "type": "string",
+                                "description": "The name of the educational framework that describes the skill.",
+                                "enum": [
+                                  "ESCO",
+                                  "DigComp",
+                                  "GRETA"
+                                ]
+                              },
+                              "educationalFrameworkVersion": {
+                                "type": "string",
+                                "description": "The version of the educational framework that describes the skill. Can also be the year the framework was released/published.",
+                                "example": "2.2"
+                              },
+                              "url": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "An IRI pointing at the document which describes the educational framework.",
+                                "format": "iri",
+                                "example": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC128415/JRC128415_01.pdf"
+                              },
+                              "targetUrl": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "format": "iri",
+                                "description": "An IRI pointing at the framework node of the skill.",
+                                "example": null
+                              },
+                              "educationalLevel": {
+                                "title": "EducationalLevel",
+                                "type": "object",
+                                "description": "This schema describes the attributes of an educational level.",
+                                "properties": {
+                                  "description": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "A short description of the educational level. Should be based on the framework used.",
+                                    "example": "Independently, according to my own needs, and solving well-defined and non-routine problems, I can: - discuss ways to protect my personal data and privacy in digital environments, and - discuss ways to use and share personally identifiable information while protecting myself and others from damages. - indicate privacy policy statements of how personal data is used in digital services."
+                                  },
+                                  "name": {
+                                    "type": "array",
+                                    "description": "List of names of the educational level. This array allows localized strings. A name and a language have to be given in the respective field.",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "inLanguage": {
+                                          "type": "string",
+                                          "description": "The language the name is given in. Has to be a shortcode according to BCP 47.",
+                                          "example": "en"
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "The name of the educational level in the given language by the \"inLanguage\" attribute.",
+                                          "example": "INTERMEDIATE"
+                                        }
+                                      },
+                                      "required": [
+                                        "inLanguage",
+                                        "name"
+                                      ]
+                                    }
+                                  },
+                                  "alternateName": {
+                                    "type": [
+                                      "array",
+                                      "null"
+                                    ],
+                                    "description": "A list of alternative names for the educational level.",
+                                    "example": [
+                                      "independent use of concept",
+                                      "use of concept for oneself"
+                                    ],
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "shortCode": {
+                                    "type": "string",
+                                    "example": "4",
+                                    "description": "A short code for the educational level if it is provided by the used framework."
+                                  },
+                                  "educationalFramework": {
+                                    "type": "string",
+                                    "description": "The name of the educational framework that describes the educational level.",
+                                    "enum": [
+                                      "ESCO",
+                                      "DigComp",
+                                      "GRETA"
+                                    ]
+                                  },
+                                  "educationalFrameworkVersion": {
+                                    "type": "string",
+                                    "description": "The version of the educational framework that describes the skill. Can also be the year the framework was released/published.",
+                                    "example": "2.2"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "description": "An IRI pointing at the document which describes the educational framework.",
+                                    "example": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC128415/JRC128415_01.pdf"
+                                  },
+                                  "targetUrl": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "iri",
+                                    "description": "An IRI pointing at the framework node of the educational level.",
+                                    "example": null
+                                  },
+                                  "type": {
+                                    "type": "string",
+                                    "description": "The type of the object.",
+                                    "enum": [
+                                      "EducationalLevel"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "educationalFramework",
+                                  "educationalFrameworkVersion",
+                                  "type"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "name",
+                              "educationalFramework",
+                              "educationalFrameworkVersion"
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "identifier"
+                  ]
+                }
+              },
+              "isPartOf": {
+                "type": "array",
+                "description": "A list of programs (preferable EducationalOccupationalPrograms) this course is part of. The given metadata shall at least contain a link to the program.",
+                "uniqueItems": true,
+                "example": null,
+                "items": {
+                  "title": "Program",
+                  "type": "object",
+                  "description": "This schema describes the attributes of a course program to an extend that it links to a EducationalOccupationalProgram.",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "An IRI pointing at the course program or a homepage of the program, ... etc.",
+                      "format": "iri"
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "The type of the object.",
+                      "enum": [
+                        "Program"
+                      ]
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "The title or name of the course program this course is part of."
+                    }
+                  },
+                  "required": [
+                    "identifier",
+                    "type"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
