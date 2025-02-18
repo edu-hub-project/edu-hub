@@ -101,8 +101,8 @@ def handle_moochub_data():
                     "url": "https://edu.opencampus.sh"
                 },
                 "license": [{
-                    "identifier": "CC-BY-SA-4.0",
-                    "url": "https://spdx.org/licenses/CC-BY-SA-4.0.html",
+                    "identifier": "CC-BY-NC-4.0",
+                    "url": "https://creativecommons.org/licenses/by-nc/4.0/legalcode.en",
                     "contentUrl": None
                 }],
                 "creator": [{
@@ -114,11 +114,12 @@ def handle_moochub_data():
             
             if course["coverImage"]:
                 attributes["image"] = {
-                    "contentUrl": course["coverImage"],
+                    "description": "© Jan Konitzki / opencampus.sh",
                     "type": "ImageObject",
+                    "contentUrl": course["coverImage"],
                     "license": [{
-                        "identifier": "CC-BY-SA-4.0",
-                        "url": "https://spdx.org/licenses/CC-BY-SA-4.0.html",
+                        "identifier": "proprietary",
+                        "url": None,
                         "contentUrl": None
                     }]
                 }
