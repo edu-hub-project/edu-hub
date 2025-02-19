@@ -1,4 +1,6 @@
 requests==2.*
 flask==2.*
 pandas>=1.5.0
-authlib==1.*
+authlib
+google-auth==2.*
+google-cloud-storage==2.*
