@@ -79,7 +79,7 @@ def handle_moochub_data():
             
             attributes = {
                 "name": course["title"],
-                "courseCode": None,
+                "courseCode": str(course["id"]),
                 "learningResourceType": {
                     "identifier": "https://w3id.org/kim/hcrt/course",
                     "type": "Concept",

@@ -31,6 +31,18 @@ resource "google_project_iam_member" "cloud_run_invoker" {
   member  = "serviceAccount:${google_service_account.custom_cloud_function_account.email}"
 }
 
+# Add explicit permission for the Cloud Function's service account to invoke Hasura
+resource "google_cloud_run_service_iam_member" "function_invoke_hasura" {
+  location = var.region
+  service  = module.hasura_service.service_name
+  role     = "roles/run.invoker"
+  member   = "serviceAccount:${google_service_account.custom_cloud_function_account.email}"
+
+  depends_on = [
+    module.hasura_service
+  ]
+}
+
 
 ###############################################################################
 # Create Google Cloud Function Services
@@ -132,27 +144,53 @@ resource "google_cloudfunctions2_function" "call_python_function" {
 
   service_config {
     environment_variables = {
-      ENVIRONMENT                  = var.environment
-      BUCKET_NAME                  = var.project_id
-      HASURA_ENDPOINT              = "https://${local.hasura_service_name}.opencampus.sh/v1/graphql"
-      HASURA_GRAPHQL_ADMIN_KEY     = var.hasura_graphql_admin_key
-      HASURA_CLOUD_FUNCTION_SECRET = var.hasura_cloud_function_secret
-      ZOOM_ACCOUNT_ID              = var.zoom_account_id
-      ZOOM_API_KEY                 = var.zoom_api_key
-      ZOOM_API_SECRET              = var.zoom_api_secret
-      LMS_URL                      = var.lms_url
-      LMS_USER                     = var.lms_user
-      LMS_PASSWORD                 = var.lms_password
-      LMS_ATTENDANCE_SURVEY_ID     = var.lms_attendance_survey_id
-      MM_URL                       = var.mm_url
-      MM_TOKEN                     = var.mm_token
+      ENVIRONMENT              = var.environment
+      BUCKET_NAME              = var.project_id
+      HASURA_ENDPOINT          = "https://${local.hasura_service_name}.opencampus.sh/v1/graphql"
+      ZOOM_ACCOUNT_ID          = var.zoom_account_id
+      ZOOM_API_KEY             = var.zoom_api_key
+      ZOOM_API_SECRET          = var.zoom_api_secret
+      LMS_URL                  = var.lms_url
+      LMS_USER                 = var.lms_user
+      LMS_PASSWORD             = var.lms_password
+      LMS_ATTENDANCE_SURVEY_ID = var.lms_attendance_survey_id
+      MM_URL                   = var.mm_url
+      MM_TOKEN                 = var.mm_token
     }
+
+    secret_environment_variables {
+      key        = "HASURA_ADMIN_SECRET"
+      project_id = var.project_id
+      secret     = google_secret_manager_secret.hasura_graphql_admin_key.secret_id
+      version    = "latest"
+    }
+
+    secret_environment_variables {
+      key        = "HASURA_CLOUD_FUNCTION_SECRET"
+      project_id = var.project_id
+      secret     = google_secret_manager_secret.cloud_function.secret_id
+      version    = "latest"
+    }
+
     max_instance_count    = 500
     available_memory      = "512M"
     timeout_seconds       = 3600
     ingress_settings      = var.cloud_function_ingress_settings
     service_account_email = google_service_account.custom_cloud_function_account.email
   }
+}
+
+# Make sure the Cloud Function's service account can access both secrets
+resource "google_secret_manager_secret_iam_member" "call_python_function_admin_key_access" {
+  secret_id = google_secret_manager_secret.hasura_graphql_admin_key.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.custom_cloud_function_account.email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "call_python_function_cloud_secret_access" {
+  secret_id = google_secret_manager_secret.cloud_function.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.custom_cloud_function_account.email}"
 }
 
 ###############################################################################
