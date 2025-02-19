@@ -32,12 +32,17 @@ resource "google_project_iam_member" "service_account_token_creator" {
 ###############################################################################
 # Create Google cloud function for API proxy
 #####
-# Apply IAM policy which grants any user the privilege to invoke the serverless function
-resource "google_cloud_run_service_iam_policy" "api_proxy_noauth_invoker" {
-  location    = google_cloudfunctions2_function.api_proxy.location
-  project     = google_cloudfunctions2_function.api_proxy.project
-  service     = google_cloudfunctions2_function.api_proxy.name
-  policy_data = data.google_iam_policy.noauth_invoker.policy_data
+# Add the IAM binding to allow public access
+resource "google_cloud_run_service_iam_binding" "api_proxy_noauth" {
+  location = google_cloudfunctions2_function.api_proxy.location
+  project  = google_cloudfunctions2_function.api_proxy.project
+  service  = google_cloudfunctions2_function.api_proxy.name
+  role     = "roles/run.invoker"
+  members  = ["allUsers"]
+
+  depends_on = [
+    google_cloudfunctions2_function.api_proxy
+  ]
 }
 
 # Retrieve data object with zipped source code
@@ -84,13 +89,6 @@ resource "google_cloudfunctions2_function" "api_proxy" {
 ###############################################################################
 # Create Google cloud function for callPythonFunction
 #####
-# Apply IAM policy (see 'main.tf') which grants any user the privilige to invoke the serverless function
-resource "google_cloud_run_service_iam_policy" "call_python_function_noauth_invoker" {
-  location    = google_cloudfunctions2_function.call_python_function.location
-  project     = google_cloudfunctions2_function.call_python_function.project
-  service     = google_cloudfunctions2_function.call_python_function.name
-  policy_data = data.google_iam_policy.noauth_invoker.policy_data
-}
 # Retrieve data object with zipped scource code
 data "google_storage_bucket_object" "call_python_function" {
   name   = "cloud-functions/callPythonFunction.zip"
