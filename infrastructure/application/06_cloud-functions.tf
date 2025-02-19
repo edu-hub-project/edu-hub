@@ -24,6 +24,13 @@ resource "google_project_iam_member" "service_account_token_creator" {
   member  = "serviceAccount:${google_service_account.custom_cloud_function_account.email}"
 }
 
+# Add Cloud Run invoker role to the service account
+resource "google_project_iam_member" "cloud_run_invoker" {
+  project = var.project_id
+  role    = "roles/run.invoker"
+  member  = "serviceAccount:${google_service_account.custom_cloud_function_account.email}"
+}
+
 
 ###############################################################################
 # Create Google Cloud Function Services
@@ -89,6 +96,13 @@ resource "google_cloudfunctions2_function" "api_proxy" {
 ###############################################################################
 # Create Google cloud function for callPythonFunction
 #####
+# Apply IAM policy (see 'main.tf') which grants any user the privilige to invoke the serverless function
+resource "google_cloud_run_service_iam_policy" "call_python_function_noauth_invoker" {
+  location    = google_cloudfunctions2_function.call_python_function.location
+  project     = google_cloudfunctions2_function.call_python_function.project
+  service     = google_cloudfunctions2_function.call_python_function.name
+  policy_data = data.google_iam_policy.noauth_invoker.policy_data
+}
 # Retrieve data object with zipped scource code
 data "google_storage_bucket_object" "call_python_function" {
   name   = "cloud-functions/callPythonFunction.zip"
