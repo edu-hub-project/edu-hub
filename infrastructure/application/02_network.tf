@@ -91,6 +91,36 @@ module "lb-http" {
         sample_rate = null
       }
     }
+
+    moochub = {
+      description = "Backend for MOOChub API"
+      groups = [
+        {
+          group = google_compute_region_network_endpoint_group.moochub.id
+        }
+      ]
+      enable_cdn              = false
+      security_policy         = null
+      custom_request_headers  = null
+      custom_response_headers = null
+
+      iap_config = {
+        enable               = false
+        oauth2_client_id     = ""
+        oauth2_client_secret = ""
+      }
+      log_config = {
+        enable      = false
+        sample_rate = null
+      }
+    }
+  }
+  url_map = {
+    default_service = "default"
+    path_rules = [{
+      paths   = ["/moochub", "/moochub/*"]
+      service = "moochub"
+    }]
   }
 }
 
