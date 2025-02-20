@@ -273,7 +273,7 @@ class CertificateCreator:
                     "course_name": enrollment["Course"]["title"],
                     "semester": enrollment["Course"]["Program"]["title"],
                     "template": image,
-                    "ECTS": str(int(enrollment["Course"]["ects"]) * 30),
+                    "ECTS": str(float(enrollment["Course"]["ects"].replace(",", ".")) * 30),
                     "learningGoalsList": learning_goals,
                     "praxisprojekt": enrollment["User"]["AchievementRecordAuthors"][0]["AchievementRecord"]["AchievementOption"]["title"]
                 }
