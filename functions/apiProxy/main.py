@@ -3,17 +3,42 @@ from flask import jsonify
 import logging
 from api_clients.eduhub_client import EduHubClient
 import uuid
+from datetime import datetime
 
-HASURA_ENDPOINT = os.getenv('HASURA_ENDPOINT')
-HASURA_ADMIN_SECRET = os.getenv('HASURA_GRAPHQL_ADMIN_KEY')
+# Rate limiting configuration - 100 requests per hour per IP
+RATE_LIMIT = 100
+RATE_WINDOW = 3600  # 1 hour in seconds
+request_counts = {}  # In-memory storage for rate limiting
+
+def check_rate_limit(ip_address):
+    current_time = datetime.now().timestamp()
+    if ip_address in request_counts:
+        count, window_start = request_counts[ip_address]
+        # Reset if window has expired
+        if current_time - window_start > RATE_WINDOW:
+            request_counts[ip_address] = (1, current_time)
+            return True
+        elif count >= RATE_LIMIT:
+            return False
+        else:
+            request_counts[ip_address] = (count + 1, window_start)
+            return True
+    else:
+        request_counts[ip_address] = (1, current_time)
+        return True
 
 def get_cors_headers():
-    return {
+    headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Max-Age': '3600'
+        'Access-Control-Allow-Headers': 'Content-Type, Accept-Version',
+        'Access-Control-Max-Age': '3600',
+        'Content-Type': 'application/vnd.api+json',
+        'X-API-Version': '3.0.1',
+        'X-Rate-Limit-Limit': str(RATE_LIMIT),
+        'X-Rate-Limit-Window': str(RATE_WINDOW)
     }
+    return headers
 
 def generate_uuid_from_id(id_str):
     """Generate a consistent UUID from a string ID by using it as a namespace."""
@@ -23,7 +48,7 @@ def generate_uuid_from_id(id_str):
     # Generate a UUID using the course ID string
     return str(uuid.uuid5(NAMESPACE_UUID, str(id_str)))
 
-def handle_moochub_data():
+def handle_moochub_data(page=1, per_page=10):
     try:
         # Use the existing EduHubClient
         eduhub_client = EduHubClient()
@@ -144,14 +169,32 @@ def handle_moochub_data():
             
             transformed_data.append(transformed_course)
 
+        # Implement pagination
+        start_idx = (page - 1) * per_page
+        end_idx = start_idx + per_page
+        paginated_data = transformed_data[start_idx:end_idx]
+        total_pages = (len(transformed_data) + per_page - 1) // per_page
+
+        base_url = "https://edu.opencampus.sh/moochub"
+        
         moochub_response = {
             "links": {
-                "self": "https://edu.opencampus.sh",
-                "first": "https://edu.opencampus.sh",
-                "last": "https://edu.opencampus.sh"
+                "self": f"{base_url}?page={page}",
+                "first": f"{base_url}?page=1",
+                "last": f"{base_url}?page={total_pages}",
             },
-            "data": transformed_data
+            "data": paginated_data,
+            "meta": {
+                "totalPages": total_pages,
+                "totalItems": len(transformed_data)
+            }
         }
+
+        # Add next/prev links if applicable
+        if page < total_pages:
+            moochub_response["links"]["next"] = f"{base_url}?page={page + 1}"
+        if page > 1:
+            moochub_response["links"]["prev"] = f"{base_url}?page={page - 1}"
             
         return moochub_response
             
@@ -159,23 +202,49 @@ def handle_moochub_data():
         logging.error(f"Error in handle_moochub_data: {str(e)}")
         return {'error': str(e)}, 500
 
+def validate_pagination(page, per_page):
+    try:
+        page = int(page)
+        per_page = int(per_page)
+        if page < 1 or per_page < 1 or per_page > 100:
+            return False
+        return True
+    except (ValueError, TypeError):
+        return False
+
 def handle_request(request):
+    # Get client IP
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    
     # Handle CORS preflight requests
     if request.method == 'OPTIONS':
         return ('', 204, get_cors_headers())
 
-    # Get the path from the request
+    # Check rate limit
+    if not check_rate_limit(client_ip):
+        return (jsonify({
+            'error': 'Rate limit exceeded',
+            'details': f'Maximum {RATE_LIMIT} requests per hour'
+        }), 429, get_cors_headers())
+
+    # Basic request logging
+    logging.info(f"Request from {client_ip}: {request.method} {request.path}")
+
+    # Version handling
+    requested_version = request.headers.get('Accept-Version', '3.0.1')
+    if requested_version not in ['3.0.1', '3.0.0']:
+        return (jsonify({'error': 'Unsupported API version'}), 406, get_cors_headers())
+
     path = request.path.strip('/').split('/')[0]
-
-    # Route to appropriate handler based on path
-    handlers = {
-        'moochub': handle_moochub_data,
-        # Add more endpoints here as needed
-    }
-
-    if path in handlers:
-        result = handlers[path]()
-        # Check if result includes an error status
+    
+    if path == 'moochub':
+        # Validate pagination parameters
+        page = request.args.get('page', 1)
+        per_page = request.args.get('per_page', 10)
+        if not validate_pagination(page, per_page):
+            return (jsonify({'error': 'Invalid pagination parameters'}), 400, get_cors_headers())
+            
+        result = handle_moochub_data(int(page), int(per_page))
         if isinstance(result, tuple):
             data, status = result
             return (jsonify(data), status, get_cors_headers())
