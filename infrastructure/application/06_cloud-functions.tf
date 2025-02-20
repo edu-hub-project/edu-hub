@@ -79,7 +79,7 @@ resource "google_cloudfunctions2_function" "api_proxy" {
 
   build_config {
     runtime     = "python311"
-    entry_point = "handle_request" # More generic entry point name
+    entry_point = "handle_request"
     environment_variables = {
       # Causes a re-deploy of the function when the source changes
       "SOURCE_SHA" = data.google_storage_bucket_object.api_proxy.md5hash
@@ -96,6 +96,7 @@ resource "google_cloudfunctions2_function" "api_proxy" {
     environment_variables = {
       HASURA_ENDPOINT          = "https://${local.hasura_service_name}.opencampus.sh/v1/graphql"
       HASURA_GRAPHQL_ADMIN_KEY = var.hasura_graphql_admin_key
+      API_BASE_URL             = "https://${local.eduhub_service_name}.opencampus.sh"
     }
     max_instance_count    = 1
     available_memory      = "256M"

@@ -175,7 +175,8 @@ def handle_moochub_data(page=1, per_page=10):
         paginated_data = transformed_data[start_idx:end_idx]
         total_pages = (len(transformed_data) + per_page - 1) // per_page
 
-        base_url = "https://edu.opencampus.sh/moochub"
+        # Use environment variable for base URL
+        base_url = f"{os.getenv('API_BASE_URL', 'https://edu.opencampus.sh')}/moochub"
         
         moochub_response = {
             "links": {
