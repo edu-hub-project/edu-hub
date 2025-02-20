@@ -47,6 +47,7 @@ select_permissions:
     permission:
       columns:
         - achievementOptionId
+        - courseId
         - coverImageUrl
         - csvResults
         - description
