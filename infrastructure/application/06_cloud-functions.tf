@@ -94,8 +94,8 @@ resource "google_cloudfunctions2_function" "api_proxy" {
 
   service_config {
     environment_variables = {
-      HASURA_ENDPOINT     = "https://${local.hasura_service_name}.opencampus.sh/v1/graphql"
-      HASURA_ADMIN_SECRET = var.hasura_graphql_admin_key
+      HASURA_ENDPOINT          = "https://${local.hasura_service_name}.opencampus.sh/v1/graphql"
+      HASURA_GRAPHQL_ADMIN_KEY = var.hasura_graphql_admin_key
     }
     max_instance_count    = 1
     available_memory      = "256M"
