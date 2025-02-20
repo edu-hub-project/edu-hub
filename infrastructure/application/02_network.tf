@@ -54,6 +54,38 @@ resource "google_compute_region_network_endpoint_group" "default" {
   }
 }
 
+# Add the NEG for moochub
+resource "google_compute_region_network_endpoint_group" "moochub" {
+  provider              = google-beta
+  name                  = "moochub-neg"
+  network_endpoint_type = "SERVERLESS"
+  region                = var.region
+  cloud_function {
+    function = google_cloudfunctions2_function.api_proxy.name
+  }
+}
+
+# Create custom URL map
+resource "google_compute_url_map" "urlmap" {
+  name            = "url-map"
+  default_service = module.lb-http.backend_services["default"].self_link
+
+  host_rule {
+    hosts        = ["*"]
+    path_matcher = "allpaths"
+  }
+
+  path_matcher {
+    name            = "allpaths"
+    default_service = module.lb-http.backend_services["default"].self_link
+
+    path_rule {
+      paths   = ["/moochub", "/moochub/*"]
+      service = module.lb-http.backend_services["moochub"].self_link
+    }
+  }
+}
+
 # create Cloud HTTP(S) Load Balancer with Serverless Network Endpoint Groups (NEGs)
 # and place serverless services from Cloud Run, Cloud Functions and App Engine behind a Cloud Load Balancer
 module "lb-http" {
@@ -115,13 +147,8 @@ module "lb-http" {
       }
     }
   }
-  url_map = {
-    default_service = "default"
-    path_rules = [{
-      paths   = ["/moochub", "/moochub/*"]
-      service = "moochub"
-    }]
-  }
+  url_map        = google_compute_url_map.urlmap.self_link
+  create_url_map = false
 }
 
 
