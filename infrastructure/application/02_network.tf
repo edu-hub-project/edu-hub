@@ -65,27 +65,6 @@ resource "google_compute_region_network_endpoint_group" "api_proxy" {
   }
 }
 
-# Comment out this URL map resource temporarily
-# resource "google_compute_url_map" "urlmap" {
-#   name            = "url-map"
-#   default_service = module.lb-http.backend_services["default"].self_link
-#
-#   host_rule {
-#     hosts        = ["*"]
-#     path_matcher = "allpaths"
-#   }
-#
-#   path_matcher {
-#     name            = "allpaths"
-#     default_service = module.lb-http.backend_services["default"].self_link
-#
-#     path_rule {
-#       paths   = ["/moochub", "/moochub/*"]
-#       service = module.lb-http.backend_services["moochub"].self_link
-#     }
-#   }
-# }
-
 # Modify the lb-http module to create its own URL map
 module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
@@ -105,24 +84,6 @@ module "lb-http" {
   https_redirect            = "true"
   random_certificate_suffix = "true"
   create_url_map            = true
-
-  # Configure URL map with host rules
-  url_map = {
-    default_service = "default"
-    host_rules = [
-      {
-        hosts        = ["api.${local.eduhub_service_name}.opencampus.sh"]
-        path_matcher = "api_proxy"
-      }
-    ]
-    path_matchers = [
-      {
-        name            = "api_proxy"
-        default_service = "api_proxy"
-        path_rules      = []
-      }
-    ]
-  }
 
   backends = {
     default = {
@@ -175,6 +136,35 @@ module "lb-http" {
       path_rule = []
     }
   }
+}
+
+# Create a custom URL map that routes requests based on hostname
+resource "google_compute_url_map" "url_map" {
+  name            = "lb-url-map"
+  default_service = module.lb-http.backend_services["default"].self_link
+
+  host_rule {
+    hosts        = ["api.${local.eduhub_service_name}.opencampus.sh"]
+    path_matcher = "api-paths"
+  }
+
+  path_matcher {
+    name            = "api-paths"
+    default_service = module.lb-http.backend_services["api_proxy"].self_link
+  }
+}
+
+# Update the HTTP proxy to use our custom URL map
+resource "google_compute_target_http_proxy" "http_proxy" {
+  name    = "lb-http-proxy"
+  url_map = google_compute_url_map.url_map.id
+}
+
+# Update the HTTPS proxy to use our custom URL map
+resource "google_compute_target_https_proxy" "https_proxy" {
+  name             = "lb-https-proxy"
+  url_map          = google_compute_url_map.url_map.id
+  ssl_certificates = module.lb-http.ssl_certificate != null ? [module.lb-http.ssl_certificate] : module.lb-http.ssl_certificates
 }
 
 
