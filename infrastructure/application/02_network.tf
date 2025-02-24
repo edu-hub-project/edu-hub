@@ -54,6 +54,38 @@ resource "google_compute_region_network_endpoint_group" "default" {
   }
 }
 
+# Add the NEG for moochub
+resource "google_compute_region_network_endpoint_group" "moochub" {
+  provider              = google-beta
+  name                  = "moochub-neg"
+  network_endpoint_type = "SERVERLESS"
+  region                = var.region
+  cloud_function {
+    function = google_cloudfunctions2_function.api_proxy.name
+  }
+}
+
+# Create custom URL map
+resource "google_compute_url_map" "urlmap" {
+  name            = "url-map"
+  default_service = module.lb-http.backend_services["default"].self_link
+
+  host_rule {
+    hosts        = ["*"]
+    path_matcher = "allpaths"
+  }
+
+  path_matcher {
+    name            = "allpaths"
+    default_service = module.lb-http.backend_services["default"].self_link
+
+    path_rule {
+      paths   = ["/moochub", "/moochub/*"]
+      service = module.lb-http.backend_services["moochub"].self_link
+    }
+  }
+}
+
 # create Cloud HTTP(S) Load Balancer with Serverless Network Endpoint Groups (NEGs)
 # and place serverless services from Cloud Run, Cloud Functions and App Engine behind a Cloud Load Balancer
 module "lb-http" {
@@ -63,10 +95,16 @@ module "lb-http" {
   project = var.project_id
 
   # Create Google-managed SSL certificates for the specified domains. 
-  ssl                             = "true"
-  managed_ssl_certificate_domains = ["${local.keycloak_service_name}.opencampus.sh", "${local.hasura_service_name}.opencampus.sh", "${local.eduhub_service_name}.opencampus.sh", "${local.rent_a_scientist_service_name}.opencampus.sh"]
-  https_redirect                  = "true"
-  random_certificate_suffix       = "true"
+  ssl = "true"
+  managed_ssl_certificate_domains = [
+    "${local.keycloak_service_name}.opencampus.sh",
+    "${local.hasura_service_name}.opencampus.sh",
+    "${local.eduhub_service_name}.opencampus.sh",
+    "${local.rent_a_scientist_service_name}.opencampus.sh",
+    "api.${local.eduhub_service_name}.opencampus.sh"
+  ]
+  https_redirect            = "true"
+  random_certificate_suffix = "true"
 
   backends = {
     default = {
@@ -91,7 +129,32 @@ module "lb-http" {
         sample_rate = null
       }
     }
+
+    moochub = {
+      description = "Backend for MOOChub API"
+      groups = [
+        {
+          group = google_compute_region_network_endpoint_group.moochub.id
+        }
+      ]
+      enable_cdn              = false
+      security_policy         = null
+      custom_request_headers  = null
+      custom_response_headers = null
+
+      iap_config = {
+        enable               = false
+        oauth2_client_id     = ""
+        oauth2_client_secret = ""
+      }
+      log_config = {
+        enable      = false
+        sample_rate = null
+      }
+    }
   }
+  url_map        = google_compute_url_map.urlmap.self_link
+  create_url_map = false
 }
 
 
@@ -129,4 +192,13 @@ resource "cloudflare_record" "rent_a_scientist" {
   name    = local.rent_a_scientist_service_name
   type    = "A"
   value   = module.lb-http.external_ip
+}
+
+# Add a domain record for the API proxy
+resource "cloudflare_record" "api_proxy" {
+  zone_id = var.cloudflare_zone_id
+  name    = "api.${local.eduhub_service_name}"
+  type    = "A"
+  value   = module.lb-http.external_ip
+  proxied = true
 }
