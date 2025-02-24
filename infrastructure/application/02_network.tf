@@ -54,10 +54,10 @@ resource "google_compute_region_network_endpoint_group" "default" {
   }
 }
 
-# Add the NEG for moochub
-resource "google_compute_region_network_endpoint_group" "moochub" {
+# Add the NEG for API proxy
+resource "google_compute_region_network_endpoint_group" "api_proxy" {
   provider              = google-beta
-  name                  = "moochub-neg"
+  name                  = "api-proxy-neg"
   network_endpoint_type = "SERVERLESS"
   region                = var.region
   cloud_function {
@@ -65,29 +65,7 @@ resource "google_compute_region_network_endpoint_group" "moochub" {
   }
 }
 
-# Create custom URL map
-resource "google_compute_url_map" "urlmap" {
-  name            = "url-map"
-  default_service = module.lb-http.backend_services["default"].self_link
-
-  host_rule {
-    hosts        = ["*"]
-    path_matcher = "allpaths"
-  }
-
-  path_matcher {
-    name            = "allpaths"
-    default_service = module.lb-http.backend_services["default"].self_link
-
-    path_rule {
-      paths   = ["/moochub", "/moochub/*"]
-      service = module.lb-http.backend_services["moochub"].self_link
-    }
-  }
-}
-
-# create Cloud HTTP(S) Load Balancer with Serverless Network Endpoint Groups (NEGs)
-# and place serverless services from Cloud Run, Cloud Functions and App Engine behind a Cloud Load Balancer
+# Modify the lb-http module to create its own URL map
 module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
   version = "~> 12.0.0"
@@ -105,6 +83,7 @@ module "lb-http" {
   ]
   https_redirect            = "true"
   random_certificate_suffix = "true"
+  create_url_map            = true
 
   backends = {
     default = {
@@ -128,13 +107,15 @@ module "lb-http" {
         enable      = false
         sample_rate = null
       }
+
+      path_rule = []
     }
 
-    moochub = {
-      description = "Backend for MOOChub API"
+    api_proxy = {
+      description = "Backend for API Proxy Cloud Function"
       groups = [
         {
-          group = google_compute_region_network_endpoint_group.moochub.id
+          group = google_compute_region_network_endpoint_group.api_proxy.id
         }
       ]
       enable_cdn              = false
@@ -151,10 +132,29 @@ module "lb-http" {
         enable      = false
         sample_rate = null
       }
+
+      path_rule = []
     }
   }
-  url_map        = google_compute_url_map.urlmap.self_link
-  create_url_map = false
+}
+
+# Add a host rule to the URL map created by the module
+resource "google_compute_url_map" "url_map_update" {
+  name            = "load-balancer"
+  default_service = module.lb-http.backend_services["default"].self_link
+  project         = var.project_id
+
+  host_rule {
+    hosts        = ["api.${local.eduhub_service_name}.opencampus.sh"]
+    path_matcher = "api-paths"
+  }
+
+  path_matcher {
+    name            = "api-paths"
+    default_service = module.lb-http.backend_services["api_proxy"].self_link
+  }
+
+  depends_on = [module.lb-http]
 }
 
 
