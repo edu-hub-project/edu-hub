@@ -138,10 +138,11 @@ module "lb-http" {
   }
 }
 
-# Create a custom URL map that routes requests based on hostname
-resource "google_compute_url_map" "url_map" {
-  name            = "lb-url-map"
+# Add a host rule to the URL map created by the module
+resource "google_compute_url_map" "url_map_update" {
+  name            = "load-balancer"
   default_service = module.lb-http.backend_services["default"].self_link
+  project         = var.project_id
 
   host_rule {
     hosts        = ["api.${local.eduhub_service_name}.opencampus.sh"]
@@ -152,19 +153,8 @@ resource "google_compute_url_map" "url_map" {
     name            = "api-paths"
     default_service = module.lb-http.backend_services["api_proxy"].self_link
   }
-}
 
-# Update the HTTP proxy to use our custom URL map
-resource "google_compute_target_http_proxy" "http_proxy" {
-  name    = "lb-http-proxy"
-  url_map = google_compute_url_map.url_map.id
-}
-
-# Update the HTTPS proxy to use our custom URL map
-resource "google_compute_target_https_proxy" "https_proxy" {
-  name             = "lb-https-proxy"
-  url_map          = google_compute_url_map.url_map.id
-  ssl_certificates = module.lb-http.ssl_certificate != null ? [module.lb-http.ssl_certificate] : module.lb-http.ssl_certificates
+  depends_on = [module.lb-http]
 }
 
 
