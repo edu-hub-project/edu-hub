@@ -106,6 +106,21 @@ resource "google_cloudfunctions2_function" "api_proxy" {
   }
 }
 
+# Add domain mapping for the API proxy Cloud Function
+resource "google_cloud_run_domain_mapping" "api_proxy" {
+  name     = "api.${local.eduhub_service_name}.opencampus.sh"
+  location = google_cloudfunctions2_function.api_proxy.location
+  project  = google_cloudfunctions2_function.api_proxy.project
+
+  metadata {
+    namespace = var.project_id
+  }
+
+  spec {
+    route_name = google_cloudfunctions2_function.api_proxy.name
+  }
+}
+
 ###############################################################################
 # Create Google cloud function for callPythonFunction
 #####
