@@ -106,6 +106,24 @@ module "lb-http" {
   random_certificate_suffix = "true"
   create_url_map            = true
 
+  # Configure URL map with host rules
+  url_map = {
+    default_service = "default"
+    host_rules = [
+      {
+        hosts        = ["api.${local.eduhub_service_name}.opencampus.sh"]
+        path_matcher = "api_proxy"
+      }
+    ]
+    path_matchers = [
+      {
+        name            = "api_proxy"
+        default_service = "api_proxy"
+        path_rules      = []
+      }
+    ]
+  }
+
   backends = {
     default = {
       description = null
@@ -157,13 +175,6 @@ module "lb-http" {
       path_rule = []
     }
   }
-}
-
-# Update the path matcher to use the renamed backend
-resource "google_compute_url_map_path_matcher" "api_paths" {
-  name            = "api-paths"
-  url_map         = module.lb-http.url_map
-  default_service = module.lb-http.backend_services["api_proxy"].self_link
 }
 
 
