@@ -54,18 +54,8 @@ resource "google_compute_region_network_endpoint_group" "default" {
   }
 }
 
-# Add the NEG for API proxy
-resource "google_compute_region_network_endpoint_group" "api_proxy" {
-  provider              = google-beta
-  name                  = "api-proxy-neg"
-  network_endpoint_type = "SERVERLESS"
-  region                = var.region
-  cloud_function {
-    function = google_cloudfunctions2_function.api_proxy.name
-  }
-}
-
-# Modify the lb-http module to create its own URL map
+# create Cloud HTTP(S) Load Balancer with Serverless Network Endpoint Groups (NEGs)
+# and place serverless services from Cloud Run, Cloud Functions and App Engine behind a Cloud Load Balancer
 module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
   version = "~> 12.0.0"
@@ -73,17 +63,10 @@ module "lb-http" {
   project = var.project_id
 
   # Create Google-managed SSL certificates for the specified domains. 
-  ssl = "true"
-  managed_ssl_certificate_domains = [
-    "${local.keycloak_service_name}.opencampus.sh",
-    "${local.hasura_service_name}.opencampus.sh",
-    "${local.eduhub_service_name}.opencampus.sh",
-    "${local.rent_a_scientist_service_name}.opencampus.sh",
-    "api.${local.eduhub_service_name}.opencampus.sh"
-  ]
-  https_redirect            = "true"
-  random_certificate_suffix = "true"
-  create_url_map            = true
+  ssl                             = "true"
+  managed_ssl_certificate_domains = ["${local.keycloak_service_name}.opencampus.sh", "${local.hasura_service_name}.opencampus.sh", "${local.eduhub_service_name}.opencampus.sh", "${local.rent_a_scientist_service_name}.opencampus.sh", "api.${local.eduhub_service_name}.opencampus.sh"]
+  https_redirect                  = "true"
+  random_certificate_suffix       = "true"
 
   backends = {
     default = {
@@ -107,54 +90,8 @@ module "lb-http" {
         enable      = false
         sample_rate = null
       }
-
-      path_rule = []
-    }
-
-    api-proxy = {
-      description = "Backend for API Proxy Cloud Function"
-      groups = [
-        {
-          group = google_compute_region_network_endpoint_group.api_proxy.id
-        }
-      ]
-      enable_cdn              = false
-      security_policy         = null
-      custom_request_headers  = null
-      custom_response_headers = null
-
-      iap_config = {
-        enable               = false
-        oauth2_client_id     = ""
-        oauth2_client_secret = ""
-      }
-      log_config = {
-        enable      = false
-        sample_rate = null
-      }
-
-      path_rule = []
     }
   }
-}
-
-# Add a host rule to the URL map created by the module
-resource "google_compute_url_map" "url_map_update" {
-  name            = "load-balancer"
-  default_service = module.lb-http.backend_services["default"].self_link
-  project         = var.project_id
-
-  host_rule {
-    hosts        = ["api.${local.eduhub_service_name}.opencampus.sh"]
-    path_matcher = "api-paths"
-  }
-
-  path_matcher {
-    name            = "api-paths"
-    default_service = module.lb-http.backend_services["api-proxy"].self_link
-  }
-
-  depends_on = [module.lb-http]
 }
 
 
@@ -194,11 +131,10 @@ resource "cloudflare_record" "rent_a_scientist" {
   value   = module.lb-http.external_ip
 }
 
-# Add a domain record for the API proxy
-resource "cloudflare_record" "api_proxy" {
+# Add a domain record for the EduHub API service
+resource "cloudflare_record" "eduhub_api" {
   zone_id = var.cloudflare_zone_id
-  name    = "api.${local.eduhub_service_name}"
+  name    = local.eduhub_api_service_name
   type    = "A"
   value   = module.lb-http.external_ip
-  proxied = true
 }
