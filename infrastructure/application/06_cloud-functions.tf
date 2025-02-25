@@ -107,9 +107,10 @@ resource "google_cloudfunctions2_function" "api_proxy" {
     service_account_email = google_service_account.custom_cloud_function_account.email
   }
 
-  depends_on = [
-    google_service_account.custom_cloud_function_account
-  ]
+  # Add lifecycle block to prevent cycles
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 ###############################################################################
