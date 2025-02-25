@@ -74,7 +74,7 @@ data "google_storage_bucket_object" "api_proxy" {
 resource "google_cloudfunctions2_function" "api_proxy" {
   provider    = google-beta
   location    = var.region
-  name        = "api-proxy"
+  name        = local.eduhub_api_service_name
   description = "API proxy for transforming and routing various API responses"
 
   build_config {

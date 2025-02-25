@@ -58,6 +58,10 @@ def handle_moochub_data(page=1, per_page=25):
         bucket_name = os.getenv('BUCKET_NAME', 'emulated-bucket')
         storage_port = os.getenv('LOCAL_STORAGE_PORT', '4001')
         
+        # Use environment variable for base URL and ensure it's a complete IRI
+        api_base_url = os.getenv('API_BASE_URL', 'https://localhost')
+        base_url = f"https://api.{api_base_url.replace('https://', '')}"
+        
         query = """query {
             Course(where: {_and: {published: {_eq: true}, Program: {published: {_eq: true}}}}) {
                 id
@@ -186,9 +190,6 @@ def handle_moochub_data(page=1, per_page=25):
         paginated_data = transformed_data[start_idx:end_idx]
         total_pages = (len(transformed_data) + per_page - 1) // per_page
 
-        # Use environment variable for base URL and ensure it's a complete IRI
-        api_base_url = os.getenv('API_BASE_URL', 'https://edu.opencampus.sh')
-        base_url = f"https://api.{api_base_url.replace('https://', '')}"
         
         moochub_response = {
             "links": {
