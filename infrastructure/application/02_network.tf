@@ -52,6 +52,10 @@ resource "google_compute_region_network_endpoint_group" "default" {
     #service  = module.keycloak_service.service_name
     url_mask = var.url_mask
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # create Cloud HTTP(S) Load Balancer with Serverless Network Endpoint Groups (NEGs)
