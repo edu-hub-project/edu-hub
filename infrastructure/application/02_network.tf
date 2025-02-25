@@ -111,7 +111,7 @@ module "lb-http" {
       path_rule = []
     }
 
-    api_proxy = {
+    api-proxy = {
       description = "Backend for API Proxy Cloud Function"
       groups = [
         {
@@ -151,7 +151,7 @@ resource "google_compute_url_map" "url_map_update" {
 
   path_matcher {
     name            = "api-paths"
-    default_service = module.lb-http.backend_services["api_proxy"].self_link
+    default_service = module.lb-http.backend_services["api-proxy"].self_link
   }
 
   depends_on = [module.lb-http]
