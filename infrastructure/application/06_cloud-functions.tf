@@ -106,6 +106,10 @@ resource "google_cloudfunctions2_function" "api_proxy" {
     ingress_settings      = var.cloud_function_ingress_settings
     service_account_email = google_service_account.custom_cloud_function_account.email
   }
+
+  depends_on = [
+    google_service_account.custom_cloud_function_account
+  ]
 }
 
 ###############################################################################
