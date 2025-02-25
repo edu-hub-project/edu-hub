@@ -53,9 +53,9 @@ resource "google_cloud_run_service_iam_member" "function_invoke_hasura" {
 #####
 # Add the IAM binding to allow public access
 resource "google_cloud_run_service_iam_binding" "api_proxy_noauth" {
-  location = google_cloudfunctions2_function.api_proxy.location
-  project  = google_cloudfunctions2_function.api_proxy.project
-  service  = google_cloudfunctions2_function.api_proxy.name
+  location = var.region
+  project  = var.project_id
+  service  = local.eduhub_api_service_name
   role     = "roles/run.invoker"
   members  = ["allUsers"]
 
@@ -107,9 +107,10 @@ resource "google_cloudfunctions2_function" "api_proxy" {
     service_account_email = google_service_account.custom_cloud_function_account.email
   }
 
-  depends_on = [
-    google_service_account.custom_cloud_function_account
-  ]
+  # Add lifecycle block to prevent cycles
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 ###############################################################################
