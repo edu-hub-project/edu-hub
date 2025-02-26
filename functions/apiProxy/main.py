@@ -60,7 +60,7 @@ def handle_moochub_data(page=1, per_page=25):
         
         # Use environment variable for base URL and ensure it's a complete IRI
         api_base_url = os.getenv('API_BASE_URL', 'https://localhost')
-        base_url = f"https://api.{api_base_url.replace('https://', '')}"
+        base_url = f"https://api-{api_base_url.replace('https://', '')}/moochub"
         
         query = """query {
             Course(where: {_and: {published: {_eq: true}, Program: {published: {_eq: true}}}}) {
