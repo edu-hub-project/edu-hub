@@ -56,6 +56,10 @@ resource "google_compute_region_network_endpoint_group" "default" {
   lifecycle {
     create_before_destroy = true
   }
+  depends_on = [
+    google_compute_region_network_endpoint_group.default
+  ]
+
 }
 
 # create Cloud HTTP(S) Load Balancer with Serverless Network Endpoint Groups (NEGs)
@@ -96,6 +100,9 @@ module "lb-http" {
       }
     }
   }
+  depends_on = [
+    google_compute_region_network_endpoint_group.default
+  ]
 }
 
 
